@@ -1,0 +1,1 @@
+from .sp_trainer import SentencePieceTrainer as SentencePieceTrainer
