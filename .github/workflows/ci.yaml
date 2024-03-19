@@ -1,0 +1,50 @@
+---
+name: "CI"
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - "*"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      # https://github.com/actions/setup-python/blob/main/docs/advanced-usage.md#caching-packages
+      - name: Install poetry
+        run: pipx install poetry
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: poetry
+
+      - name: Install dependencies
+        run: poetry install
+
+      # https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python#using-ruff-to-lint-code
+      - name: Ruff
+        run: poetry run ruff --output-format=github .
+        continue-on-error: true
+
+      - name: Mypy
+        run: poetry run mypy .
+
+      # https://github.com/codecov/example-python
+      - name: Pytest
+        run: poetry run pytest --cov=src --cov-report=xml
+
+      # - name: Compile Vertex Pipeline
+      #   run: python -m src.dazai_bert_pipeline.compile
+
+      - name: Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}

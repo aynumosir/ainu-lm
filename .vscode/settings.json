@@ -1,0 +1,16 @@
+{
+  "files.exclude": {
+    ".venv": true,
+    ".mypy_cache": true,
+    ".ruff_cache": true,
+    ".pytest_cache": true,
+    "**/*.egg-info": true,
+    "**/__pycache__": true
+  },
+  "[python]": {
+    "editor.defaultFormatter": "charliermarsh.ruff",
+    "editor.codeActionsOnSave": {
+      "source.fixAll": "always"
+    }
+  }
+}
