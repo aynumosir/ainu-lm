@@ -2,7 +2,7 @@ from pathlib import Path
 
 from datasets import load_dataset
 
-from .trainers import SentencePieceTrainer
+from ..trainers import BpeTrainer
 
 if __name__ == "__main__":
     dataset = load_dataset("aynumosir/ainu-corpora")
@@ -12,10 +12,10 @@ if __name__ == "__main__":
     with open("/tmp/corpus.txt", "w") as f:
         f.write(corpus)
 
-    trainer = SentencePieceTrainer(
+    trainer = BpeTrainer(
         corpus_file=Path("/tmp/corpus.txt"), output_dir=Path("./models/tokenizer")
     )
 
     result = trainer.train()
 
-    print(result.model_path)
+    # print(result.model_path)
