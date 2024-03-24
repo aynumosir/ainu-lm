@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "ainu-nlp"
+name = "ainu-language-model"
 version = "0.1.0"
 description = ""
 authors = ["Ryo Igarashi <n33t5hin@gmail.com>"]
