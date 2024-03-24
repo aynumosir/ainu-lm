@@ -8,7 +8,7 @@ from ..models.job_dir import JobDir
 
 def get_argument_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Train a language model")
-    subparsers = parser.add_subparsers(dest="model", description="Model to train")
+    subparsers = parser.add_subparsers(dest="task", description="Model to train")
 
     """
     Subparser for the tokenizer
@@ -51,5 +51,10 @@ def get_argument_parser() -> argparse.ArgumentParser:
         help="Job directory. Use gs:/ to save to Google Cloud Storage",
         default=os.environ.get("AIP_MODEL_DIR"),
     )
+
+    """
+    Subparser for the cache
+    """
+    subparsers.add_parser("cache")
 
     return parser

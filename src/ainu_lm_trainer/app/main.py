@@ -1,12 +1,17 @@
 from .argument_parser import get_argument_parser
-from .commands import language_model, tokenizer
+from .task_cache import cache
+from .task_language_model import language_model
+from .task_tokenizer import tokenizer
 
 if __name__ == "__main__":
     argument_parser = get_argument_parser()
     args = argument_parser.parse_args()
 
-    if args.model == "tokenizer":
+    if args.task == "tokenizer":
         tokenizer(job_dir=args.job_dir)
 
-    if args.model == "language_model":
+    if args.task == "language_model":
         language_model(job_dir=args.job_dir, tokenizer_blob=args.tokenizer_blob)
+
+    if args.task == "cache":
+        cache()
