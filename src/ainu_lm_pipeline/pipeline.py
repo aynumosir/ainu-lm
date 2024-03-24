@@ -142,7 +142,5 @@ def ainu_lm_pipeline(
             model_gcs_path=training_job_details_task.outputs["model_artifacts"],
             hf_repo=hf_repo,
             hf_token=hf_token,
-        )
-        .set_display_name("Huggingface Hub に push")
-        .after(training_job_details_task)
+        ).set_display_name("Huggingface Hub に push")
     )
