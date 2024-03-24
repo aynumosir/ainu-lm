@@ -10,9 +10,8 @@
   in
   {
     devShell.aarch64-darwin = pkgs.mkShell {
-      buildInputs = with pkgs; [
+      packages = with pkgs; [
         python311
-        poetry
         google-cloud-sdk
       ];
     };

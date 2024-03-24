@@ -1,10 +1,16 @@
 import argparse
 import os
+from datetime import datetime
 
 from google.cloud import aiplatform
 from google.cloud.aiplatform.pipeline_jobs import PipelineJob
 
 from . import config as cfg
+
+
+def get_timestamp() -> str:
+    return datetime.now().strftime("%Y%m%d%H%M%S")
+
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--commit-sha", type=str, required=True)
@@ -14,7 +20,7 @@ if __name__ == "__main__":
     aiplatform.init(project=cfg.PROJECT_ID, location=cfg.REGION)
 
     args = parser.parse_args()
-    job_id = f"pipeline-ainu-lm-{args.commit_sha}"
+    job_id = f"pipeline-ainu-lm-{get_timestamp()}"
 
     pipeline_params = {
         "pipeline_job_id": job_id,
@@ -32,7 +38,7 @@ if __name__ == "__main__":
         job_id=job_id,
         pipeline_root=cfg.PIPELINE_ROOT,
         parameter_values=pipeline_params,
-        enable_caching=True,
+        enable_caching=False,
     )
 
     pipeline_job.run(sync=True)

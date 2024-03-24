@@ -6,14 +6,8 @@ ENV TRANSFORMERS_NO_ADVISORY_WARNINGS=1
 
 RUN apt update
 
-COPY pyproject.toml poetry.lock /workspace/
-
-RUN pip install poetry \
- && poetry config virtualenvs.create false \
- && poetry export -f requirements.txt --output requirements.txt --without-hashes \
- && pip uninstall -y poetry
-
-RUN pip install -r requirements.txt
+COPY pyproject.toml /workspace/
+RUN pip install -e .
 
 COPY . /workspace
 
