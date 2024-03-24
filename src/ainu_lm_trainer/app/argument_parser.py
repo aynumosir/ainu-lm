@@ -33,7 +33,7 @@ def get_argument_parser() -> argparse.ArgumentParser:
     language_model_parser.add_argument(
         "--model-name",
         type=str,
-        help="Model name to train (e.g. roberta-ainu-base)",
+        help="Model name to train (e.g. roberta-base-ainu)",
         default=os.environ.get("MODEL_NAME"),
     )
     language_model_parser.add_argument(

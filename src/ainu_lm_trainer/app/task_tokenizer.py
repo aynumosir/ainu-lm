@@ -3,8 +3,8 @@ from pathlib import Path
 
 from datasets import load_dataset
 
-from ...models import JobDir
-from ...trainers import ByteLevelBPETokenizerTrainer
+from ..models import JobDir
+from ..trainers import ByteLevelBPETokenizerTrainer
 
 
 def tokenizer(job_dir: JobDir) -> None:

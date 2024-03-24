@@ -8,7 +8,7 @@ readme = "README.md"
 package-mode = false
 
 [tool.poetry.dependencies]
-python = "^3.11"
+python = ">=3.8,<3.12.0"
 datasets = "^2.18.0"
 transformers = "^4.38.2"
 sentencepiece = "^0.2.0"
@@ -16,6 +16,8 @@ tokenizers = "^0.15.2"
 google-cloud-storage = "^2.16.0"
 cloudml-hypertune = "^0.1.0.dev6"
 accelerate = "^0.28.0"
+google-cloud-aiplatform = "^1.44.0"
+google-cloud-pipeline-components = "^2.11.0"
 
 
 [tool.poetry.group.dev.dependencies]
@@ -31,8 +33,11 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.mypy]
 ignore_missing_imports = true
-exclude = ["dazai_bert_pipeline"]
+exclude = ["ainu_lm_pipeline"]
 
 [tool.ruff.lint]
 select = ["E4", "E7", "E9", "F", "I", "ANN"]
 ignore = ["ANN101", "ANN102"]
+
+[tool.ruff.per-file-ignores]
+"__init__.py" = ["F401"]

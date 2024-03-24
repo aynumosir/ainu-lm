@@ -5,8 +5,8 @@ from datasets import load_dataset
 from google.cloud import storage
 from google.cloud.storage import Blob
 
-from ...models import JobDir
-from ...trainers import RobertaTrainer
+from ..models import JobDir
+from ..trainers import RobertaTrainer
 
 
 def language_model(job_dir: JobDir, tokenizer_blob: Blob) -> None:

@@ -1,1 +1,1 @@
-from .job_dir import JobDir as JobDir
+from .job_dir import JobDir

@@ -2,8 +2,22 @@
   "version": "0.2",
   "ignorePaths": [],
   "dictionaryDefinitions": [],
-  "dictionaries": ["python"],
-  "words": ["aynumosir"],
+  "dictionaries": [
+    "python"
+  ],
+  "words": [
+    "aiplatform",
+    "aynumosir",
+    "cloudbuild",
+    "cloudsdktool",
+    "gapic",
+    "googleapis",
+    "huggingface",
+    "idxmin",
+    "kaniko",
+    "neetlab",
+    "protobuf"
+  ],
   "ignoreWords": [],
   "import": []
 }
