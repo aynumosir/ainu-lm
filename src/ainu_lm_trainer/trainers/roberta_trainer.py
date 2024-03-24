@@ -13,11 +13,22 @@ from transformers import (
 
 
 class RobertaTrainer:
-    def __init__(self, dataset: Dataset, output_dir: Path = Path("models/lm")) -> None:
-        self.dataset = dataset
-        self.output_dir = output_dir
+    dataset: Dataset
+    output_dir: Path
+    tokenizer_name_or_dir: Path | str
 
-    def train(self) -> None:
+    def __init__(
+        self, dataset: Dataset, tokenizer_name_or_dir: Path | str, output_dir: Path
+    ) -> None:
+        self.output_dir = output_dir
+        self.tokenizer_name_or_dir = tokenizer_name_or_dir
+
+        if "text" not in dataset.column_names:
+            raise ValueError('The dataset must have a column named "text"')
+        else:
+            self.dataset = dataset
+
+    def train(self, num_train_epochs: int = 10) -> None:
         # FacebookAI/roberta-base よりも hidden_layers が少し小さい。エスペラントの記事を参考にした。
         # https://colab.research.google.com/github/huggingface/blog/blob/main/notebooks/01_how_to_train.ipynb
         config = RobertaConfig(
@@ -29,14 +40,17 @@ class RobertaTrainer:
         )
 
         tokenizer = RobertaTokenizerFast.from_pretrained(
-            "./models/tokenizer",
+            str(self.tokenizer_name_or_dir),
             max_length=512,
             padding="max_length",
             truncation=True,
+            return_tensors="pt",
         )
 
-        # 一応、vocab_size が合っているか確認
-        assert tokenizer.vocab_size == config.vocab_size
+        if config.vocab_size != tokenizer.vocab_size:
+            print(
+                f"config.vocab_size ({config.vocab_size}) != tokenizer.vocab_size ({tokenizer.vocab_size})"
+            )
 
         model = RobertaForMaskedLM(config=config)
         model = model.to("cuda") if torch.cuda.is_available() else model
@@ -44,7 +58,7 @@ class RobertaTrainer:
         training_args = TrainingArguments(
             output_dir=str(self.output_dir),
             overwrite_output_dir=True,
-            num_train_epochs=10,
+            num_train_epochs=num_train_epochs,
             per_device_train_batch_size=64,
             save_steps=10_000,
             save_total_limit=2,
@@ -54,13 +68,19 @@ class RobertaTrainer:
             tokenizer=tokenizer, mlm=True, mlm_probability=0.15
         )
 
+        train_dataset = self.dataset.map(
+            lambda examples: tokenizer(
+                examples["text"], padding="max_length", truncation=True
+            ),
+            batched=True,
+        )
+
         trainer = Trainer(
             model=model,
             args=training_args,
             data_collator=data_collator,
-            train_dataset=self.dataset,
+            train_dataset=train_dataset,
         )
 
         trainer.train()
-
-        return trainer
+        trainer.save_model(self.output_dir)

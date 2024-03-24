@@ -1,6 +1,10 @@
 import argparse
 import os
 
+from google.cloud.storage import Blob
+
+from ..models.job_dir import JobDir
+
 
 def get_argument_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Train a language model")
@@ -11,9 +15,9 @@ def get_argument_parser() -> argparse.ArgumentParser:
     """
     tokenizer_parser = subparsers.add_parser("tokenizer")
     tokenizer_parser.add_argument(
-        "--output-dir",
-        type=str,
-        help="Output directory. Use gs:/ to save to Google Cloud Storage",
+        "--job-dir",
+        type=JobDir,
+        help="Job directory. Use gs:/ to save to Google Cloud Storage",
         default=os.environ.get("AIP_MODEL_DIR"),
     )
 
@@ -29,7 +33,7 @@ def get_argument_parser() -> argparse.ArgumentParser:
     language_model_parser.add_argument(
         "--model-name",
         type=str,
-        help="Model name to train (e.g. robreta-ainu-base)",
+        help="Model name to train (e.g. roberta-ainu-base)",
         default=os.environ.get("MODEL_NAME"),
     )
     language_model_parser.add_argument(
@@ -37,14 +41,14 @@ def get_argument_parser() -> argparse.ArgumentParser:
     )
     language_model_parser.add_argument(
         "--tokenizer-dir",
-        type=str,
+        type=Blob.from_string,
         help="Tokenizer directory. Use gs:/ to load from Google Cloud Storage",
-        default="./models/tokenizer",
+        required=True,
     )
     language_model_parser.add_argument(
-        "--output-dir",
-        type=str,
-        help="Output directory. Use gs:/ to save to Google Cloud Storage",
+        "--job-dir",
+        type=JobDir,
+        help="Job directory. Use gs:/ to save to Google Cloud Storage",
         default=os.environ.get("AIP_MODEL_DIR"),
     )
 

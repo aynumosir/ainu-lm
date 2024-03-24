@@ -13,7 +13,7 @@
       buildInputs = with pkgs; [
         python311
         poetry
-        # google-cloud-sdk
+        google-cloud-sdk
       ];
     };
   };

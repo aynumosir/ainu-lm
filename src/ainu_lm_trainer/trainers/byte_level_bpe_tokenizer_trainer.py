@@ -29,8 +29,8 @@ class ByteLevelBPETokenizerTrainer:
 
         tokenizer = ByteLevelBPETokenizer()
 
-        # You can `lowercase=True` and `unicode_normalizer="nfd"` but unable to set strip accents
-        # https://huggingface.co/docs/tokenizers/en/pipeline#normalization
+        # You can `lowercase=True` and `unicode_normalizer="nfd"` but unable to strip accents thus overriding the normalizer.
+        # c.f. https://huggingface.co/docs/tokenizers/en/pipeline#normalization
         tokenizer.normalizer = Sequence([NFD(), Lowercase(), StripAccents()])
 
         tokenizer.train_from_iterator(
@@ -46,4 +46,18 @@ class ByteLevelBPETokenizerTrainer:
             ],
         )
 
+        self.demo(tokenizer)
         tokenizer.save(str(self.output_dir / "tokenizer.json"))
+
+        return tokenizer
+
+    def demo(self, tokenizer: ByteLevelBPETokenizer) -> None:
+        # cSpell:disable
+        text = "Kánto or wa yakú sak no a=ránke p sinép ka isám"
+        # cSpell:enable
+
+        print("=" * 80)
+        print(f"text: {text}")
+        print(f"encode(text): {tokenizer.encode(text).ids}")
+        print(f"decode(text): {tokenizer.decode(tokenizer.encode(text).ids)}")
+        print("=" * 80)
