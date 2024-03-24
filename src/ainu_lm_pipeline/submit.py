@@ -27,7 +27,7 @@ if __name__ == "__main__":
     }
 
     pipeline_job = PipelineJob(
-        display_name=f"pytorch-{cfg.APP_NAME}",
+        display_name=f"Ainu LM Pipeline ({args.commit_sha})",
         template_path="./pipelines/ainu_lm_pipeline.json",
         job_id=job_id,
         pipeline_root=cfg.PIPELINE_ROOT,
