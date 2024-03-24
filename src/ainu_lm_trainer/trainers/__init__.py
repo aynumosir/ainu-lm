@@ -1,2 +1,3 @@
-from .bpe import BpeTrainer as BpeTrainer
-from .sp import SentencePieceTrainer as SentencePieceTrainer
+from .byte_level_bpe_tokenizer_trainer import (
+    ByteLevelBPETokenizerTrainer as ByteLevelBPETokenizerTrainer,
+)

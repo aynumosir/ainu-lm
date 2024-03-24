@@ -31,7 +31,7 @@ jobs:
 
       # https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python#using-ruff-to-lint-code
       - name: Ruff
-        run: poetry run ruff --output-format=github .
+        run: poetry run ruff check --output-format=github .
         continue-on-error: true
 
       - name: Mypy
