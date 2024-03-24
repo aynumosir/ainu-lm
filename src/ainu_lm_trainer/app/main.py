@@ -11,7 +11,14 @@ if __name__ == "__main__":
         tokenizer(job_dir=args.job_dir)
 
     if args.task == "language_model":
-        language_model(job_dir=args.job_dir, tokenizer_blob=args.tokenizer_blob)
+        language_model(
+            job_dir=args.job_dir,
+            tokenizer_blob=args.tokenizer_dir,
+            num_train_epochs=args.num_train_epochs,
+            hypertune_enabled=args.hp_tune,
+            tensorboard_id=args.tensorboard_id,
+            tensorboard_experiment_name=args.tensorboard_experiment_display_name,
+        )
 
     if args.task == "cache":
         cache()

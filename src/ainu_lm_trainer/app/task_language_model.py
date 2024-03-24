@@ -1,15 +1,25 @@
 import os
 from pathlib import Path
+from typing import Optional
 
 from datasets import load_dataset
-from google.cloud import storage
+from google.cloud import aiplatform, storage
 from google.cloud.storage import Blob
 
 from ..models import JobDir
-from ..trainers import RobertaTrainer
+from ..trainers import RobertaTrainer, RobertaTrainerConfig
 
 
-def language_model(job_dir: JobDir, tokenizer_blob: Blob) -> None:
+def language_model(
+    job_dir: JobDir,
+    tokenizer_blob: Blob,
+    num_train_epochs: int,
+    hypertune_enabled: Optional[bool] = None,
+    tensorboard_id: Optional[str] = None,
+    tensorboard_experiment_name: Optional[str] = None,
+) -> None:
+    aiplatform.init()
+
     client = storage.Client()
     dataset = load_dataset("aynumosir/ainu-corpora", split="data")
     dataset = dataset.map(lambda example: {"text": example["sentence"]})
@@ -26,9 +36,17 @@ def language_model(job_dir: JobDir, tokenizer_blob: Blob) -> None:
     # Create output directory
     output_dir = Path("/tmp/ainu-lm-trainer/lm")
     output_dir.mkdir(parents=True, exist_ok=True)
-    trainer = RobertaTrainer(
-        dataset, tokenizer_name_or_dir=tokenizer_dir, output_dir=output_dir
+
+    config = RobertaTrainerConfig(
+        num_train_epochs=num_train_epochs,
+        tokenizer_name_or_dir=tokenizer_dir,
+        output_dir=output_dir,
+        hypertune_enabled=hypertune_enabled,
+        tensorboard_id=tensorboard_id,
+        tensorboard_experiment_name=tensorboard_experiment_name,
     )
+
+    trainer = RobertaTrainer(dataset, config=config)
     trainer.train()
 
     paths = [

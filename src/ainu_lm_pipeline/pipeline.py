@@ -23,6 +23,7 @@ def ainu_lm_pipeline(
     pipeline_root: str,
     source_repo_name: str,
     source_commit_sha: str,
+    tensorboard_id: str,
     hf_repo: str,
     hf_token: str,
 ) -> None:
@@ -85,6 +86,8 @@ def ainu_lm_pipeline(
     worker_pool_specs_task = (
         get_worker_pool_specs(
             train_image_uri=cfg.TRAIN_IMAGE_URI,
+            tensorboard_id=tensorboard_id,
+            tensorboard_experiment_name=pipeline_job_id,
             tokenizer_gcs_path=tokenizer_training_job_details_task.outputs[
                 "model_artifacts"
             ],

@@ -13,10 +13,14 @@
     "gapic",
     "googleapis",
     "huggingface",
+    "hypertune",
+    "hypertuner",
     "idxmin",
     "kaniko",
+    "logdir",
     "neetlab",
-    "protobuf"
+    "protobuf",
+    "tensorboard"
   ],
   "ignoreWords": [],
   "import": []

@@ -31,12 +31,6 @@ def get_argument_parser() -> argparse.ArgumentParser:
         help="Whether to use hyperparameter tuning",
     )
     language_model_parser.add_argument(
-        "--model-name",
-        type=str,
-        help="Model name to train (e.g. roberta-base-ainu)",
-        default=os.environ.get("MODEL_NAME"),
-    )
-    language_model_parser.add_argument(
         "--num-train-epochs", type=int, help="Number of training epochs", default=10
     )
     language_model_parser.add_argument(
@@ -50,6 +44,14 @@ def get_argument_parser() -> argparse.ArgumentParser:
         type=JobDir,
         help="Job directory. Use gs:/ to save to Google Cloud Storage",
         default=os.environ.get("AIP_MODEL_DIR"),
+    )
+    language_model_parser.add_argument(
+        "--tensorboard-id",
+        help="Tensorboard ID",
+    )
+    language_model_parser.add_argument(
+        "--tensorboard-experiment-display-name",
+        help="Tensorboard experiment display name",
     )
 
     """

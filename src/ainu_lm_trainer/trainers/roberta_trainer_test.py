@@ -3,6 +3,7 @@ from pathlib import Path
 from datasets import Dataset
 
 from .roberta_trainer import RobertaTrainer
+from .roberta_trainer_config import RobertaTrainerConfig
 
 
 def test_compact_dataset() -> None:
@@ -21,10 +22,13 @@ def test_compact_dataset() -> None:
 
     trainer = RobertaTrainer(
         dataset=dataset,
-        tokenizer_name_or_dir="roberta-base",
-        output_dir=output_dir,
+        config=RobertaTrainerConfig(
+            num_train_epochs=1,
+            tokenizer_name_or_dir="roberta-base",
+            output_dir=output_dir,
+        ),
     )
 
-    trainer.train(num_train_epochs=1)
+    trainer.train()
 
     assert (output_dir / "config.json").exists()

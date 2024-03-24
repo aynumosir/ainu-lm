@@ -14,7 +14,6 @@ def test_parsing_language_model_training() -> None:
         [
             "language_model",
             "--hp-tune=True",
-            "--model-name=test-model",
             "--num-train-epochs=20",
             "--tokenizer-dir=gs://test/tokenizer",
             "--job-dir=gs://test/job_dir",
@@ -22,7 +21,6 @@ def test_parsing_language_model_training() -> None:
     )
     assert args.task == "language_model"
     assert args.hp_tune == "True"
-    assert args.model_name == "test-model"
     assert args.num_train_epochs == 20
 
     assert args.tokenizer_dir.bucket.name == "test"

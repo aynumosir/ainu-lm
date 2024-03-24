@@ -8,6 +8,8 @@ from kfp import dsl
 def get_worker_pool_specs(
     train_image_uri: str,
     tokenizer_gcs_path: str,
+    tensorboard_id: str,
+    tensorboard_experiment_name: str,
 ) -> list:
     worker_pool_specs = [
         {
@@ -17,6 +19,8 @@ def get_worker_pool_specs(
                     "language-model",
                     "--hp-tune=True",
                     f"--tokenizer={tokenizer_gcs_path}",
+                    f"--tensorboard-id={tensorboard_id}",
+                    f"--tensorboard-experiment-name={tensorboard_experiment_name}",
                 ],
             },
             "machine_spec": {
