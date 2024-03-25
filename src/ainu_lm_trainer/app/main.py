@@ -17,7 +17,7 @@ if __name__ == "__main__":
             num_train_epochs=args.num_train_epochs,
             hypertune_enabled=args.hp_tune,
             tensorboard_id=args.tensorboard_id,
-            tensorboard_experiment_name=args.tensorboard_experiment_display_name,
+            tensorboard_experiment_name=args.tensorboard_experiment_name,
         )
 
     if args.task == "cache":

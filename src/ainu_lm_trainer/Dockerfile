@@ -10,11 +10,7 @@ RUN apt update \
  && rm -rf /var/lib/apt/lists/*
 
 COPY pyproject.toml /trainer
-
-# https://stackoverflow.com/a/74240630
-RUN pip install -q pip-tools \
- && pip-compile -q -o requirements.txt pyproject.toml \
- && pip install -q --no-cache-dir -r requirements.txt
+RUN pip install -q --no-cache-dir .
 
 COPY . /trainer
 RUN pip install -q --no-cache-dir --no-deps .
