@@ -10,10 +10,10 @@ RUN apt update \
  && rm -rf /var/lib/apt/lists/*
 
 COPY pyproject.toml /trainer
-RUN pip install -q --no-cache-dir .
+RUN pip install --no-cache-dir .
 
 COPY . /trainer
-RUN pip install -q --no-cache-dir --no-deps .
+RUN pip install --no-cache-dir --no-deps .
 
 RUN python -m ainu_lm_trainer.app.main cache
 
