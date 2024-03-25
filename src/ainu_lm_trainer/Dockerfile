@@ -9,10 +9,10 @@ ENV HF_TOKEN=$HF_TOKEN
 RUN apt update \
  && rm -rf /var/lib/apt/lists/*
 
-COPY pyproject.toml /trainer
+COPY pyproject.toml ./
 RUN pip install --no-cache-dir .
 
-COPY . /trainer
+COPY . ./
 RUN pip install --no-cache-dir --no-deps .
 
 RUN python -m ainu_lm_trainer.app.main cache
