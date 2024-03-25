@@ -3,7 +3,7 @@ import os
 
 from google.cloud.storage import Blob
 
-from ..models.job_dir import JobDir
+from ..utils import get_path_from_uri
 
 
 def get_argument_parser() -> argparse.ArgumentParser:
@@ -15,8 +15,8 @@ def get_argument_parser() -> argparse.ArgumentParser:
     """
     tokenizer_parser = subparsers.add_parser("tokenizer")
     tokenizer_parser.add_argument(
-        "--job-dir",
-        type=JobDir,
+        "--output-dir",
+        type=get_path_from_uri,
         help="Job directory. Use gs:/ to save to Google Cloud Storage",
         default=os.environ.get("AIP_MODEL_DIR"),
     )
@@ -40,18 +40,16 @@ def get_argument_parser() -> argparse.ArgumentParser:
         required=True,
     )
     language_model_parser.add_argument(
-        "--job-dir",
-        type=JobDir,
+        "--output-dir",
+        type=get_path_from_uri,
         help="Job directory. Use gs:/ to save to Google Cloud Storage",
         default=os.environ.get("AIP_MODEL_DIR"),
     )
     language_model_parser.add_argument(
-        "--tensorboard-id",
-        help="Tensorboard ID",
-    )
-    language_model_parser.add_argument(
-        "--tensorboard-experiment-name",
-        help="Tensorboard experiment name",
+        "--logging-dir",
+        type=get_path_from_uri,
+        help="Logging directory. Use gs:/ to save to Google Cloud Storage",
+        default=os.environ.get("AIP_TENSORBOARD_LOG_DIR"),
     )
 
     """

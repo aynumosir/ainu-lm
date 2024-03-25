@@ -28,6 +28,7 @@ def ainu_lm_pipeline(
     hf_token: str,
 ) -> None:
     BASE_OUTPUT_DIR = f"{pipeline_staging}/{source_commit_sha}"
+    TENSORBOARD = f"projects/{cfg.PROJECT_ID}/locations/{cfg.REGION}/tensorboards/{tensorboard_id}"
 
     # ----------------------------------------------------
     # カスタム訓練イメージのビルド
@@ -51,6 +52,7 @@ def ainu_lm_pipeline(
         CustomTrainingJobOp(
             display_name=f"{pipeline_job_id}-tokenizer",
             base_output_directory=BASE_OUTPUT_DIR,
+            tensorboard=TENSORBOARD,
             worker_pool_specs=[
                 {
                     "container_spec": {

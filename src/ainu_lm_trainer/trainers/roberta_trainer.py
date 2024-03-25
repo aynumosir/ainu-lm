@@ -1,8 +1,5 @@
-from pathlib import Path
-
 import torch
 from datasets import Dataset
-from google.cloud import aiplatform
 from transformers import (
     DataCollatorForLanguageModeling,
     RobertaConfig,
@@ -19,7 +16,6 @@ from .roberta_trainer_config import RobertaTrainerConfig
 class RobertaTrainer:
     dataset: Dataset
     config: RobertaTrainerConfig
-    logging_dir: Path
 
     def __init__(
         self,
@@ -30,14 +26,12 @@ class RobertaTrainer:
             raise ValueError('The dataset must have a column named "text"')
         else:
             self.dataset = dataset
-
         self.config = config
-        self.logging_dir = Path("./logs")
 
     def train(self) -> None:
         # FacebookAI/roberta-base よりも hidden_layers が少し小さい。エスペラントの記事を参考にした。
         # https://colab.research.google.com/github/huggingface/blog/blob/main/notebooks/01_how_to_train.ipynb
-        config = RobertaConfig(
+        roberta_config = RobertaConfig(
             vocab_size=52_000,
             max_position_embeddings=514,
             num_attention_heads=12,
@@ -49,25 +43,18 @@ class RobertaTrainer:
             str(self.config.tokenizer_name_or_dir)
         )
 
-        if config.vocab_size != tokenizer.vocab_size:
-            print(
-                f"config.vocab_size ({config.vocab_size}) != tokenizer.vocab_size ({tokenizer.vocab_size})"
-            )
-
-        model = RobertaForMaskedLM(config=config)
-
-        print(f"device: {'cuda' if torch.cuda.is_available() else 'cpu'}")
+        model = RobertaForMaskedLM(config=roberta_config)
         model = model.to("cuda") if torch.cuda.is_available() else model
 
         training_args = TrainingArguments(
             output_dir=str(self.config.output_dir),
             overwrite_output_dir=True,
             num_train_epochs=self.config.num_train_epochs,
-            per_device_train_batch_size=8,
+            per_device_train_batch_size=16,
             save_steps=10_000,
             save_total_limit=2,
-            logging_dir=self.logging_dir,
-            report_to=["tensorboard"] if self.config.tensorboard_enabled else [],
+            logging_dir=str(self.config.logging_dir),
+            report_to=["tensorboard"],
         )
 
         data_collator = DataCollatorForLanguageModeling(
@@ -95,18 +82,5 @@ class RobertaTrainer:
         if self.config.hypertune_enabled:
             trainer.add_callback(HPTuneCallback("loss", "eval_loss"))
 
-        if self.config.tensorboard_enabled:
-            aiplatform.start_upload_tb_log(
-                tensorboard_id=self.config.tensorboard_id,
-                tensorboard_experiment_name=self.config.tensorboard_experiment_name
-                or "",
-                logdir=str(self.logging_dir),
-                run_name_prefix="roberta-base-ainu",
-            )
-
         trainer.train()
-
-        if self.config.tensorboard_enabled:
-            aiplatform.end_upload_tb_log()
-
         trainer.save_model(self.config.output_dir)

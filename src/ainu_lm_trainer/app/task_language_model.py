@@ -1,4 +1,3 @@
-import os
 from pathlib import Path
 from typing import Optional
 
@@ -6,12 +5,12 @@ from datasets import load_dataset
 from google.cloud import aiplatform, storage
 from google.cloud.storage import Blob
 
-from ..models import JobDir
 from ..trainers import RobertaTrainer, RobertaTrainerConfig
 
 
 def language_model(
-    job_dir: JobDir,
+    output_dir: Path,
+    logging_dir: Path,
     tokenizer_blob: Blob,
     num_train_epochs: int,
     hypertune_enabled: Optional[bool] = None,
@@ -33,32 +32,13 @@ def language_model(
         filename = blob.name.split("/")[-1]
         blob.download_to_filename(str(tokenizer_dir / filename))
 
-    # Create output directory
-    output_dir = Path("/tmp/ainu-lm-trainer/lm")
-    output_dir.mkdir(parents=True, exist_ok=True)
-
     config = RobertaTrainerConfig(
+        output_dir=output_dir,
+        logging_dir=logging_dir,
         num_train_epochs=num_train_epochs,
         tokenizer_name_or_dir=tokenizer_dir,
-        output_dir=output_dir,
         hypertune_enabled=hypertune_enabled,
-        tensorboard_id=tensorboard_id,
-        tensorboard_experiment_name=tensorboard_experiment_name,
     )
 
     trainer = RobertaTrainer(dataset, config=config)
     trainer.train()
-
-    paths = [
-        Path(os.path.join(output_dir, file))
-        for file in os.listdir(output_dir)
-        if os.path.isfile(os.path.join(output_dir, file))
-    ]
-
-    for path in paths:
-        file = path.name
-        blob = job_dir.resolve(file).to_blob(client=client)
-        blob.upload_from_filename(path)
-        print(f"Uploaded {file} to {str(job_dir)}")
-
-    os.system(f"rm -rf {output_dir}")

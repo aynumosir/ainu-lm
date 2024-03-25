@@ -2,7 +2,9 @@
   "version": "0.2",
   "ignorePaths": [],
   "dictionaryDefinitions": [],
-  "dictionaries": ["python"],
+  "dictionaries": [
+    "python"
+  ],
   "words": [
     "aiplatform",
     "aynumosir",
@@ -20,7 +22,8 @@
     "logdir",
     "neetlab",
     "protobuf",
-    "tensorboard"
+    "tensorboard",
+    "tensorboards"
   ],
   "ignoreWords": [],
   "import": []

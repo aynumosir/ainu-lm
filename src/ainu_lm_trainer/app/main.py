@@ -8,16 +8,15 @@ if __name__ == "__main__":
     args = argument_parser.parse_args()
 
     if args.task == "tokenizer":
-        tokenizer(job_dir=args.job_dir)
+        tokenizer(output_dir=args.output_dir)
 
     if args.task == "language-model":
         language_model(
-            job_dir=args.job_dir,
+            output_dir=args.output_dir,
+            logging_dir=args.logging_dir,
             tokenizer_blob=args.tokenizer_dir,
             num_train_epochs=args.num_train_epochs,
             hypertune_enabled=args.hp_tune,
-            tensorboard_id=args.tensorboard_id,
-            tensorboard_experiment_name=args.tensorboard_experiment_name,
         )
 
     if args.task == "cache":
