@@ -25,7 +25,7 @@ if __name__ == "__main__":
 
     pipeline_params = {
         "pipeline_job_id": job_id,
-        "pipeline_staging": cfg.PIPELINE_ROOT,
+        "pipeline_staging": cfg.PIPELINE_STAGING,
         "source_repo_name": "github_aynumosir_ainu-lm",
         "source_commit_sha": args.commit_sha,
         "tensorboard_id": os.environ.get("TENSORBOARD_ID"),

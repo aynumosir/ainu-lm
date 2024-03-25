@@ -24,7 +24,7 @@ def get_argument_parser() -> argparse.ArgumentParser:
     """
     Subparser for the language model
     """
-    language_model_parser = subparsers.add_parser("language_model")
+    language_model_parser = subparsers.add_parser("language-model")
     language_model_parser.add_argument(
         "--hp-tune",
         default=False,
@@ -50,8 +50,8 @@ def get_argument_parser() -> argparse.ArgumentParser:
         help="Tensorboard ID",
     )
     language_model_parser.add_argument(
-        "--tensorboard-experiment-display-name",
-        help="Tensorboard experiment display name",
+        "--tensorboard-experiment-name",
+        help="Tensorboard experiment name",
     )
 
     """

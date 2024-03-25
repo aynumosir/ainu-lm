@@ -46,11 +46,7 @@ class RobertaTrainer:
         )
 
         tokenizer = RobertaTokenizerFast.from_pretrained(
-            str(self.config.tokenizer_name_or_dir),
-            max_length=512,
-            padding="max_length",
-            truncation=True,
-            return_tensors="pt",
+            str(self.config.tokenizer_name_or_dir)
         )
 
         if config.vocab_size != tokenizer.vocab_size:
@@ -78,7 +74,11 @@ class RobertaTrainer:
 
         train_dataset = self.dataset.map(
             lambda examples: tokenizer(
-                examples["text"], padding="max_length", truncation=True
+                examples["text"],
+                max_length=512,
+                padding="max_length",
+                truncation=True,
+                return_tensors="pt",
             ),
             batched=True,
         )
@@ -95,8 +95,9 @@ class RobertaTrainer:
 
         if self.config.tensorboard_enabled:
             aiplatform.start_upload_tb_log(
-                tensorboard_id=config.tensorboard_id,
-                tensorboard_experiment_name=config.tensorboard_experiment_name,
+                tensorboard_id=self.config.tensorboard_id,
+                tensorboard_experiment_name=self.config.tensorboard_experiment_name
+                or "",
                 logdir=str(self.logging_dir),
                 run_name_prefix="roberta-base-ainu",
             )

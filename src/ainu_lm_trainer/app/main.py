@@ -10,7 +10,7 @@ if __name__ == "__main__":
     if args.task == "tokenizer":
         tokenizer(job_dir=args.job_dir)
 
-    if args.task == "language_model":
+    if args.task == "language-model":
         language_model(
             job_dir=args.job_dir,
             tokenizer_blob=args.tokenizer_dir,

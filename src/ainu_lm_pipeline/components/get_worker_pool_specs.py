@@ -25,8 +25,8 @@ def get_worker_pool_specs(
             },
             # https://cloud.google.com/vertex-ai/docs/training/configure-compute?hl=ja#specifying_gpus
             "machine_spec": {
-                "machine_type": "a2-highgpu-1g",
-                "accelerator_type": "NVIDIA_TESLA_A100",
+                "machine_type": "n1-standard-8",
+                "accelerator_type": "NVIDIA_TESLA_V100",
                 "accelerator_count": 1,
             },
             "replica_count": "1",
