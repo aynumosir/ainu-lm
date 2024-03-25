@@ -21,7 +21,6 @@ dependencies = [
 	"accelerate==0.28.0",
 	"google-cloud-aiplatform[tensorboard]==1.44.0",
 	"google-cloud-pipeline-components==2.11.0",
-	"tensorboard"
 ]
 
 [project.optional-dependencies]
