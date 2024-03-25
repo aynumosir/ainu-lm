@@ -2,9 +2,7 @@
   "version": "0.2",
   "ignorePaths": [],
   "dictionaryDefinitions": [],
-  "dictionaries": [
-    "python"
-  ],
+  "dictionaries": ["python"],
   "words": [
     "aiplatform",
     "aynumosir",
@@ -12,6 +10,7 @@
     "cloudsdktool",
     "gapic",
     "googleapis",
+    "highgpu",
     "huggingface",
     "hypertune",
     "hypertuner",

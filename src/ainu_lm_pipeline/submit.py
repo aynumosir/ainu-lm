@@ -14,6 +14,7 @@ def get_timestamp() -> str:
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--commit-sha", type=str, required=True)
+parser.add_argument("--no-cache", type=bool, default=False)
 
 
 if __name__ == "__main__":
@@ -38,7 +39,7 @@ if __name__ == "__main__":
         job_id=job_id,
         pipeline_root=cfg.PIPELINE_ROOT,
         parameter_values=pipeline_params,
-        enable_caching=False,
+        enable_caching=not args.no_cache,
     )
 
     pipeline_job.run(sync=True)
