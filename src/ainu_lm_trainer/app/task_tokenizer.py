@@ -2,12 +2,14 @@ import os
 from pathlib import Path
 
 from datasets import load_dataset
+from google.cloud import storage
 
 from ..models import JobDir
 from ..trainers import ByteLevelBPETokenizerTrainer
 
 
 def tokenizer(job_dir: JobDir) -> None:
+    client = storage.Client()
     dataset = load_dataset("aynumosir/ainu-corpora", split="data")
 
     output_dir = Path("/tmp/ainu-lm-trainer/tokenizer")
@@ -24,8 +26,8 @@ def tokenizer(job_dir: JobDir) -> None:
 
     for path in paths:
         file = path.name
-        blob = job_dir.resolve(file).blob
+        blob = job_dir.resolve(file).to_blob(client=client)
         blob.upload_from_filename(path)
-        print(f"Uploaded {file} to {job_dir.blob.bucket.name}/{job_dir.blob.name}")
+        print(f"Uploaded {file} to {str(job_dir)}")
 
     os.system(f"rm -rf {output_dir}")

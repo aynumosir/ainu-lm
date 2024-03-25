@@ -57,8 +57,8 @@ def language_model(
 
     for path in paths:
         file = path.name
-        blob = job_dir.resolve(file).blob
+        blob = job_dir.resolve(file).to_blob(client=client)
         blob.upload_from_filename(path)
-        print(f"Uploaded {file} to {job_dir.blob.bucket.name}/{job_dir.blob.name}")
+        print(f"Uploaded {file} to {str(job_dir)}")
 
     os.system(f"rm -rf {output_dir}")
