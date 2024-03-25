@@ -8,10 +8,11 @@ ENV HF_TOKEN=$HF_TOKEN
 
 RUN apt update
 
+COPY pyproject.toml /trainer
+RUN pip install .
+
 COPY . /trainer
 
-RUN pip install -e .
+RUN python -m ainu_lm_trainer.app.main cache
 
-RUN python3 -m src.ainu_lm_trainer.app.main cache
-
-ENTRYPOINT ["python3", "-m", "src.ainu_lm_trainer.app.main"]
+ENTRYPOINT ["python", "-m", "ainu_lm_trainer.app.main"]
