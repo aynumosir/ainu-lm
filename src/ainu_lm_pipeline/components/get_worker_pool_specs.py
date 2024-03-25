@@ -19,15 +19,15 @@ def get_worker_pool_specs(
                     "language-model",
                     "--hp-tune=True",
                     f"--tokenizer-dir={tokenizer_gcs_path}",
-                    f"--tensorboard-id={tensorboard_id}",
-                    f"--tensorboard-experiment-name={tensorboard_experiment_name}",
+                    # f"--tensorboard-id={tensorboard_id}",
+                    # f"--tensorboard-experiment-name={tensorboard_experiment_name}",
                 ],
             },
             # https://cloud.google.com/vertex-ai/docs/training/configure-compute?hl=ja#specifying_gpus
             "machine_spec": {
-                "machine_type": "n1-standard-32",
+                "machine_type": "n1-standard-16",
                 "accelerator_type": "NVIDIA_TESLA_V100",
-                "accelerator_count": 1,
+                "accelerator_count": 2,
             },
             "replica_count": "1",
             "disk_spec": {

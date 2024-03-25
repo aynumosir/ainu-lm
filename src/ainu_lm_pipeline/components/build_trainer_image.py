@@ -40,7 +40,7 @@ def build_trainer_image(
             )
         ],
         options=cloudbuild.BuildOptions(
-            machine_type=cloudbuild.BuildOptions.MachineType.N1_HIGHCPU_8,
+            machine_type=cloudbuild.BuildOptions.MachineType.N1_HIGHCPU_32,
         ),
         substitutions={"_IMAGE_URI": training_image_uri},
     )

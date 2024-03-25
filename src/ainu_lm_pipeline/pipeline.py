@@ -76,9 +76,13 @@ def ainu_lm_pipeline(
     # ----------------------------------------------------
     # トークナイザ訓練ジョブの詳細情報取得
     # ----------------------------------------------------
-    tokenizer_training_job_details_task = get_tokenizer_training_job_details(
-        location=cfg.REGION, job_resource=tokenizer_training_task.output
-    ).set_display_name("トークナイザ訓練ジョブの詳細情報取得")
+    tokenizer_training_job_details_task = (
+        get_tokenizer_training_job_details(
+            location=cfg.REGION, job_resource=tokenizer_training_task.output
+        )
+        .set_display_name("トークナイザ訓練ジョブの詳細情報取得")
+        .set_caching_options(True)
+    )
 
     # ----------------------------------------------------
     # worker_pool_specsの定義

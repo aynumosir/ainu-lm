@@ -55,13 +55,15 @@ class RobertaTrainer:
             )
 
         model = RobertaForMaskedLM(config=config)
+
+        print(f"device: {'cuda' if torch.cuda.is_available() else 'cpu'}")
         model = model.to("cuda") if torch.cuda.is_available() else model
 
         training_args = TrainingArguments(
             output_dir=str(self.config.output_dir),
             overwrite_output_dir=True,
             num_train_epochs=self.config.num_train_epochs,
-            per_device_train_batch_size=64,
+            per_device_train_batch_size=8,
             save_steps=10_000,
             save_total_limit=2,
             logging_dir=self.logging_dir,
@@ -75,7 +77,7 @@ class RobertaTrainer:
         train_dataset = self.dataset.map(
             lambda examples: tokenizer(
                 examples["text"],
-                max_length=512,
+                max_length=128,
                 padding="max_length",
                 truncation=True,
                 return_tensors="pt",
