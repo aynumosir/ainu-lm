@@ -9,9 +9,10 @@ ENV HF_TOKEN=$HF_TOKEN
 RUN apt update
 
 COPY pyproject.toml /trainer
-RUN pip install .
+RUN pip install -q .
 
 COPY . /trainer
+RUN pip install -q .
 
 RUN python -m ainu_lm_trainer.app.main cache
 
