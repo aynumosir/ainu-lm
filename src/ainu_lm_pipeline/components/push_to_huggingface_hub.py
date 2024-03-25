@@ -10,7 +10,7 @@ from kfp import dsl
         "torch",
         "transformers",
     ],
-    output_component_file="./pipelines/push_to_huggingface_hub.yaml",
+    output_component_file="./dist/push_to_huggingface_hub.yaml",
 )
 def push_to_huggingface_hub(
     model_gcs_path: str,

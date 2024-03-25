@@ -3,11 +3,7 @@ from os import path
 
 from kfp.compiler import Compiler
 
-# PIPELINE_JSON_SPEC_PATH = path.join(
-#     path.dirname(__file__), "../../pipelines/ainu_lm_pipeline.json"
-# )
-
-PIPELINE_JSON_SPEC_PATH = "./pipelines/ainu_lm_pipeline.json"
+PIPELINE_JSON_SPEC_PATH = "./dist/ainu_lm_pipeline.json"
 
 if __name__ == "__main__":
     os.makedirs(path.dirname(PIPELINE_JSON_SPEC_PATH), exist_ok=True)

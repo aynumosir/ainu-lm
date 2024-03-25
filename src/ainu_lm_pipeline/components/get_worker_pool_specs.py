@@ -3,7 +3,7 @@ from kfp import dsl
 
 @dsl.component(
     base_image="python:3.10",
-    output_component_file="./pipelines/get_worker_pool_specs.yaml",
+    output_component_file="./dist/get_worker_pool_specs.yaml",
 )
 def get_worker_pool_specs(
     train_image_uri: str,
@@ -18,7 +18,7 @@ def get_worker_pool_specs(
                 "args": [
                     "language-model",
                     "--hp-tune=True",
-                    f"--tokenizer={tokenizer_gcs_path}",
+                    f"--tokenizer-dir={tokenizer_gcs_path}",
                     f"--tensorboard-id={tensorboard_id}",
                     f"--tensorboard-experiment-name={tensorboard_experiment_name}",
                 ],

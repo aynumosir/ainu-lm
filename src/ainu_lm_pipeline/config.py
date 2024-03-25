@@ -6,3 +6,4 @@ TRAIN_IMAGE_URI = os.getenv(
     "TRAIN_IMAGE_URI", "us-central1-docker.pkg.dev/neetlab/docker/ainu-lm-trainer"
 )
 PIPELINE_ROOT = "gs://ainu-lm/pipeline_root"
+PIPELINE_STAGING = "gs://ainu-lm/staging"

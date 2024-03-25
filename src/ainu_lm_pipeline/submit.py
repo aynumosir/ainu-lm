@@ -24,7 +24,7 @@ if __name__ == "__main__":
 
     pipeline_params = {
         "pipeline_job_id": job_id,
-        "pipeline_root": cfg.PIPELINE_ROOT,
+        "pipeline_staging": cfg.PIPELINE_ROOT,
         "source_repo_name": "github_aynumosir_ainu-lm",
         "source_commit_sha": args.commit_sha,
         "tensorboard_id": os.environ.get("TENSORBOARD_ID"),
@@ -34,7 +34,7 @@ if __name__ == "__main__":
 
     pipeline_job = PipelineJob(
         display_name=f"Ainu LM Pipeline ({args.commit_sha})",
-        template_path="./pipelines/ainu_lm_pipeline.json",
+        template_path="./dist/ainu_lm_pipeline.json",
         job_id=job_id,
         pipeline_root=cfg.PIPELINE_ROOT,
         parameter_values=pipeline_params,

@@ -9,7 +9,7 @@ from kfp import dsl
         "google-cloud-pipeline-components",
         "google-cloud-aiplatform",
     ],
-    output_component_file="./pipelines/get_tokenizer_training_job_details.yaml",
+    output_component_file="./dist/get_tokenizer_training_job_details.yaml",
 )
 def get_tokenizer_training_job_details(
     location: str,
@@ -31,9 +31,10 @@ def get_tokenizer_training_job_details(
 
     training_gcp_resources = Parse(job_resource, GcpResources())
     resource_uri = training_gcp_resources.resources[0].resource_uri
-    custom_job = client.get_custom_job(name=resource_uri)
+    resource_name = "/".join(resource_uri.split("/")[4:])
+
+    custom_job = client.get_custom_job(name=resource_name)
+    model_artifacts = custom_job.job_spec.base_output_directory.output_uri_prefix
 
     outputs = namedtuple("Outputs", ["model_artifacts"])
-    return outputs(
-        model_artifacts=custom_job.output_uri_prefix,
-    )
+    return outputs(model_artifacts=model_artifacts)

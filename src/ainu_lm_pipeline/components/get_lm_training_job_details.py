@@ -10,7 +10,7 @@ from kfp import dsl
         "google-cloud-aiplatform",
         "pandas",
     ],
-    output_component_file="./pipelines/get_lm_training_job_details.yaml",
+    output_component_file="./dist/get_lm_training_job_details.yaml",
 )
 def get_lm_training_job_details(
     location: str,
@@ -67,12 +67,9 @@ def get_lm_training_job_details(
 
     training_gcp_resources = Parse(job_resource, GcpResources())
     resource_uri = training_gcp_resources.resources[0].resource_uri
+    resource_name = "/".join(resource_uri.split("/")[4:])
 
-    hyperparameter_tuning_job_name = "/".join(resource_uri.split("/")[4:])
-    hyperparameter_tuning_job = client.get_hyperparameter_tuning_job(
-        name=hyperparameter_tuning_job_name
-    )
-
+    hyperparameter_tuning_job = client.get_hyperparameter_tuning_job(name=resource_name)
     trials = HyperparameterTrainingJobTrials(hyperparameter_tuning_job.trials)
     best_trial = trials.best
 

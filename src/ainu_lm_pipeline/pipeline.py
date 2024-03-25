@@ -20,14 +20,14 @@ from .components import (
 @dsl.pipeline(name="ainu-lm-pipeline", pipeline_root="ainu-lm")
 def ainu_lm_pipeline(
     pipeline_job_id: str,
-    pipeline_root: str,
+    pipeline_staging: str,
     source_repo_name: str,
     source_commit_sha: str,
     tensorboard_id: str,
     hf_repo: str,
     hf_token: str,
 ) -> None:
-    BASE_OUTPUT_DIR = f"{pipeline_root}/{source_commit_sha}"
+    BASE_OUTPUT_DIR = f"{pipeline_staging}/{source_commit_sha}"
 
     # ----------------------------------------------------
     # カスタム訓練イメージのビルド
