@@ -10,20 +10,21 @@ from kfp import dsl
 def build_trainer_image(
     project_id: str,
     training_image_uri: str,
-    repo_name: str,
-    commit_sha: str,
+    github_repo: str,
+    github_commit_sha: str,
     hf_token: str,
 ) -> NamedTuple("Outputs", [("training_image_uri", str)]):
     from google.cloud.devtools import cloudbuild_v1 as cloudbuild
 
     build_client = cloudbuild.CloudBuildClient()
+    repo_name = f"github_{github_repo.replace('/', '_')}"
 
     build = cloudbuild.Build(
         source=cloudbuild.Source(
             repo_source=cloudbuild.RepoSource(
                 project_id=project_id,
                 repo_name=repo_name,
-                commit_sha=commit_sha,
+                commit_sha=github_commit_sha,
             )
         ),
         steps=[

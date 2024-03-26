@@ -25,7 +25,6 @@ if __name__ == "__main__":
         "tensorboard_name": TENSORBOARD_NAME,
         "train_image_uri": TRAIN_IMAGE_URI,
         "pipeline_staging": PIPELINE_STAGING,
-        "source_repo_name": "github_aynumosir_ainu-lm",
         "hf_model_repo": "aynumosir/roberta-base-ainu",
         "hf_dataset_repo": "aynumosir/ainu-corpora",
         "hf_secret_id": "aynumosir-hf-token",
