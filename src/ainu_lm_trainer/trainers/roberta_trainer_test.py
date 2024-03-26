@@ -10,9 +10,16 @@ def test_compact_dataset() -> None:
     dataset = Dataset.from_dict(
         {
             "text": [
-                "This is a test.",
-                "This is another test.",
-                "This is yet another test.",
+                "this is a 1st test sentence",
+                "this is a 2nd test sentence",
+                "this is a 3rd test sentence",
+                "this is a 4th test sentence",
+                "this is a 5th test sentence",
+                "this is a 6th test sentence",
+                "this is a 7th test sentence",
+                "this is a 8th test sentence",
+                "this is a 9th test sentence",
+                "this is a 10th test sentence",
             ]
         }
     )
@@ -36,3 +43,4 @@ def test_compact_dataset() -> None:
     trainer.train()
 
     assert (output_dir / "config.json").exists()
+    assert (output_dir / "all_results.json").exists()

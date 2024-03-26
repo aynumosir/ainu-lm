@@ -50,9 +50,7 @@ class RobertaTrainer:
             output_dir=str(self.config.output_dir),
             overwrite_output_dir=True,
             num_train_epochs=self.config.num_train_epochs,
-            per_device_train_batch_size=16,
-            save_steps=10_000,
-            save_total_limit=2,
+            per_device_train_batch_size=64,
             logging_dir=str(self.config.logging_dir),
             report_to=["tensorboard"],
         )
@@ -61,7 +59,7 @@ class RobertaTrainer:
             tokenizer=tokenizer, mlm=True, mlm_probability=0.15
         )
 
-        train_dataset = self.dataset.map(
+        dataset = self.dataset.map(
             lambda examples: tokenizer(
                 examples["text"],
                 max_length=128,
@@ -71,16 +69,22 @@ class RobertaTrainer:
             ),
             batched=True,
         )
+        dataset_dict = dataset.train_test_split(test_size=0.1)
 
         trainer = Trainer(
             model=model,
             args=training_args,
             data_collator=data_collator,
-            train_dataset=train_dataset,
+            train_dataset=dataset_dict["train"],
+            eval_dataset=dataset_dict["test"],
         )
 
         if self.config.hypertune_enabled:
             trainer.add_callback(HPTuneCallback("loss", "eval_loss"))
 
         trainer.train()
+
+        metrics = trainer.evaluate()
+        trainer.save_metrics("all", metrics)
+
         trainer.save_model(self.config.output_dir)
