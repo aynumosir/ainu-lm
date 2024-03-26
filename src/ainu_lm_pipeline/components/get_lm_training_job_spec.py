@@ -13,7 +13,7 @@ def get_lm_training_job_spec(
                 "image_uri": train_image_uri,
                 "args": [
                     "language-model",
-                    "--num-train-epochs=1",
+                    "--num-train-epochs=15",
                     f"--tokenizer-dir={tokenizer_gcs_path}",
                     f"--dataset-revision={dataset_revision}",
                 ],

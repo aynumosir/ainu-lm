@@ -47,6 +47,7 @@ class RobertaTrainer:
         model = model.to("cuda") if torch.cuda.is_available() else model
 
         training_args = TrainingArguments(
+            save_strategy="epoch",
             output_dir=str(self.config.checkpoint_dir),
             overwrite_output_dir=True,
             num_train_epochs=self.config.num_train_epochs,
