@@ -6,7 +6,7 @@ from kfp import dsl
 @dsl.component(
     base_image="python:3.10",
     packages_to_install=[
-        "huggingface_hub",
+        "huggingface-hub",
         "pygithub",
     ],
 )

@@ -41,9 +41,10 @@ def get_lm_training_job_result(
     job_base_dir = job_resource.job_spec.base_output_directory.output_uri_prefix
 
     model_path = f"{job_base_dir}/model"
+    checkpoints_path = f"{job_base_dir}/checkpoints"
 
     # Copy model artifacts
-    shutil.copytree(model_path.replace("gs://", "/gcs/"), model.path)
+    shutil.copytree(checkpoints_path.replace("gs://", "/gcs/"), model.path)
 
     # Fetch metrics
     metrics_uri = f"{model.path}/all_results.json"

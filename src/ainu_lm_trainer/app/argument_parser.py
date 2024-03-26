@@ -43,10 +43,16 @@ def get_argument_parser() -> argparse.ArgumentParser:
         required=True,
     )
     language_model_parser.add_argument(
-        "--output-dir",
+        "--model-dir",
         type=get_path_from_uri,
         help="Job directory. Use gs:/ to save to Google Cloud Storage",
         default=os.environ.get("AIP_MODEL_DIR"),
+    )
+    language_model_parser.add_argument(
+        "--checkpoint-dir",
+        type=get_path_from_uri,
+        help="Checkpoint directory. Use gs:/ to save to Google Cloud Storage",
+        default=os.environ.get("AIP_CHECKPOINT_DIR"),
     )
     language_model_parser.add_argument(
         "--logging-dir",

@@ -24,23 +24,27 @@ def test_compact_dataset() -> None:
         }
     )
 
-    output_dir = Path("/tmp/ainu_lm_trainer_test")
-    output_dir.mkdir(parents=True, exist_ok=True)
+    model_dir = Path("/tmp/ainu_lm_trainer_test")
+    model_dir.mkdir(parents=True, exist_ok=True)
 
     logging_dir = Path("/tmp/ainu_lm_trainer_test_logging")
     logging_dir.mkdir(parents=True, exist_ok=True)
+
+    checkpoint_dir = Path("/tmp/ainu_lm_trainer_test_checkpoint")
+    checkpoint_dir.mkdir(parents=True, exist_ok=True)
 
     trainer = RobertaTrainer(
         dataset=dataset,
         config=RobertaTrainerConfig(
             num_train_epochs=1,
             tokenizer_name_or_dir="roberta-base",
-            output_dir=output_dir,
-            logging_dir=output_dir,
+            model_dir=model_dir,
+            logging_dir=logging_dir,
+            checkpoint_dir=checkpoint_dir,
         ),
     )
 
     trainer.train()
 
-    assert (output_dir / "config.json").exists()
-    assert (output_dir / "all_results.json").exists()
+    assert (model_dir / "config.json").exists()
+    assert (model_dir / "all_results.json").exists()

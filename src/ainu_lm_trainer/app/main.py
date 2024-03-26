@@ -12,7 +12,8 @@ if __name__ == "__main__":
 
     if args.task == "language-model":
         language_model(
-            output_dir=args.output_dir,
+            model_dir=args.model_dir,
+            checkpoint_dir=args.checkpoint_dir,
             logging_dir=args.logging_dir,
             tokenizer_dir=args.tokenizer_dir,
             num_train_epochs=args.num_train_epochs,

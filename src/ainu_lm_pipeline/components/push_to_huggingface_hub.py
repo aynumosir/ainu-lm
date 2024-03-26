@@ -3,12 +3,7 @@ from kfp import dsl
 
 @dsl.component(
     base_image="python:3.10",
-    packages_to_install=[
-        "google-cloud-pipeline-components",
-        "huggingface-hub",
-        "torch",
-        "transformers",
-    ],
+    packages_to_install=["huggingface-hub"],
 )
 def push_to_huggingface_hub(
     project_id: str,
@@ -16,12 +11,16 @@ def push_to_huggingface_hub(
     hf_repo: str,
     hf_token: str,
 ) -> None:
-    from transformers import RobertaForMaskedLM, RobertaTokenizerFast
+    from huggingface_hub import HfFolder, Repository
 
     model_path = model_gcs_path.replace("gs://", "/gcs/")
 
-    model = RobertaForMaskedLM.from_pretrained(model_path, local_files_only=True)
-    tokenizer = RobertaTokenizerFast.from_pretrained(model_path, local_files_only=True)
+    # Initialize Hugging Face repository
+    repo = Repository(
+        project=project_id,
+        name=hf_repo,
+        token=hf_token,
+    )
 
-    model.push_to_hub(hf_repo, token=hf_token)
-    tokenizer.push_to_hub(hf_repo, token=hf_token)
+    # Push model to Hugging Face Hub
+    repo.push_from_folder(HfFolder(folder=model_path))

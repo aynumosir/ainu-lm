@@ -17,8 +17,9 @@ def test_parsing_language_model_training() -> None:
             "--num-train-epochs=20",
             "--tokenizer-dir=gs://test/tokenizer",
             "--dataset-revision=v1",
-            "--output-dir=gs://test/output_dir",
+            "--model-dir=gs://test/model_dir",
             "--logging-dir=gs://test/logging_dir",
+            "--checkpoint-dir=gs://test/checkpoint_dir",
         ]
     )
     assert args.task == "language-model"
@@ -27,8 +28,9 @@ def test_parsing_language_model_training() -> None:
     assert args.dataset_revision == "v1"
 
     assert str(args.tokenizer_dir) == "/gcs/test/tokenizer"
-    assert str(args.output_dir) == "/gcs/test/output_dir"
+    assert str(args.model_dir) == "/gcs/test/model_dir"
     assert str(args.logging_dir) == "/gcs/test/logging_dir"
+    assert str(args.checkpoint_dir) == "/gcs/test/checkpoint_dir"
 
 
 def test_parsing_language_model_with_local_disk() -> None:
@@ -40,8 +42,9 @@ def test_parsing_language_model_with_local_disk() -> None:
             "--num-train-epochs=20",
             "--tokenizer-dir=/model/tokenizer",
             "--dataset-revision=v1",
-            "--output-dir=/model/output_dir",
+            "--model-dir=/model/model_dir",
             "--logging-dir=/model/logging_dir",
+            "--checkpoint-dir=/model/checkpoint_dir",
         ]
     )
     assert args.task == "language-model"
@@ -50,5 +53,6 @@ def test_parsing_language_model_with_local_disk() -> None:
     assert args.dataset_revision == "v1"
 
     assert str(args.tokenizer_dir) == "/model/tokenizer"
-    assert str(args.output_dir) == "/model/output_dir"
+    assert str(args.model_dir) == "/model/model_dir"
     assert str(args.logging_dir) == "/model/logging_dir"
+    assert str(args.checkpoint_dir) == "/model/checkpoint_dir"

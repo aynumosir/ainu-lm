@@ -7,7 +7,8 @@ from ..trainers import RobertaTrainer, RobertaTrainerConfig
 
 
 def language_model(
-    output_dir: Path,
+    model_dir: Path,
+    checkpoint_dir: Path,
     logging_dir: Path,
     tokenizer_dir: Path,
     num_train_epochs: int,
@@ -20,7 +21,8 @@ def language_model(
     dataset = dataset.map(lambda example: {"text": example["sentence"]})
 
     config = RobertaTrainerConfig(
-        output_dir=output_dir,
+        model_dir=model_dir,
+        checkpoint_dir=checkpoint_dir,
         logging_dir=logging_dir,
         tokenizer_name_or_dir=tokenizer_dir,
         num_train_epochs=num_train_epochs,

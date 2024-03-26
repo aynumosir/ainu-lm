@@ -47,9 +47,8 @@ class RobertaTrainer:
         model = model.to("cuda") if torch.cuda.is_available() else model
 
         training_args = TrainingArguments(
-            output_dir=str(self.config.output_dir),
+            output_dir=str(self.config.checkpoint_dir),
             overwrite_output_dir=True,
-            save_only_model=True,
             num_train_epochs=self.config.num_train_epochs,
             per_device_train_batch_size=64,
             logging_dir=str(self.config.logging_dir),
@@ -88,4 +87,4 @@ class RobertaTrainer:
         metrics = trainer.evaluate()
         trainer.save_metrics("all", metrics)
 
-        trainer.save_model(self.config.output_dir)
+        trainer.save_model(str(self.config.model_dir))

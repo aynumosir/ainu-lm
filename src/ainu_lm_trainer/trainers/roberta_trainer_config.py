@@ -5,7 +5,8 @@ from typing import Optional
 
 @dataclass
 class RobertaTrainerConfig:
-    output_dir: Path
+    model_dir: Path
+    checkpoint_dir: Path
     logging_dir: Path
 
     num_train_epochs: int
