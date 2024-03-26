@@ -10,7 +10,6 @@ from kfp import dsl
         "google-cloud-aiplatform",
         "pandas",
     ],
-    output_component_file="./dist/get_lm_training_job_result.yaml",
 )
 def get_lm_training_job_result(
     location: str,
@@ -41,11 +40,13 @@ def get_lm_training_job_result(
     job_resource = job_client.get_custom_job(name=custom_job_name)
     job_base_dir = job_resource.job_spec.base_output_directory.output_uri_prefix
 
+    model_path = f"{job_base_dir}/model"
+
     # Copy model artifacts
-    shutil.copytree(job_base_dir.replace("gs://", "/gcs/"), model.path)
+    shutil.copytree(model_path.replace("gs://", "/gcs/"), model.path)
 
     # Fetch metrics
-    metrics_uri = f"{model.path}/model/all_results.json"
+    metrics_uri = f"{model.path}/all_results.json"
     metrics_df = pd.read_json(metrics_uri, typ="series")
 
     # Set model metadata
@@ -59,4 +60,4 @@ def get_lm_training_job_result(
         ).total_seconds(),
     }
 
-    return (job_base_dir,)
+    return (model_path,)

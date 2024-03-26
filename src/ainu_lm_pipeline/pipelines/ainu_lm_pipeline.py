@@ -21,7 +21,6 @@ def ainu_lm_pipeline(
     service_account: str,
     tensorboard_name: str,
     train_image_uri: str,
-    pipeline_job_id: str,
     pipeline_staging: str,
     source_repo_name: str,
     hf_model_repo: str,
@@ -106,6 +105,7 @@ def ainu_lm_pipeline(
         )
         .set_display_name("トークナイザの訓練ジョブの仕様を取得")
         .set_caching_options(True)
+        .after(build_custom_train_image_op)
     )
 
     # ----------------------------------------------------
@@ -113,13 +113,12 @@ def ainu_lm_pipeline(
     # ----------------------------------------------------
     tokenizer_training_job_op = (
         CustomTrainingJobOp(
-            display_name=f"{pipeline_job_id}-tokenizer",
+            display_name="ainu-lm-tokenizer",
             base_output_directory=get_base_output_directory_op.output,
             worker_pool_specs=get_tokenizer_training_job_spec_op.output,
         )
         .set_display_name("トークナイザの訓練")
         .set_caching_options(True)
-        .after(build_custom_train_image_op)
     )
 
     # ----------------------------------------------------
@@ -154,7 +153,7 @@ def ainu_lm_pipeline(
     lm_training_job_op = (
         CustomTrainingJobOp(
             project=project_id,
-            display_name=f"{pipeline_job_id}-lm",
+            display_name="ainu-lm-lm",
             base_output_directory=get_base_output_directory_op.output,
             worker_pool_specs=get_lm_training_job_spec_op.output,
             location=location,
@@ -168,10 +167,14 @@ def ainu_lm_pipeline(
     # ----------------------------------------------------
     # 訓練ジョブの詳細情報取得
     # ----------------------------------------------------
-    get_lm_training_job_op = get_lm_training_job_result(
-        location=location,
-        job_resource=lm_training_job_op.output,
-    ).set_display_name("訓練ジョブの詳細情報取得")
+    get_lm_training_job_op = (
+        get_lm_training_job_result(
+            location=location,
+            job_resource=lm_training_job_op.output,
+        )
+        .set_display_name("訓練ジョブの詳細情報取得")
+        .set_caching_options(True)
+    )
 
     # ----------------------------------------------------
     # Huggingface Hub に push
@@ -182,5 +185,7 @@ def ainu_lm_pipeline(
             model_gcs_path=get_lm_training_job_op.outputs["model_artifacts"],
             hf_repo=hf_model_repo,
             hf_token=get_hf_token_op.output,
-        ).set_display_name("Huggingface Hub に push")
+        )
+        .set_display_name("Huggingface Hub に push")
+        .set_caching_options(True)
     )

@@ -4,7 +4,6 @@ from kfp import dsl
 @dsl.component(
     base_image="python:3.10",
     packages_to_install=["google-cloud-secret-manager"],
-    output_component_file="./dist/get_latest_secret_by_id.yaml",
 )
 def get_latest_secret_by_id(project_id: str, secret_id: str) -> str:
     from google.cloud import secretmanager

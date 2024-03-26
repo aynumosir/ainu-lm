@@ -9,7 +9,6 @@ from kfp import dsl
         "torch",
         "transformers",
     ],
-    output_component_file="./dist/push_to_huggingface_hub.yaml",
 )
 def push_to_huggingface_hub(
     project_id: str,

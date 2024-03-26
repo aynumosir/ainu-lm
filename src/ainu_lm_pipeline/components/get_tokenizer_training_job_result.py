@@ -9,7 +9,6 @@ from kfp import dsl
         "google-cloud-pipeline-components",
         "google-cloud-aiplatform",
     ],
-    output_component_file="./dist/get_tokenizer_training_job_result.yaml",
 )
 def get_tokenizer_training_job_result(
     location: str,

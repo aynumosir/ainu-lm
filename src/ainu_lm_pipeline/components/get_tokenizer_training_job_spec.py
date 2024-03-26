@@ -1,10 +1,7 @@
 from kfp import dsl
 
 
-@dsl.component(
-    base_image="python:3.10",
-    output_component_file="./dist/get_tokenizer_training_job_spec.yaml",
-)
+@dsl.component(base_image="python:3.10")
 def get_tokenizer_training_job_spec(
     train_image_uri: str,
     dataset_revision: str,
@@ -25,5 +22,4 @@ def get_tokenizer_training_job_spec(
             },
         }
     ]
-
     return worker_pool_specs

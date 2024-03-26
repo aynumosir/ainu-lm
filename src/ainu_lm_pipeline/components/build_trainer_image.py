@@ -6,7 +6,6 @@ from kfp import dsl
 @dsl.component(
     base_image="gcr.io/google.com/cloudsdktool/cloud-sdk:latest",
     packages_to_install=["google-cloud-build"],
-    output_component_file="./dist/build_trainer_image.yaml",
 )
 def build_trainer_image(
     project_id: str,

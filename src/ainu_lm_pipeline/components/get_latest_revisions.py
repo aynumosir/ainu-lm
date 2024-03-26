@@ -9,7 +9,6 @@ from kfp import dsl
         "huggingface_hub",
         "pygithub",
     ],
-    output_component_file="./dist/get_latest_revisions.yaml",
 )
 def get_latest_revisions(
     github_repo_id: str,
