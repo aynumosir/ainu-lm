@@ -9,7 +9,7 @@ if __name__ == "__main__":
     os.makedirs(path.dirname(PIPELINE_JSON_SPEC_PATH), exist_ok=True)
 
     try:
-        from .pipeline import ainu_lm_pipeline
+        from .pipelines import ainu_lm_pipeline
 
         compiler = Compiler()
         compiler.compile(

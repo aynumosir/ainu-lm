@@ -20,7 +20,7 @@ def get_lm_training_job_result(
     "Outputs",
     [
         ("model_artifacts", str),
-        ("eval_loss", float),
+        # ("eval_loss", float),
     ],
 ):
     import shutil
@@ -46,17 +46,17 @@ def get_lm_training_job_result(
 
     # Fetch metrics
     metrics_uri = f"{model.path}/model/all_results.json"
-    metrics_df = pd.read_json(metrics_uri)
+    metrics_df = pd.read_json(metrics_uri, typ="series")
 
     # Set model metadata
     model.metadata = {
         "framework": "pytorch",
         "job_name": custom_job_name,
         "epoch": metrics_df["epoch"],
-        "eval_loss": metrics_df["eval_loss"],
+        # "eval_loss": metrics_df["eval_loss"],
         "time_to_train_in_seconds": (
             job_resource.end_time - job_resource.start_time
         ).total_seconds(),
     }
 
-    return (job_base_dir, metrics_df["eval_loss"])
+    return (job_base_dir,)

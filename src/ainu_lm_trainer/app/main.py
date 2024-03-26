@@ -8,7 +8,7 @@ if __name__ == "__main__":
     args = argument_parser.parse_args()
 
     if args.task == "tokenizer":
-        tokenizer(output_dir=args.output_dir)
+        tokenizer(output_dir=args.output_dir, dataset_revision=args.dataset_revision)
 
     if args.task == "language-model":
         language_model(
@@ -17,6 +17,7 @@ if __name__ == "__main__":
             tokenizer_dir=args.tokenizer_dir,
             num_train_epochs=args.num_train_epochs,
             hypertune_enabled=args.hp_tune,
+            dataset_revision=args.dataset_revision,
         )
 
     if args.task == "cache":

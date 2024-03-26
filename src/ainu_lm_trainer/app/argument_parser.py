@@ -18,6 +18,11 @@ def get_argument_parser() -> argparse.ArgumentParser:
         help="Job directory. Use gs:/ to save to Google Cloud Storage",
         default=os.environ.get("AIP_MODEL_DIR"),
     )
+    tokenizer_parser.add_argument(
+        "--dataset-revision",
+        type=str,
+        help="Dataset version e.g. v1",
+    )
 
     """
     Subparser for the language model
@@ -48,6 +53,11 @@ def get_argument_parser() -> argparse.ArgumentParser:
         type=get_path_from_uri,
         help="Logging directory. Use gs:/ to save to Google Cloud Storage",
         default=os.environ.get("AIP_TENSORBOARD_LOG_DIR"),
+    )
+    language_model_parser.add_argument(
+        "--dataset-revision",
+        type=str,
+        help="Dataset version e.g. v1",
     )
 
     """

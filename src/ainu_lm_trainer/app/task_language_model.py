@@ -11,11 +11,12 @@ def language_model(
     logging_dir: Path,
     tokenizer_dir: Path,
     num_train_epochs: int,
+    dataset_revision: str,
     hypertune_enabled: Optional[bool] = None,
-    tensorboard_id: Optional[str] = None,
-    tensorboard_experiment_name: Optional[str] = None,
 ) -> None:
-    dataset = load_dataset("aynumosir/ainu-corpora", split="data")
+    dataset = load_dataset(
+        "aynumosir/ainu-corpora", split="data", revision=dataset_revision
+    )
     dataset = dataset.map(lambda example: {"text": example["sentence"]})
 
     config = RobertaTrainerConfig(

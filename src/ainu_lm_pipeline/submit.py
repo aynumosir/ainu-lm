@@ -1,4 +1,3 @@
-import argparse
 import os
 from datetime import datetime
 
@@ -18,16 +17,9 @@ PIPELINE_STAGING = os.getenv("PIPELINE_STAGING")
 TENSORBOARD_NAME = os.getenv("TENSORBOARD_NAME")
 SERVICE_ACCOUNT = os.getenv("SERVICE_ACCOUNT")
 
-
-parser = argparse.ArgumentParser()
-parser.add_argument("--commit-sha", type=str, required=True)
-parser.add_argument("--no-cache", type=bool, default=False)
-
-
 if __name__ == "__main__":
     aiplatform.init(project=PROJECT_ID, location=REGION)
 
-    args = parser.parse_args()
     job_id = f"pipeline-ainu-lm-{get_timestamp()}"
 
     pipeline_params = {
@@ -39,18 +31,20 @@ if __name__ == "__main__":
         "pipeline_job_id": job_id,
         "pipeline_staging": PIPELINE_STAGING,
         "source_repo_name": "github_aynumosir_ainu-lm",
-        "source_commit_sha": args.commit_sha,
-        "hf_repo": "aynumosir/roberta-ainu-base",
+        "hf_model_repo": "aynumosir/roberta-ainu-base",
+        "hf_dataset_repo": "aynumosir/ainu-corpora",
         "hf_secret_id": "aynumosir-hf-token",
+        "github_repo": "aynumosir/ainu-lm",
+        "github_secret_id": "aynumosir-github-token",
     }
 
     pipeline_job = PipelineJob(
-        display_name=f"Ainu LM Pipeline ({args.commit_sha})",
+        display_name="Ainu LM Pipeline",
         template_path="./dist/ainu_lm_pipeline.json",
         job_id=job_id,
         pipeline_root=PIPELINE_ROOT,
         parameter_values=pipeline_params,
-        enable_caching=not args.no_cache,
+        enable_caching=True,
     )
 
     pipeline_job.run(sync=True, service_account=SERVICE_ACCOUNT)

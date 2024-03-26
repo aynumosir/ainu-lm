@@ -49,6 +49,7 @@ class RobertaTrainer:
         training_args = TrainingArguments(
             output_dir=str(self.config.output_dir),
             overwrite_output_dir=True,
+            save_only_model=True,
             num_train_epochs=self.config.num_train_epochs,
             per_device_train_batch_size=64,
             logging_dir=str(self.config.logging_dir),

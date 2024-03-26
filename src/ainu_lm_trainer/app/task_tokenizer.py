@@ -5,7 +5,9 @@ from datasets import load_dataset
 from ..trainers import ByteLevelBPETokenizerTrainer
 
 
-def tokenizer(output_dir: Path) -> None:
-    dataset = load_dataset("aynumosir/ainu-corpora", split="data")
+def tokenizer(output_dir: Path, dataset_revision: str) -> None:
+    dataset = load_dataset(
+        "aynumosir/ainu-corpora", split="data", revision=dataset_revision
+    )
     trainer = ByteLevelBPETokenizerTrainer(dataset, output_dir=output_dir)
     trainer.train()

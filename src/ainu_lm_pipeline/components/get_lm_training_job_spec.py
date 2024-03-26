@@ -8,6 +8,7 @@ from kfp import dsl
 def get_lm_training_job_spec(
     train_image_uri: str,
     tokenizer_gcs_path: str,
+    dataset_revision: str,
 ) -> list:
     worker_pool_specs = [
         {
@@ -17,6 +18,7 @@ def get_lm_training_job_spec(
                     "language-model",
                     "--num-train-epochs=1",
                     f"--tokenizer-dir={tokenizer_gcs_path}",
+                    f"--dataset-revision={dataset_revision}",
                 ],
             },
             # https://cloud.google.com/vertex-ai/docs/training/configure-compute?hl=ja#specifying_gpus
