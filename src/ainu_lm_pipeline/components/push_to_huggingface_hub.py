@@ -19,7 +19,7 @@ def push_to_huggingface_hub(
 
     api.upload_folder(
         repo_id=hf_repo,
-        repo_type="dataset",
+        repo_type="model",
         folder_path=model_path,
         commit_message=commit_message,
         token=hf_token,
