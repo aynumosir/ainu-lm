@@ -16,7 +16,6 @@ from .components import (
 def ainu_lm_pipeline(
     project_id: str,
     location: str,
-    service_account: str,
     tensorboard_name: str,
     train_image_uri: str,
     pipeline_job_id: str,
@@ -115,7 +114,6 @@ def ainu_lm_pipeline(
             base_output_directory=BASE_OUTPUT_DIR,
             worker_pool_specs=get_lm_training_job_spec_task.output,
             location=location,
-            service_account=service_account,
             tensorboard=tensorboard_name,
         )
         .set_display_name("モデルの訓練")
