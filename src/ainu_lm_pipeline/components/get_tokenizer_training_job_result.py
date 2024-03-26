@@ -8,55 +8,32 @@ from kfp import dsl
     packages_to_install=[
         "google-cloud-pipeline-components",
         "google-cloud-aiplatform",
-        "pandas",
     ],
-    output_component_file="./dist/get_lm_training_job_details.yaml",
+    output_component_file="./dist/get_tokenizer_training_job_result.yaml",
 )
-def get_lm_training_job_details(
+def get_tokenizer_training_job_result(
     location: str,
     job_resource: str,
-    model: dsl.Output[dsl.Model],
 ) -> NamedTuple(
     "Outputs",
     [
         ("model_artifacts", str),
-        ("eval_loss", float),
     ],
 ):
-    import shutil
-
-    import pandas as pd
     from google.cloud.aiplatform.gapic import JobServiceClient
     from google.protobuf.json_format import Parse
     from google_cloud_pipeline_components.proto.gcp_resources_pb2 import GcpResources
 
-    # Initialize client
     job_client_options = {"api_endpoint": f"{location}-aiplatform.googleapis.com"}
     job_client = JobServiceClient(client_options=job_client_options)
 
-    # Get custom job
     training_gcp_resources = Parse(job_resource, GcpResources())
     custom_job_id = training_gcp_resources.resources[0].resource_uri
     custom_job_name = "/".join(custom_job_id.split("/")[4:])
     job_resource = job_client.get_custom_job(name=custom_job_name)
     job_base_dir = job_resource.job_spec.base_output_directory.output_uri_prefix
 
-    # Copy model artifacts
-    shutil.copytree(job_base_dir.replace("gs://", "/gcs/"), model.path)
+    # TODO: これどうせ AIP_MODEL_DIR と同じだしなんとかしたい
+    tokenizer_dir = f"{job_base_dir.rstrip('/')}/model"
 
-    # Fetch metrics
-    metrics_uri = f"{model.path}/model/all_results.json"
-    metrics_df = pd.read_json(metrics_uri)
-
-    # Set model metadata
-    model.metadata = {
-        "framework": "pytorch",
-        "job_name": custom_job_name,
-        "epoch": metrics_df["epoch"],
-        "eval_loss": metrics_df["eval_loss"],
-        "time_to_train_in_seconds": (
-            job_resource.end_time - job_resource.start_time
-        ).total_seconds(),
-    }
-
-    return (job_base_dir, metrics_df["eval_loss"])
+    return (tokenizer_dir,)

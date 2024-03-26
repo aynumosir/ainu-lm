@@ -35,14 +35,17 @@ def build_trainer_image(
                     "--destination=$_IMAGE_URI",
                     "--cache=true",
                     "--dockerfile=./src/ainu_lm_trainer/Dockerfile",
-                    f"--build-arg=HF_TOKEN={hf_token}",
+                    "--build-arg=HF_TOKEN=$_HF_TOKEN",
                 ],
             )
         ],
         options=cloudbuild.BuildOptions(
             machine_type=cloudbuild.BuildOptions.MachineType.N1_HIGHCPU_32,
         ),
-        substitutions={"_IMAGE_URI": training_image_uri},
+        substitutions={
+            "_IMAGE_URI": training_image_uri,
+            "_HF_TOKEN": hf_token,
+        },
     )
 
     operation = build_client.create_build(project_id=project_id, build=build)

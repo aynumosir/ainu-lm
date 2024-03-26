@@ -33,6 +33,7 @@ if __name__ == "__main__":
     pipeline_params = {
         "project_id": PROJECT_ID,
         "location": REGION,
+        "service_account": SERVICE_ACCOUNT,
         "tensorboard_name": TENSORBOARD_NAME,
         "train_image_uri": TRAIN_IMAGE_URI,
         "pipeline_job_id": job_id,

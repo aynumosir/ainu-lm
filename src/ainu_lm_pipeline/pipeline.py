@@ -4,9 +4,9 @@ from kfp import dsl
 from .components import (
     build_trainer_image,
     get_hf_token,
-    get_lm_training_job_details,
+    get_lm_training_job_result,
     get_lm_training_job_spec,
-    get_tokenizer_training_job_details,
+    get_tokenizer_training_job_result,
     get_tokenizer_training_job_spec,
     push_to_huggingface_hub,
 )
@@ -16,6 +16,7 @@ from .components import (
 def ainu_lm_pipeline(
     project_id: str,
     location: str,
+    service_account: str,
     tensorboard_name: str,
     train_image_uri: str,
     pipeline_job_id: str,
@@ -30,7 +31,7 @@ def ainu_lm_pipeline(
     # ----------------------------------------------------
     # Hugging Face Hub のトークン取得
     # ----------------------------------------------------
-    get_hf_token_task = (
+    get_hf_token_op = (
         get_hf_token(
             project_id=project_id,
             hf_secret_id=hf_secret_id,
@@ -42,13 +43,13 @@ def ainu_lm_pipeline(
     # ----------------------------------------------------
     # カスタム訓練イメージのビルド
     # ----------------------------------------------------
-    build_custom_train_image_task = (
+    build_custom_train_image_op = (
         build_trainer_image(
             project_id=project_id,
             training_image_uri=train_image_uri,
             repo_name=source_repo_name,
             commit_sha=source_commit_sha,
-            hf_token=get_hf_token_task.output,
+            hf_token=get_hf_token_op.output,
         )
         .set_display_name("カスタム訓練イメージのビルド")
         .set_caching_options(True)
@@ -57,7 +58,7 @@ def ainu_lm_pipeline(
     # ----------------------------------------------------
     # トークナイザの訓練ジョブの仕様を取得
     # ----------------------------------------------------
-    tokenizer_training_job_spec_task = (
+    get_tokenizer_training_job_spec_op = (
         get_tokenizer_training_job_spec(
             train_image_uri=train_image_uri,
         )
@@ -68,65 +69,65 @@ def ainu_lm_pipeline(
     # ----------------------------------------------------
     # トークナイザの訓練
     # ----------------------------------------------------
-    tokenizer_training_task = (
+    tokenizer_training_job_op = (
         CustomTrainingJobOp(
             display_name=f"{pipeline_job_id}-tokenizer",
             base_output_directory=BASE_OUTPUT_DIR,
-            worker_pool_specs=tokenizer_training_job_spec_task.output,
+            worker_pool_specs=get_tokenizer_training_job_spec_op.output,
         )
         .set_display_name("トークナイザの訓練")
         .set_caching_options(True)
-        .after(build_custom_train_image_task)
+        .after(build_custom_train_image_op)
     )
 
     # ----------------------------------------------------
-    # トークナイザ訓練ジョブの詳細情報取得
+    # トークナイザ訓練ジョブの結果取得
     # ----------------------------------------------------
-    tokenizer_training_job_details_task = (
-        get_tokenizer_training_job_details(
-            location=location, job_resource=tokenizer_training_task.output
+    get_tokenizer_training_job_result_op = (
+        get_tokenizer_training_job_result(
+            location=location, job_resource=tokenizer_training_job_op.output
         )
-        .set_display_name("トークナイザ訓練ジョブの詳細情報取得")
+        .set_display_name("トークナイザ訓練ジョブの結果取得")
         .set_caching_options(True)
     )
 
     # ----------------------------------------------------
     # モデル訓練ジョブの仕様を取得
     # ----------------------------------------------------
-    get_lm_training_job_spec_task = (
+    get_lm_training_job_spec_op = (
         get_lm_training_job_spec(
             train_image_uri=train_image_uri,
-            tokenizer_gcs_path=tokenizer_training_job_details_task.outputs[
+            tokenizer_gcs_path=get_tokenizer_training_job_result_op.outputs[
                 "model_artifacts"
             ],
         )
-        .set_display_name("worker_pool_specsの定義")
+        .set_display_name("モデル訓練ジョブの仕様を取得")
         .set_caching_options(True)
     )
 
     # ----------------------------------------------------
     # モデルの訓練
     # ----------------------------------------------------
-    lm_training_task = (
+    lm_training_job_op = (
         CustomTrainingJobOp(
             project=project_id,
             display_name=f"{pipeline_job_id}-lm",
             base_output_directory=BASE_OUTPUT_DIR,
-            worker_pool_specs=get_lm_training_job_spec_task.output,
+            worker_pool_specs=get_lm_training_job_spec_op.output,
             location=location,
             tensorboard=tensorboard_name,
+            service_account=service_account,
         )
         .set_display_name("モデルの訓練")
         .set_caching_options(True)
-        .after(tokenizer_training_task)
     )
 
     # ----------------------------------------------------
     # 訓練ジョブの詳細情報取得
     # ----------------------------------------------------
-    training_job_details_task = get_lm_training_job_details(
+    get_lm_training_job_op = get_lm_training_job_result(
         location=location,
-        job_resource=lm_training_task.output,
+        job_resource=lm_training_job_op.output,
     ).set_display_name("訓練ジョブの詳細情報取得")
 
     # ----------------------------------------------------
@@ -135,8 +136,8 @@ def ainu_lm_pipeline(
     (
         push_to_huggingface_hub(
             project_id=project_id,
-            model_gcs_path=training_job_details_task.outputs["model_artifacts"],
+            model_gcs_path=get_lm_training_job_op.outputs["model_artifacts"],
             hf_repo=hf_repo,
-            hf_token=get_hf_token_task.output,
+            hf_token=get_hf_token_op.output,
         ).set_display_name("Huggingface Hub に push")
     )
