@@ -181,11 +181,11 @@ def ainu_lm_pipeline(
     # ----------------------------------------------------
     (
         push_to_huggingface_hub(
-            project_id=project_id,
             model_gcs_path=get_lm_training_job_op.outputs["model_artifacts"],
+            commit_message=f"Update model for {get_latest_revisions_op.outputs['hf_repo_sha']}",
             hf_repo=hf_model_repo,
             hf_token=get_hf_token_op.output,
         )
-        .set_display_name("Huggingface Hub に push")
+        .set_display_name("Hugging Face Hub に push")
         .set_caching_options(True)
     )

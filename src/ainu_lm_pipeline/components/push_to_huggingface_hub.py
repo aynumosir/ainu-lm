@@ -6,21 +6,21 @@ from kfp import dsl
     packages_to_install=["huggingface-hub"],
 )
 def push_to_huggingface_hub(
-    project_id: str,
     model_gcs_path: str,
+    commit_message: str,
     hf_repo: str,
     hf_token: str,
 ) -> None:
-    from huggingface_hub import HfFolder, Repository
+    from huggingface_hub import HfApi
+
+    api = HfApi()
 
     model_path = model_gcs_path.replace("gs://", "/gcs/")
 
-    # Initialize Hugging Face repository
-    repo = Repository(
-        project=project_id,
-        name=hf_repo,
+    api.upload_folder(
+        repo_id=hf_repo,
+        repo_type="dataset",
+        folder_path=model_path,
+        commit_message=commit_message,
         token=hf_token,
     )
-
-    # Push model to Hugging Face Hub
-    repo.push_from_folder(HfFolder(folder=model_path))
