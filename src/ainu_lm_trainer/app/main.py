@@ -14,7 +14,7 @@ if __name__ == "__main__":
         language_model(
             output_dir=args.output_dir,
             logging_dir=args.logging_dir,
-            tokenizer_blob=args.tokenizer_dir,
+            tokenizer_dir=args.tokenizer_dir,
             num_train_epochs=args.num_train_epochs,
             hypertune_enabled=args.hp_tune,
         )

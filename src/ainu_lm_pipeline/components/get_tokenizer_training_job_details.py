@@ -20,21 +20,17 @@ def get_tokenizer_training_job_details(
         ("model_artifacts", str),
     ],
 ):
-    from collections import namedtuple
-
     from google.cloud.aiplatform.gapic import JobServiceClient
     from google.protobuf.json_format import Parse
     from google_cloud_pipeline_components.proto.gcp_resources_pb2 import GcpResources
 
-    client_options = {"api_endpoint": f"{location}-aiplatform.googleapis.com"}
-    client = JobServiceClient(client_options=client_options)
+    job_client_options = {"api_endpoint": f"{location}-aiplatform.googleapis.com"}
+    job_client = JobServiceClient(client_options=job_client_options)
 
     training_gcp_resources = Parse(job_resource, GcpResources())
-    resource_uri = training_gcp_resources.resources[0].resource_uri
-    resource_name = "/".join(resource_uri.split("/")[4:])
+    custom_job_id = training_gcp_resources.resources[0].resource_uri
+    custom_job_name = "/".join(custom_job_id.split("/")[4:])
+    job_resource = job_client.get_custom_job(name=custom_job_name)
+    job_base_dir = job_resource.job_spec.base_output_directory.output_uri_prefix
 
-    custom_job = client.get_custom_job(name=resource_name)
-    model_artifacts = custom_job.job_spec.base_output_directory.output_uri_prefix
-
-    outputs = namedtuple("Outputs", ["model_artifacts"])
-    return outputs(model_artifacts=model_artifacts)
+    return (job_base_dir,)

@@ -1,8 +1,6 @@
 import argparse
 import os
 
-from google.cloud.storage import Blob
-
 from ..utils import get_path_from_uri
 
 
@@ -35,7 +33,7 @@ def get_argument_parser() -> argparse.ArgumentParser:
     )
     language_model_parser.add_argument(
         "--tokenizer-dir",
-        type=Blob.from_string,
+        type=get_path_from_uri,
         help="Tokenizer directory. Use gs:/ to load from Google Cloud Storage",
         required=True,
     )

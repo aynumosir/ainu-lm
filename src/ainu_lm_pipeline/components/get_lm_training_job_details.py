@@ -15,6 +15,7 @@ from kfp import dsl
 def get_lm_training_job_details(
     location: str,
     job_resource: str,
+    model: dsl.Output[dsl.Model],
 ) -> NamedTuple(
     "Outputs",
     [
@@ -22,63 +23,40 @@ def get_lm_training_job_details(
         ("eval_loss", float),
     ],
 ):
-    from collections import namedtuple
-    from typing import Sequence
+    import shutil
 
     import pandas as pd
     from google.cloud.aiplatform.gapic import JobServiceClient
-    from google.cloud.aiplatform_v1.types import study
     from google.protobuf.json_format import Parse
     from google_cloud_pipeline_components.proto.gcp_resources_pb2 import GcpResources
 
-    class HyperparameterTrainingJobTrials(pd.DataFrame):
-        def __init__(self, trials: Sequence[study.Trial]) -> None:
-            results = []
+    # Initialize client
+    job_client_options = {"api_endpoint": f"{location}-aiplatform.googleapis.com"}
+    job_client = JobServiceClient(client_options=job_client_options)
 
-            for trial in trials:
-                metric = next(
-                    (
-                        metric.value
-                        for metric in trial.final_measurement.metrics
-                        if metric.metric_id == "loss"
-                    ),
-                    None,
-                )
-
-                results.append(
-                    {
-                        "id": trial.id,
-                        "name": trial.name,
-                        "state": trial.state,
-                        "parameters": trial.parameters,
-                        "final_measurement": metric,
-                        "measurements": trial.measurements,
-                    }
-                )
-
-            super().__init__(results)
-
-        @property
-        def best(self) -> study.Trial:
-            return self.loc[self["final_measurement"].idxmin()]
-
-    client_options = {"api_endpoint": f"{location}-aiplatform.googleapis.com"}
-    client = JobServiceClient(client_options=client_options)
-
+    # Get custom job
     training_gcp_resources = Parse(job_resource, GcpResources())
-    resource_uri = training_gcp_resources.resources[0].resource_uri
-    resource_name = "/".join(resource_uri.split("/")[4:])
+    custom_job_id = training_gcp_resources.resources[0].resource_uri
+    custom_job_name = "/".join(custom_job_id.split("/")[4:])
+    job_resource = job_client.get_custom_job(name=custom_job_name)
+    job_base_dir = job_resource.job_spec.base_output_directory.output_uri_prefix
 
-    hyperparameter_tuning_job = client.get_hyperparameter_tuning_job(name=resource_name)
-    trials = HyperparameterTrainingJobTrials(hyperparameter_tuning_job.trials)
-    best_trial = trials.best
+    # Copy model artifacts
+    shutil.copytree(job_base_dir.replace("gs://", "/gcs/"), model.path)
 
-    prefix = (
-        hyperparameter_tuning_job.trial_job_spec.base_output_directory.output_uri_prefix
-    )
-    model_artifacts_uri = "/".join([prefix, best_trial.id])
+    # Fetch metrics
+    metrics_uri = f"{model.path}/model/all_results.json"
+    metrics_df = pd.read_json(metrics_uri)
 
-    outputs = namedtuple("Outputs", ["model_artifacts", "eval_loss"])
-    return outputs(
-        model_artifacts=model_artifacts_uri, eval_loss=best_trial.final_measurement
-    )
+    # Set model metadata
+    model.metadata = {
+        "framework": "pytorch",
+        "job_name": custom_job_name,
+        "epoch": metrics_df["epoch"],
+        "eval_loss": metrics_df["eval_loss"],
+        "time_to_train_in_seconds": (
+            job_resource.end_time - job_resource.start_time
+        ).total_seconds(),
+    }
+
+    return (job_base_dir, metrics_df["eval_loss"])
