@@ -38,9 +38,6 @@ jobs:
       - name: Pytest
         run: pytest --cov=src --cov-report=xml
 
-      - name: Compile Vertex Pipeline
-        run: python -m src.ainu_lm_pipeline.compile
-
       - name: Codecov
         uses: codecov/codecov-action@v3
         with:

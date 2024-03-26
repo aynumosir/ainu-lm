@@ -47,4 +47,4 @@ def test_compact_dataset() -> None:
     trainer.train()
 
     assert (model_dir / "config.json").exists()
-    assert (model_dir / "all_results.json").exists()
+    assert (checkpoint_dir / "all_results.json").exists()
