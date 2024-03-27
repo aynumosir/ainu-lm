@@ -27,11 +27,12 @@ def ainu_lm_pipeline(
     pipeline_staging: str,
     hf_model_repo: str,
     hf_dataset_repo: str,
-    hf_dataset_commit_sha: Optional[str],
     hf_secret_id: str,
     github_repo: str,
-    github_commit_sha: Optional[str],
     github_secret_id: str,
+    hf_dataset_commit_sha: Optional[str] = None,
+    github_commit_sha: Optional[str] = None,
+    push_to_hub: Optional[bool] = False,
 ) -> None:
     # ----------------------------------------------------
     # トークンの取得
@@ -149,14 +150,15 @@ def ainu_lm_pipeline(
         job_resource=lm_training_job_op.output,
     ).set_display_name("LMの結果取得")
 
-    # ----------------------------------------------------
-    # Huggingface Hub に push
-    # ----------------------------------------------------
-    (
-        push_to_huggingface_hub(
-            model_gcs_path=get_lm_training_job_op.outputs["model_artifacts"],
-            commit_message=f"Update model for {get_revision_dataset_op.output}",
-            hf_repo=hf_model_repo,
-            hf_token=get_hf_token_op.output,
-        ).set_display_name("Hugging Face Hub に push")
-    )
+    with dsl.If(push_to_hub == True, "公開する場合"):  # noqa: E712
+        # ----------------------------------------------------
+        # Huggingface Hub に push
+        # ----------------------------------------------------
+        (
+            push_to_huggingface_hub(
+                model_gcs_path=get_lm_training_job_op.outputs["model_artifacts"],
+                commit_message=f"Update model for {get_revision_dataset_op.output}",
+                hf_repo=hf_model_repo,
+                hf_token=get_hf_token_op.output,
+            ).set_display_name("Hugging Face Hub に push")
+        )

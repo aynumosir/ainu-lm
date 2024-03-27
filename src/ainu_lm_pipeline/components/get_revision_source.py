@@ -10,7 +10,7 @@ from kfp import dsl
 def get_revision_source(
     github_repo_id: str,
     github_token: str,
-    github_commit_sha: Optional[str],
+    github_commit_sha: Optional[str] = None,
 ) -> str:
     from github import Github
 
