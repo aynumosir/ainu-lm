@@ -10,7 +10,7 @@ from kfp import dsl
 def get_revision_dataset(
     hf_repo_id: str,
     hf_token: str,
-    hf_dataset_commit_sha: Optional[str],
+    hf_dataset_commit_sha: Optional[str] = None,
 ) -> str:
     from huggingface_hub import HfApi
 

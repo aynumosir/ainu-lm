@@ -1,11 +1,10 @@
 import argparse
 import os
-from pathlib import Path
 
 from kfp.compiler import Compiler
-from kfp.registry import RegistryClient
 
-from ainu_lm_pipeline.pipelines import ainu_lm_pipeline
+from ..pipelines import ainu_lm_pipeline
+from .config import pipeline_path
 
 
 def get_argument_parser() -> argparse.ArgumentParser:
@@ -48,12 +47,6 @@ def get_argument_parser() -> argparse.ArgumentParser:
         help="Hugging Face dataset repository. e.g. aynumosir/ainu-corpora",
     )
     parser.add_argument(
-        "--hf-dataset-commit-sha",
-        type=str,
-        required=False,
-        help="Hugging Face dataset commit SHA. e.g. 4c3c9b6c0a1f7e7a5e4a0e5e4a0e5e4a0e5e4a0e",
-    )
-    parser.add_argument(
         "--hf-secret-id",
         type=str,
         default=os.getenv("HF_SECRET_ID"),
@@ -71,24 +64,12 @@ def get_argument_parser() -> argparse.ArgumentParser:
         default=os.getenv("GITHUB_SECRET_ID"),
         help="Secret ID for GitHub token. e.g. aynumosir-github-token",
     )
-    parser.add_argument(
-        "--github-commit-sha",
-        type=str,
-        required=False,
-        help="GitHub commit SHA. e.g. 4c3c9b6c0a1f7e7a5e4a0e5e4a0e5e4a0e5e4a0e",
-    )
-    parser.add_argument(
-        "--kfp-repo",
-        type=str,
-        default=os.getenv("KFP_REPO"),
-        help="KFP repository. e.g. kfp",
-    )
     return parser
 
 
 if __name__ == "__main__":
     args = get_argument_parser().parse_args()
-    pipeline_path = Path("./dist/ainu_lm_pipeline.yaml")
+
     os.makedirs(pipeline_path.parent, exist_ok=True)
 
     compiler = Compiler()
@@ -104,24 +85,8 @@ if __name__ == "__main__":
             "service_account": args.service_account,
             "hf_model_repo": args.hf_model_repo,
             "hf_dataset_repo": args.hf_dataset_repo,
-            "hf_dataset_commit_sha": args.hf_dataset_commit_sha,
             "hf_secret_id": args.hf_secret_id,
             "github_repo": args.github_repo,
             "github_secret_id": args.github_secret_id,
-            "github_commit_sha": args.github_commit_sha,
         },
     )
-
-    registry_client = RegistryClient(
-        host=f"https://{args.region}-kfp.pkg.dev/{args.project_id}/{args.kfp_repo}"
-    )
-
-    template_name, version_name = registry_client.upload_pipeline(
-        file_name=str(pipeline_path),
-        tags=["latest"],
-    )
-
-    print("~" * 80)
-    print(f"Pipeline template: {template_name}")
-    print(f"Pipeline version: {version_name}")
-    print("~" * 80)

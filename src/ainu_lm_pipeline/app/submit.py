@@ -1,9 +1,12 @@
 import argparse
 import os
+from pathlib import Path
 
 from google.cloud import aiplatform
 from google.cloud.aiplatform import PipelineJob
-from google.cloud.aiplatform.pipeline_job_schedules import PipelineJobSchedule
+
+from .config import pipeline_path
+from .get_timestamp import get_timestamp
 
 
 def get_argument_parser() -> argparse.ArgumentParser:
@@ -16,39 +19,47 @@ def get_argument_parser() -> argparse.ArgumentParser:
         type=str,
         default=os.getenv("SERVICE_ACCOUNT"),
     )
-    parser.add_argument("--job-id", type=str, default="ainu-lm-weekly")
     parser.add_argument(
         "--template-path",
-        type=str,
-        default="https://us-central1-kfp.pkg.dev/neetlab/kfp/ainu-lm-pipeline/latest",
+        type=Path,
+        default=pipeline_path,
     )
+    parser.add_argument(
+        "--github-commit-sha",
+        type=str,
+        required=False,
+    )
+    parser.add_argument(
+        "--hf-dataset-commit-sha",
+        type=str,
+        required=False,
+    )
+
     return parser
 
 
 if __name__ == "__main__":
     args = get_argument_parser().parse_args()
 
-    display_name = "Ainu LM Pipeline Weekly Schedule"
     aiplatform.init(project=args.project_id, location=args.region)
 
+    if args.github_commit_sha is None:
+        print("warning: `github_commit_sha` is not provided")
+
+    if args.hf_dataset_commit_sha is None:
+        print("warning: `hf_dataset_commit_sha` is not provided")
+
     pipeline_job = PipelineJob(
-        display_name="Ainu LM Pipeline",
-        template_path=args.template_path,
-        job_id=args.job_id,
+        display_name="Ainu LM via Pull Request",
+        template_path=str(pipeline_path),
+        job_id=f"ainu-lm-pull-request-{get_timestamp()}",
         pipeline_root=args.pipeline_root,
+        parameter_values={
+            "github_commit_sha": args.github_commit_sha,
+            "hf_dataset_commit_sha": args.hf_dataset_commit_sha,
+        },
     )
 
-    existing_schedules = PipelineJobSchedule.list(
-        filter=f'display_name="{display_name}"',
-        order_by="create_time desc",
-    )
-
-    if len(existing_schedules) > 0:
-        for existing_schedule in existing_schedules:
-            existing_schedule.delete(sync=True)
-
-    pipeline_job.create_schedule(
-        cron="0 0 * * SUN",
-        display_name=display_name,
+    pipeline_job.submit(
         service_account=args.service_account,
     )

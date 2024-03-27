@@ -6,7 +6,7 @@ steps:
       - |
         pip install -q "."
 
-        python -m ainu_lm_pipeline.create \
+        python -m ainu_lm_pipeline.app.compile \
           --project-id=$PROJECT_ID \
           --region=$_REGION \
           --train-image-uri=$_TRAIN_IMAGE_URI \
@@ -17,14 +17,14 @@ steps:
           --hf-dataset-repo=$_HF_DATASET_REPO \
           --hf-secret-id=$_HF_SECRET_ID \
           --github-repo=$_GITHUB_REPO \
-          --github-secret-id=$_GITHUB_SECRET_ID \
-          --kfp-repo=$_KFP_REPO
+          --github-secret-id=$_GITHUB_SECRET_ID
 
-        python -m ainu_lm_pipeline.schedule \
+        python -m ainu_lm_pipeline.app.submit \
           --project-id=$PROJECT_ID \
           --region=$_REGION \
           --pipeline-root=$_PIPELINE_ROOT \
-          --service-account=$_SERVICE_ACCOUNT
+          --service-account=$_SERVICE_ACCOUNT \
+          --github-commit-sha=$COMMIT_SHA
 
 options:
   logging: CLOUD_LOGGING_ONLY
