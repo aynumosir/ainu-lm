@@ -1,3 +1,5 @@
+from typing import Optional
+
 from kfp import dsl
 
 
@@ -8,8 +10,12 @@ from kfp import dsl
 def get_revision_source(
     github_repo_id: str,
     github_token: str,
+    github_commit_sha: Optional[str],
 ) -> str:
     from github import Github
+
+    if github_commit_sha is not None:
+        return github_commit_sha
 
     github = Github(github_token)
     github_repo = github.get_repo(github_repo_id)

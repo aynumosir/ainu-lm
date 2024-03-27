@@ -48,6 +48,12 @@ def get_argument_parser() -> argparse.ArgumentParser:
         help="Hugging Face dataset repository. e.g. aynumosir/ainu-corpora",
     )
     parser.add_argument(
+        "--hf-dataset-commit-sha",
+        type=str,
+        required=False,
+        help="Hugging Face dataset commit SHA. e.g. 4c3c9b6c0a1f7e7a5e4a0e5e4a0e5e4a0e5e4a0e",
+    )
+    parser.add_argument(
         "--hf-secret-id",
         type=str,
         default=os.getenv("HF_SECRET_ID"),
@@ -64,6 +70,12 @@ def get_argument_parser() -> argparse.ArgumentParser:
         type=str,
         default=os.getenv("GITHUB_SECRET_ID"),
         help="Secret ID for GitHub token. e.g. aynumosir-github-token",
+    )
+    parser.add_argument(
+        "--github-commit-sha",
+        type=str,
+        required=False,
+        help="GitHub commit SHA. e.g. 4c3c9b6c0a1f7e7a5e4a0e5e4a0e5e4a0e5e4a0e",
     )
     parser.add_argument(
         "--kfp-repo",
@@ -92,9 +104,11 @@ if __name__ == "__main__":
             "service_account": args.service_account,
             "hf_model_repo": args.hf_model_repo,
             "hf_dataset_repo": args.hf_dataset_repo,
+            "hf_dataset_commit_sha": args.hf_dataset_commit_sha,
             "hf_secret_id": args.hf_secret_id,
             "github_repo": args.github_repo,
             "github_secret_id": args.github_secret_id,
+            "github_commit_sha": args.github_commit_sha,
         },
     )
 

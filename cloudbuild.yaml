@@ -9,7 +9,7 @@ steps:
         python -m ainu_lm_pipeline.create \
           --project-id=$PROJECT_ID \
           --region=$_REGION \
-          --train-image-url=$_TRAIN_IMAGE_URL \
+          --train-image-uri=$_TRAIN_IMAGE_URI \
           --pipeline-staging=$_PIPELINE_STAGING \
           --tensorboard-id=$_TENSORBOARD_ID \
           --service-account=$_SERVICE_ACCOUNT \
@@ -25,3 +25,6 @@ steps:
           --region=$_REGION \
           --pipeline-root=$_PIPELINE_ROOT \
           --service-account=$_SERVICE_ACCOUNT
+
+options:
+  logging: CLOUD_LOGGING_ONLY

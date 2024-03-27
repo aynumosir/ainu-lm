@@ -1,3 +1,5 @@
+from typing import Optional
+
 from google_cloud_pipeline_components.v1.custom_job import CustomTrainingJobOp
 from kfp import dsl
 
@@ -25,8 +27,10 @@ def ainu_lm_pipeline(
     pipeline_staging: str,
     hf_model_repo: str,
     hf_dataset_repo: str,
+    hf_dataset_commit_sha: Optional[str],
     hf_secret_id: str,
     github_repo: str,
+    github_commit_sha: Optional[str],
     github_secret_id: str,
 ) -> None:
     # ----------------------------------------------------
@@ -49,6 +53,7 @@ def ainu_lm_pipeline(
         get_revision_source(
             github_repo_id=github_repo,
             github_token=get_github_token_op.output,
+            github_commit_sha=github_commit_sha,
         )
         .set_display_name("GitHubのリビジョンの取得")
         .set_caching_options(False)
@@ -58,6 +63,7 @@ def ainu_lm_pipeline(
         get_revision_dataset(
             hf_repo_id=hf_dataset_repo,
             hf_token=get_hf_token_op.output,
+            hf_dataset_commit_sha=hf_dataset_commit_sha,
         )
         .set_display_name("Hugging Face Datasetsのリビジョンの取得")
         .set_caching_options(False)
