@@ -20,7 +20,7 @@ def ainu_lm_pipeline(
     project_id: str,
     location: str,
     service_account: str,
-    tensorboard_name: str,
+    tensorboard_id: str,
     train_image_uri: str,
     pipeline_staging: str,
     hf_model_repo: str,
@@ -131,7 +131,7 @@ def ainu_lm_pipeline(
         base_output_directory=get_base_output_directory_op.output,
         worker_pool_specs=get_lm_training_job_spec_op.output,
         location=location,
-        tensorboard=tensorboard_name,
+        tensorboard=f"projects/{project_id}/locations/{location}/tensorboards/{tensorboard_id}",
         service_account=service_account,
     ).set_display_name("LMの訓練")
 

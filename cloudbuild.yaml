@@ -1,0 +1,27 @@
+steps:
+  - name: python:3.11
+    entrypoint: bash
+    args:
+      - "-c"
+      - |
+        pip install -q "."
+
+        python -m ainu_lm_pipeline.create \
+          --project-id=$PROJECT_ID \
+          --region=$_REGION \
+          --train-image-url=$_TRAIN_IMAGE_URL \
+          --pipeline-staging=$_PIPELINE_STAGING \
+          --tensorboard-id=$_TENSORBOARD_ID \
+          --service-account=$_SERVICE_ACCOUNT \
+          --hf-model-repo=$_HF_MODEL_REPO \
+          --hf-dataset-repo=$_HF_DATASET_REPO \
+          --hf-secret-id=$_HF_SECRET_ID \
+          --github-repo=$_GITHUB_REPO \
+          --github-secret-id=$_GITHUB_SECRET_ID \
+          --kfp-repo=$_KFP_REPO
+
+        python -m ainu_lm_pipeline.schedule \
+          --project-id=$PROJECT_ID \
+          --region=$_REGION \
+          --pipeline-root=$_PIPELINE_ROOT \
+          --service-account=$_SERVICE_ACCOUNT
