@@ -9,6 +9,7 @@ from kfp import dsl
         "google-cloud-pipeline-components",
         "google-cloud-aiplatform",
         "pandas",
+        "pyarrow",
     ],
 )
 def get_lm_training_job_result(
