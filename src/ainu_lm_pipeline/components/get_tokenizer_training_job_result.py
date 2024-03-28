@@ -8,6 +8,7 @@ from kfp import dsl
     packages_to_install=[
         "google-cloud-pipeline-components",
         "google-cloud-aiplatform",
+        "pyarrow",
     ],
 )
 def get_tokenizer_training_job_result(

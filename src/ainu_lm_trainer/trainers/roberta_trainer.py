@@ -29,15 +29,7 @@ class RobertaTrainer:
         self.config = config
 
     def train(self) -> None:
-        # FacebookAI/roberta-base よりも hidden_layers が少し小さい。エスペラントの記事を参考にした。
-        # https://colab.research.google.com/github/huggingface/blog/blob/main/notebooks/01_how_to_train.ipynb
-        roberta_config = RobertaConfig(
-            vocab_size=52_000,
-            max_position_embeddings=514,
-            num_attention_heads=12,
-            num_hidden_layers=6,
-            type_vocab_size=1,
-        )
+        roberta_config = RobertaConfig.from_pretrained("FacebookAI/roberta-base")
 
         tokenizer = RobertaTokenizerFast.from_pretrained(
             str(self.config.tokenizer_name_or_dir)

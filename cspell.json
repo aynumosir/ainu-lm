@@ -23,6 +23,7 @@
     "logdir",
     "neetlab",
     "protobuf",
+    "pyarrow",
     "pygithub",
     "secretmanager",
     "tensorboard",
