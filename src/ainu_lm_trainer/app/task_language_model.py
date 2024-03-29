@@ -16,7 +16,7 @@ def language_model(
     hypertune_enabled: Optional[bool] = None,
 ) -> None:
     dataset = load_dataset(
-        "aynumosir/ainu-corpora", split="data", revision=dataset_revision
+        "aynumosir/ainu-corpora", split="train", revision=dataset_revision
     )
     dataset = dataset.map(lambda example: {"text": example["sentence"]})
 
