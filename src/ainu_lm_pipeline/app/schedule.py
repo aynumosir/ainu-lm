@@ -51,7 +51,7 @@ if __name__ == "__main__":
             existing_schedule.delete(sync=True)
 
     pipeline_job.create_schedule(
-        cron="0 0 * * SUN",
+        cron="TZ=Asia/Tokyo 0 0 * * SUN",
         display_name=display_name,
         service_account=args.service_account,
     )
