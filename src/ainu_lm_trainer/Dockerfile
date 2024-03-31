@@ -16,6 +16,4 @@ RUN pip install -q --no-cache-dir .
 COPY . ./
 RUN pip install -q --no-cache-dir --no-deps .
 
-RUN python -m ainu_lm_trainer.app.main cache
-
 ENTRYPOINT ["python", "-m", "ainu_lm_trainer.app.main"]

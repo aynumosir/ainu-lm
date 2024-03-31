@@ -34,8 +34,6 @@ def ainu_lm_pipeline(
     github_commit_sha: Optional[str] = None,
     push_to_hub: Optional[bool] = False,
 ) -> None:
-    training_suffix = f"{github_commit_sha[:7]}-{hf_dataset_commit_sha[:7]}"
-
     # ----------------------------------------------------
     # トークンの取得
     # ----------------------------------------------------
@@ -70,6 +68,10 @@ def ainu_lm_pipeline(
         )
         .set_display_name("Hugging Face Datasetsのリビジョンの取得")
         .set_caching_options(False)
+    )
+
+    training_job_suffix = (
+        f"{get_revision_source_op.output}-{get_revision_dataset_op.output}"
     )
 
     # ----------------------------------------------------
@@ -108,7 +110,7 @@ def ainu_lm_pipeline(
     # トークナイザの訓練
     # ----------------------------------------------------
     tokenizer_training_job_op = CustomTrainingJobOp(
-        display_name=f"ainu-lm-tokenizer-{training_suffix}",
+        display_name=f"ainu-lm-tokenizer-{training_job_suffix}",
         base_output_directory=get_base_output_directory_op.output,
         worker_pool_specs=get_tokenizer_training_job_spec_op.output,
     ).set_display_name("トークナイザの訓練")
@@ -136,7 +138,7 @@ def ainu_lm_pipeline(
     # ----------------------------------------------------
     lm_training_job_op = CustomTrainingJobOp(
         project=project_id,
-        display_name=f"ainu-lm-{training_suffix}",
+        display_name=f"ainu-lm-{training_job_suffix}",
         base_output_directory=get_base_output_directory_op.output,
         worker_pool_specs=get_lm_training_job_spec_op.output,
         location=location,

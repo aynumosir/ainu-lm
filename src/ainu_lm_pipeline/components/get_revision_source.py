@@ -14,7 +14,7 @@ def get_revision_source(
 ) -> str:
     from github import Github
 
-    if github_commit_sha is not None:
+    if github_commit_sha is not None and github_commit_sha != "":
         return github_commit_sha
 
     github = Github(github_token)

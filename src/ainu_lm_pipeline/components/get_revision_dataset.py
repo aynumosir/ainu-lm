@@ -14,7 +14,7 @@ def get_revision_dataset(
 ) -> str:
     from huggingface_hub import HfApi
 
-    if hf_dataset_commit_sha is not None:
+    if hf_dataset_commit_sha is not None and hf_dataset_commit_sha != "":
         return hf_dataset_commit_sha
 
     hf_api = HfApi(token=hf_token)
