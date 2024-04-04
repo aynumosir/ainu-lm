@@ -43,8 +43,8 @@ class RobertaTrainer:
             output_dir=str(self.config.checkpoint_dir),
             overwrite_output_dir=True,
             num_train_epochs=self.config.num_train_epochs,
-            per_device_train_batch_size=32,
-            per_device_eval_batch_size=32,
+            per_device_train_batch_size=64,
+            per_device_eval_batch_size=64,
             logging_dir=str(self.config.logging_dir),
             report_to=["tensorboard"],
         )
