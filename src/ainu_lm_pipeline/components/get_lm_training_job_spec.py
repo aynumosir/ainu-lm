@@ -20,9 +20,9 @@ def get_lm_training_job_spec(
             },
             # https://cloud.google.com/vertex-ai/docs/training/configure-compute?hl=ja#specifying_gpus
             "machine_spec": {
-                "machine_type": "a2-highgpu-1g",
-                "accelerator_type": "NVIDIA_TESLA_A100",
-                "accelerator_count": 1,
+                "machine_type": "n1-standard-16",
+                "accelerator_type": "NVIDIA_TESLA_V100",
+                "accelerator_count": 2,
             },
             "replica_count": "1",
             "disk_spec": {
