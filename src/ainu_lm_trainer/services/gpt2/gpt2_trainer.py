@@ -1,3 +1,6 @@
+from dataclasses import dataclass
+from pathlib import Path
+
 import torch
 from transformers import (
     DataCollatorForLanguageModeling,
@@ -8,7 +11,17 @@ from transformers import (
     TrainingArguments,
 )
 
-from .gpt2_trainer_params import GPT2TrainerParams
+from ...models import TrainingDataset, TrainingDirs
+
+
+@dataclass
+class GPT2TrainerParams:
+    dirs: TrainingDirs
+    dataset: TrainingDataset
+    tokenizer: Path | str
+    num_train_epochs: int
+    per_device_batch_size: int = 32
+    context_length: int = 128
 
 
 class GPT2Trainer:
