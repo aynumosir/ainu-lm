@@ -2,10 +2,10 @@ from pathlib import Path
 
 from datasets import load_dataset
 
-from ..trainers import ByteLevelBPETokenizerTrainer
+from ..services import ByteLevelBPETokenizerTrainer
 
 
-def tokenizer(output_dir: Path, dataset_revision: str) -> None:
+def byte_level_bpe(output_dir: Path, dataset_revision: str) -> None:
     dataset = load_dataset(
         "aynumosir/ainu-corpora", split="train", revision=dataset_revision
     )

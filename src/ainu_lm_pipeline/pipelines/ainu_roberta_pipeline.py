@@ -7,18 +7,18 @@ from ..components import (
     build_trainer_image,
     get_base_output_directory,
     get_latest_secret_by_id,
-    get_lm_training_job_result,
-    get_lm_training_job_spec,
     get_revision_dataset,
     get_revision_source,
+    get_roberta_training_job_result,
+    get_roberta_training_job_spec,
     get_tokenizer_training_job_result,
     get_tokenizer_training_job_spec,
     push_to_huggingface_hub,
 )
 
 
-@dsl.pipeline(name="ainu-lm-pipeline", pipeline_root="ainu-lm")
-def ainu_lm_pipeline(
+@dsl.pipeline(name="ainu-roberta-pipeline", pipeline_root="ainu-lm")
+def ainu_roberta_pipeline(
     project_id: str,
     location: str,
     service_account: str,
@@ -123,36 +123,36 @@ def ainu_lm_pipeline(
     ).set_display_name("トークナイザの結果取得")
 
     # ----------------------------------------------------
-    # LM訓練ジョブの仕様を取得
+    # RoBERTa 訓練ジョブの仕様を取得
     # ----------------------------------------------------
-    get_lm_training_job_spec_op = get_lm_training_job_spec(
+    get_roberta_training_job_spec_op = get_roberta_training_job_spec(
         train_image_uri=train_image_uri,
         tokenizer_gcs_path=get_tokenizer_training_job_result_op.outputs[
             "model_artifacts"
         ],
         dataset_revision=get_revision_dataset_op.output,
-    ).set_display_name("LM訓練ジョブの仕様を取得")
+    ).set_display_name("RoBERTa訓練ジョブの仕様を取得")
 
     # ----------------------------------------------------
-    # LMの訓練
+    # RoBERTaの訓練
     # ----------------------------------------------------
     lm_training_job_op = CustomTrainingJobOp(
         project=project_id,
-        display_name=f"ainu-lm-{training_job_suffix}",
+        display_name=f"ainu-lm-roberta-{training_job_suffix}",
         base_output_directory=get_base_output_directory_op.output,
-        worker_pool_specs=get_lm_training_job_spec_op.output,
+        worker_pool_specs=get_roberta_training_job_spec_op.output,
         location=location,
         tensorboard=f"projects/{project_id}/locations/{location}/tensorboards/{tensorboard_id}",
         service_account=service_account,
-    ).set_display_name("LMの訓練")
+    ).set_display_name("RoBERTaの訓練")
 
     # ----------------------------------------------------
     # LMの結果取得
     # ----------------------------------------------------
-    get_lm_training_job_op = get_lm_training_job_result(
+    get_roberta_training_job_op = get_roberta_training_job_result(
         location=location,
         job_resource=lm_training_job_op.output,
-    ).set_display_name("LMの結果取得")
+    ).set_display_name("RoBERTaの結果取得")
 
     with dsl.If(push_to_hub == True, "公開する場合"):  # noqa: E712
         # ----------------------------------------------------
@@ -160,7 +160,7 @@ def ainu_lm_pipeline(
         # ----------------------------------------------------
         (
             push_to_huggingface_hub(
-                model_gcs_path=get_lm_training_job_op.outputs["model_artifacts"],
+                model_gcs_path=get_roberta_training_job_op.outputs["model_artifacts"],
                 commit_message=f"Update model for {get_revision_dataset_op.output}",
                 hf_repo=hf_model_repo,
                 hf_token=get_hf_token_op.output,

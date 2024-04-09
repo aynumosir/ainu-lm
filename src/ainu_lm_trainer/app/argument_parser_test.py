@@ -1,19 +1,18 @@
 from .argument_parser import get_argument_parser
 
 
-def test_parsing_tokenizer_training() -> None:
+def test_parsing_byte_level_bpe_training() -> None:
     parser = get_argument_parser()
-    args = parser.parse_args(["tokenizer", "--output-dir=gs://test/output_dir"])
-    assert args.task == "tokenizer"
+    args = parser.parse_args(["byte-level-bpe", "--output-dir=gs://test/output_dir"])
+    assert args.task == "byte-level-bpe"
     assert str(args.output_dir) == "/gcs/test/output_dir"
 
 
-def test_parsing_language_model_training() -> None:
+def test_parsing_roberta_training() -> None:
     parser = get_argument_parser()
     args = parser.parse_args(
         [
-            "language-model",
-            "--hp-tune=True",
+            "roberta",
             "--num-train-epochs=20",
             "--tokenizer-dir=gs://test/tokenizer",
             "--dataset-revision=v1",
@@ -22,8 +21,7 @@ def test_parsing_language_model_training() -> None:
             "--checkpoint-dir=gs://test/checkpoint_dir",
         ]
     )
-    assert args.task == "language-model"
-    assert args.hp_tune == "True"
+    assert args.task == "roberta"
     assert args.num_train_epochs == 20
     assert args.dataset_revision == "v1"
 
@@ -33,12 +31,11 @@ def test_parsing_language_model_training() -> None:
     assert str(args.checkpoint_dir) == "/gcs/test/checkpoint_dir"
 
 
-def test_parsing_language_model_with_local_disk() -> None:
+def test_parsing_roberta_with_local_disk() -> None:
     parser = get_argument_parser()
     args = parser.parse_args(
         [
-            "language-model",
-            "--hp-tune=True",
+            "roberta",
             "--num-train-epochs=20",
             "--tokenizer-dir=/model/tokenizer",
             "--dataset-revision=v1",
@@ -47,8 +44,7 @@ def test_parsing_language_model_with_local_disk() -> None:
             "--checkpoint-dir=/model/checkpoint_dir",
         ]
     )
-    assert args.task == "language-model"
-    assert args.hp_tune == "True"
+    assert args.task == "roberta"
     assert args.num_train_epochs == 20
     assert args.dataset_revision == "v1"
 

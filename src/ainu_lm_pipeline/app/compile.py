@@ -3,7 +3,7 @@ import os
 
 from kfp.compiler import Compiler
 
-from ..pipelines import ainu_lm_pipeline
+from ..pipelines import ainu_roberta_pipeline
 from .config import pipeline_path
 
 
@@ -74,7 +74,7 @@ if __name__ == "__main__":
 
     compiler = Compiler()
     compiler.compile(
-        pipeline_func=ainu_lm_pipeline,
+        pipeline_func=ainu_roberta_pipeline,
         package_path=str(pipeline_path),
         pipeline_parameters={
             "project_id": args.project_id,
