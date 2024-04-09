@@ -2,8 +2,8 @@ from pathlib import Path
 
 from datasets import Dataset
 
-from .roberta_trainer import RobertaTrainer
-from .roberta_trainer_config import RobertaTrainerConfig
+from ...models import TrainingDatasetValue, TrainingDirs
+from .roberta_trainer import RobertaTrainer, RobertaTrainerParams
 
 
 def test_compact_dataset() -> None:
@@ -33,16 +33,17 @@ def test_compact_dataset() -> None:
     checkpoint_dir = Path("/tmp/ainu_lm_trainer_test_checkpoint")
     checkpoint_dir.mkdir(parents=True, exist_ok=True)
 
-    trainer = RobertaTrainer(
-        dataset=dataset,
-        config=RobertaTrainerConfig(
-            num_train_epochs=1,
-            tokenizer_name_or_dir="roberta-base",
-            model_dir=model_dir,
-            logging_dir=logging_dir,
-            checkpoint_dir=checkpoint_dir,
+    params = RobertaTrainerParams(
+        num_train_epochs=1,
+        tokenizer="roberta-base",
+        dataset=TrainingDatasetValue(dataset=dataset),
+        dirs=TrainingDirs(
+            model=model_dir,
+            logging=logging_dir,
+            checkpoint=checkpoint_dir,
         ),
     )
+    trainer = RobertaTrainer(params)
 
     trainer.train()
 

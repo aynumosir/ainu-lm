@@ -2,7 +2,7 @@ from kfp import dsl
 
 
 @dsl.component(base_image="python:3.10")
-def get_lm_training_job_spec(
+def get_roberta_training_job_spec(
     train_image_uri: str,
     tokenizer_gcs_path: str,
     dataset_revision: str,
@@ -12,7 +12,7 @@ def get_lm_training_job_spec(
             "container_spec": {
                 "image_uri": train_image_uri,
                 "args": [
-                    "language-model",
+                    "roberta",
                     "--num-train-epochs=45",
                     f"--tokenizer-dir={tokenizer_gcs_path}",
                     f"--dataset-revision={dataset_revision}",

@@ -10,7 +10,7 @@ def get_tokenizer_training_job_spec(
         {
             "container_spec": {
                 "image_uri": train_image_uri,
-                "args": ["tokenizer", f"--dataset-revision={dataset_revision}"],
+                "args": ["byte-level-bpe", f"--dataset-revision={dataset_revision}"],
             },
             "machine_spec": {
                 "machine_type": "n1-standard-4",

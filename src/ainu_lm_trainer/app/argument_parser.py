@@ -11,64 +11,91 @@ def get_argument_parser() -> argparse.ArgumentParser:
     """
     Subparser for the tokenizer
     """
-    tokenizer_parser = subparsers.add_parser("tokenizer")
-    tokenizer_parser.add_argument(
+    byte_level_bpe = subparsers.add_parser("byte-level-bpe")
+    byte_level_bpe.add_argument(
         "--output-dir",
         type=get_path_from_uri,
         help="Job directory. Use gs:/ to save to Google Cloud Storage",
         default=os.environ.get("AIP_MODEL_DIR"),
     )
-    tokenizer_parser.add_argument(
+    byte_level_bpe.add_argument(
         "--dataset-revision",
         type=str,
         help="Dataset version e.g. v1",
     )
 
     """
-    Subparser for the language model
+    Subparser for the RoBERTa
     """
-    language_model_parser = subparsers.add_parser("language-model")
-    language_model_parser.add_argument(
-        "--hp-tune",
-        default=False,
-        help="Whether to use hyperparameter tuning",
-    )
-    language_model_parser.add_argument(
+    roberta = subparsers.add_parser("roberta")
+    roberta.add_argument(
         "--num-train-epochs", type=int, help="Number of training epochs", default=10
     )
-    language_model_parser.add_argument(
+    roberta.add_argument(
         "--tokenizer-dir",
         type=get_path_from_uri,
         help="Tokenizer directory. Use gs:/ to load from Google Cloud Storage",
         required=True,
     )
-    language_model_parser.add_argument(
+    roberta.add_argument(
         "--model-dir",
         type=get_path_from_uri,
         help="Job directory. Use gs:/ to save to Google Cloud Storage",
         default=os.environ.get("AIP_MODEL_DIR"),
     )
-    language_model_parser.add_argument(
+    roberta.add_argument(
         "--checkpoint-dir",
         type=get_path_from_uri,
         help="Checkpoint directory. Use gs:/ to save to Google Cloud Storage",
         default=os.environ.get("AIP_CHECKPOINT_DIR"),
     )
-    language_model_parser.add_argument(
+    roberta.add_argument(
         "--logging-dir",
         type=get_path_from_uri,
         help="Logging directory. Use gs:/ to save to Google Cloud Storage",
         default=os.environ.get("AIP_TENSORBOARD_LOG_DIR"),
     )
-    language_model_parser.add_argument(
+    roberta.add_argument(
         "--dataset-revision",
         type=str,
         help="Dataset version e.g. v1",
     )
 
     """
-    Subparser for the cache
+    Subparser for the GPT2
     """
-    subparsers.add_parser("cache")
+    gpt2 = subparsers.add_parser("gpt2")
+    gpt2.add_argument(
+        "--num-train-epochs", type=int, help="Number of training epochs", default=10
+    )
+    gpt2.add_argument(
+        "--tokenizer-dir",
+        type=get_path_from_uri,
+        help="Tokenizer directory. Use gs:/ to load from Google Cloud Storage",
+        required=True,
+    )
+    gpt2.add_argument(
+        "--model-dir",
+        type=get_path_from_uri,
+        help="Job directory. Use gs:/ to save to Google Cloud Storage",
+        default=os.environ.get("AIP_MODEL_DIR"),
+    )
+    gpt2.add_argument(
+        "--checkpoint-dir",
+        type=get_path_from_uri,
+        help="Checkpoint directory. Use gs:/ to save to Google Cloud Storage",
+        default=os.environ.get("AIP_CHECKPOINT_DIR"),
+    )
+    gpt2.add_argument(
+        "--logging-dir",
+        type=get_path_from_uri,
+        help="Logging directory. Use gs:/ to save to Google Cloud Storage",
+        default=os.environ.get("AIP_TENSORBOARD_LOG_DIR"),
+    )
+    gpt2.add_argument(
+        "--dataset-revision",
+        type=str,
+        help="Dataset version e.g. v1",
+    )
 
     return parser
