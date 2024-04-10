@@ -2,7 +2,7 @@ from kfp import dsl
 
 
 @dsl.component(base_image="python:3.10")
-def get_tokenizer_training_job_spec(
+def get_byte_level_bpe_training_job_spec(
     train_image_uri: str,
     dataset_revision: str,
 ) -> list:

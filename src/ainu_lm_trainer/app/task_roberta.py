@@ -13,6 +13,7 @@ def roberta(
     logging_dir: Path,
     tokenizer_dir: Path,
     num_train_epochs: int,
+    per_device_batch_size: int,
     dataset_revision: str,
 ) -> None:
     params = RobertaTrainerParams(
@@ -29,6 +30,7 @@ def roberta(
         ),
         tokenizer=tokenizer_dir,
         num_train_epochs=num_train_epochs,
+        per_device_batch_size=per_device_batch_size,
     )
 
     trainer = RobertaTrainer(params)

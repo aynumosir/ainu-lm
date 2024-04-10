@@ -26,6 +26,7 @@ if __name__ == "__main__":
             logging_dir=args.logging_dir,
             tokenizer_dir=args.tokenizer_dir,
             num_train_epochs=args.num_train_epochs,
+            per_device_batch_size=args.per_device_batch_size,
             dataset_revision=args.dataset_revision,
         )
 
@@ -46,5 +47,6 @@ if __name__ == "__main__":
             logging_dir=args.logging_dir,
             tokenizer_dir=args.tokenizer_dir,
             num_train_epochs=args.num_train_epochs,
+            per_device_batch_size=args.per_device_batch_size,
             dataset_revision=args.dataset_revision,
         )

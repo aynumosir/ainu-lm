@@ -13,6 +13,7 @@ def t5(
     logging_dir: Path,
     tokenizer_dir: Path,
     num_train_epochs: int,
+    per_device_batch_size: int,
     dataset_revision: str,
 ) -> None:
     params = T5TrainerParams(
@@ -29,6 +30,7 @@ def t5(
         ),
         tokenizer=tokenizer_dir,
         num_train_epochs=num_train_epochs,
+        per_device_batch_size=per_device_batch_size,
     )
 
     trainer = T5Trainer(params)

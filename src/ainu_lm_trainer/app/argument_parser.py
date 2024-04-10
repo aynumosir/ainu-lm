@@ -76,6 +76,11 @@ def get_argument_parser() -> argparse.ArgumentParser:
         type=str,
         help="Dataset version e.g. v1",
     )
+    roberta.add_argument(
+        "--per-device-batch-size",
+        type=int,
+        help="Per device batch size",
+    )
 
     """
     Subparser for the GPT2
@@ -149,6 +154,11 @@ def get_argument_parser() -> argparse.ArgumentParser:
         "--dataset-revision",
         type=str,
         help="Dataset version e.g. v1",
+    )
+    t5.add_argument(
+        "--per-device-batch-size",
+        type=int,
+        help="Per device batch size",
     )
 
     return parser

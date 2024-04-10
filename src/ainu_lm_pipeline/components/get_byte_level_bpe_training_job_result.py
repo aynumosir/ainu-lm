@@ -11,7 +11,7 @@ from kfp import dsl
         "pyarrow",
     ],
 )
-def get_tokenizer_training_job_result(
+def get_byte_level_bpe_training_job_result(
     location: str,
     job_resource: str,
 ) -> NamedTuple(

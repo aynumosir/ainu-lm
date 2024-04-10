@@ -6,19 +6,19 @@ from kfp import dsl
 from ..components import (
     build_trainer_image,
     get_base_output_directory,
-    get_byte_level_bpe_training_job_result,
-    get_byte_level_bpe_training_job_spec,
-    get_gpt2_training_job_result,
-    get_gpt2_training_job_spec,
     get_latest_secret_by_id,
     get_revision_dataset,
     get_revision_source,
+    get_sentencepiece_training_job_result,
+    get_sentencepiece_training_job_spec,
+    get_t5_training_job_result,
+    get_t5_training_job_spec,
     push_to_huggingface_hub,
 )
 
 
-@dsl.pipeline(name="ainu-gpt2-pipeline", pipeline_root="ainu-lm")
-def ainu_gpt2_pipeline(
+@dsl.pipeline(name="ainu-t5-pipeline", pipeline_root="ainu-lm")
+def ainu_t5_pipeline(
     project_id: str,
     location: str,
     service_account: str,
@@ -97,8 +97,8 @@ def ainu_gpt2_pipeline(
     # ----------------------------------------------------
     # トークナイザの訓練ジョブの仕様を取得
     # ----------------------------------------------------
-    get_byte_level_bpe_training_job_spec_op = (
-        get_byte_level_bpe_training_job_spec(
+    get_sentencepiece_training_job_spec_op = (
+        get_sentencepiece_training_job_spec(
             train_image_uri=train_image_uri,
             dataset_revision=get_revision_dataset_op.output,
         )
@@ -109,50 +109,50 @@ def ainu_gpt2_pipeline(
     # ----------------------------------------------------
     # トークナイザの訓練
     # ----------------------------------------------------
-    byte_level_bpe_training_job_op = CustomTrainingJobOp(
-        display_name=f"ainu-lm-byte_level_bpe-{training_job_suffix}",
+    sentencepiece_training_job_op = CustomTrainingJobOp(
+        display_name=f"ainu-lm-sentencepiece-{training_job_suffix}",
         base_output_directory=get_base_output_directory_op.output,
-        worker_pool_specs=get_byte_level_bpe_training_job_spec_op.output,
+        worker_pool_specs=get_sentencepiece_training_job_spec_op.output,
     ).set_display_name("トークナイザの訓練")
 
     # ----------------------------------------------------
     # トークナイザの結果取得
     # ----------------------------------------------------
-    get_byte_level_bpe_training_job_result_op = get_byte_level_bpe_training_job_result(
-        location=location, job_resource=byte_level_bpe_training_job_op.output
+    get_sentencepiece_training_job_result_op = get_sentencepiece_training_job_result(
+        location=location, job_resource=sentencepiece_training_job_op.output
     ).set_display_name("トークナイザの結果取得")
 
     # ----------------------------------------------------
-    # GPT2訓練ジョブの仕様を取得
+    # T5 訓練ジョブの仕様を取得
     # ----------------------------------------------------
-    get_gpt2_training_job_spec_op = get_gpt2_training_job_spec(
+    get_t5_training_job_spec_op = get_t5_training_job_spec(
         train_image_uri=train_image_uri,
-        tokenizer_gcs_path=get_byte_level_bpe_training_job_result_op.outputs[
+        tokenizer_gcs_path=get_sentencepiece_training_job_result_op.outputs[
             "model_artifacts"
         ],
         dataset_revision=get_revision_dataset_op.output,
-    ).set_display_name("GPT2訓練ジョブの仕様を取得")
+    ).set_display_name("T5訓練ジョブの仕様を取得")
 
     # ----------------------------------------------------
-    # GPT2の訓練
+    # T5の訓練
     # ----------------------------------------------------
     lm_training_job_op = CustomTrainingJobOp(
         project=project_id,
-        display_name=f"ainu-lm-gpt2-{training_job_suffix}",
+        display_name=f"ainu-lm-t5-{training_job_suffix}",
         base_output_directory=get_base_output_directory_op.output,
-        worker_pool_specs=get_gpt2_training_job_spec_op.output,
+        worker_pool_specs=get_t5_training_job_spec_op.output,
         location=location,
         tensorboard=f"projects/{project_id}/locations/{location}/tensorboards/{tensorboard_id}",
         service_account=service_account,
-    ).set_display_name("GPT2の訓練")
+    ).set_display_name("T5の訓練")
 
     # ----------------------------------------------------
     # LMの結果取得
     # ----------------------------------------------------
-    get_gpt2_training_job_op = get_gpt2_training_job_result(
+    get_t5_training_job_op = get_t5_training_job_result(
         location=location,
         job_resource=lm_training_job_op.output,
-    ).set_display_name("GPT2の結果取得")
+    ).set_display_name("T5の結果取得")
 
     with dsl.If(push_to_hub == True, "公開する場合"):  # noqa: E712
         # ----------------------------------------------------
@@ -160,7 +160,7 @@ def ainu_gpt2_pipeline(
         # ----------------------------------------------------
         (
             push_to_huggingface_hub(
-                model_gcs_path=get_gpt2_training_job_op.outputs["model_artifacts"],
+                model_gcs_path=get_t5_training_job_op.outputs["model_artifacts"],
                 commit_message=f"Update model for {get_revision_dataset_op.output}",
                 hf_repo=hf_model_repo,
                 hf_token=get_hf_token_op.output,
