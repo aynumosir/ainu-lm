@@ -79,6 +79,7 @@ def get_argument_parser() -> argparse.ArgumentParser:
     roberta.add_argument(
         "--per-device-batch-size",
         type=int,
+        default=8,
         help="Per device batch size",
     )
 
@@ -158,6 +159,7 @@ def get_argument_parser() -> argparse.ArgumentParser:
     t5.add_argument(
         "--per-device-batch-size",
         type=int,
+        default=8,
         help="Per device batch size",
     )
 
