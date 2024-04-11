@@ -37,13 +37,11 @@ class SentencepieceTokenizerTrainer:
             iterator=self.batch_iterator(),
             # vocab_size=52_000,
             # min_frequency=2,
-            # special_tokens=[
-            #     "<s>",
-            #     "<pad>",
-            #     "</s>",
-            #     "<unk>",
-            #     "<mask>",
-            # ],
+            special_tokens=[
+                "<pad>",
+                "</s>",
+                "<unk>",
+            ],
         )
 
         self.demo(tokenizer)
