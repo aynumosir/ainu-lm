@@ -14,7 +14,7 @@ def get_t5_training_job_spec(
                 "args": [
                     "t5",
                     "--num-train-epochs=10",
-                    "--per-device-batch-size=64",
+                    "--per-device-batch-size=128",
                     f"--tokenizer-dir={tokenizer_gcs_path}",
                     f"--dataset-revision={dataset_revision}",
                 ],

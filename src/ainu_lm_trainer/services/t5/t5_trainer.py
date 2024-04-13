@@ -60,7 +60,7 @@ class T5Trainer:
             per_device_train_batch_size=self.params.per_device_batch_size,
             per_device_eval_batch_size=self.params.per_device_batch_size,
             # https://huggingface.co/docs/transformers/v4.39.3/en/model_doc/t5#usage-tips:~:text=T5%20models%20need%20a%20slightly%20higher%20learning%20rate
-            learning_rate=1e-4,
+            learning_rate=3e-4,
             logging_dir=str(self.params.dirs.logging),
             report_to=["tensorboard"],
         )
