@@ -21,7 +21,7 @@ def get_argument_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--template-path",
         type=str,
-        default="https://us-central1-kfp.pkg.dev/neetlab/kfp/ainu-lm-pipeline/latest",
+        default="https://us-central1-kfp.pkg.dev/neetlab/kfp/ainu-roberta-pipeline/latest",
     )
     return parser
 
@@ -33,7 +33,7 @@ if __name__ == "__main__":
     pipeline_job = PipelineJob(
         display_name="Ainu LM Pipeline",
         template_path=args.template_path,
-        job_id=f"ainu-lm-weekly-{get_timestamp()}",
+        job_id=f"ainu-roberta-weekly-{get_timestamp()}",
         pipeline_root=args.pipeline_root,
         parameter_values={
             "push_to_hub": True,

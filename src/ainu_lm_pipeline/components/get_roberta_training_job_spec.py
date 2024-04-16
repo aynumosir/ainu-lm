@@ -14,15 +14,16 @@ def get_roberta_training_job_spec(
                 "args": [
                     "roberta",
                     "--num-train-epochs=45",
+                    "--per-device-batch-size=128",
                     f"--tokenizer-dir={tokenizer_gcs_path}",
                     f"--dataset-revision={dataset_revision}",
                 ],
             },
             # https://cloud.google.com/vertex-ai/docs/training/configure-compute?hl=ja#specifying_gpus
             "machine_spec": {
-                "machine_type": "n1-standard-16",
-                "accelerator_type": "NVIDIA_TESLA_V100",
-                "accelerator_count": 2,
+                "machine_type": "a2-highgpu-1g",
+                "accelerator_type": "NVIDIA_TESLA_A100",
+                "accelerator_count": 1,
             },
             "replica_count": "1",
             "disk_spec": {
