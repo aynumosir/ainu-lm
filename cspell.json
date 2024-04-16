@@ -2,9 +2,7 @@
   "version": "0.2",
   "ignorePaths": [],
   "dictionaryDefinitions": [],
-  "dictionaries": [
-    "python"
-  ],
+  "dictionaries": ["python"],
   "words": [
     "aiplatform",
     "aynumosir",
@@ -21,6 +19,8 @@
     "isna",
     "kaniko",
     "logdir",
+    "unigram",
+    "sentencepiece",
     "neetlab",
     "protobuf",
     "pyarrow",

@@ -3,19 +3,19 @@ from pathlib import Path
 
 import torch
 from transformers import (
-    DataCollatorForLanguageModeling,
-    RobertaConfig,
-    RobertaForMaskedLM,
-    RobertaTokenizerFast,
+    T5Config,
+    T5ForConditionalGeneration,
+    T5TokenizerFast,
     Trainer,
     TrainingArguments,
 )
 
 from ...models import TrainingDataset, TrainingDirs
+from .t5_data_collator import DataCollatorForT5
 
 
 @dataclass
-class RobertaTrainerParams:
+class T5TrainerParams:
     dirs: TrainingDirs
     dataset: TrainingDataset
     tokenizer: Path | str
@@ -24,23 +24,21 @@ class RobertaTrainerParams:
     context_length: int = 128
 
 
-class RobertaTrainer:
-    params: RobertaTrainerParams
+class T5Trainer:
+    params: T5TrainerParams
 
-    def __init__(self, params: RobertaTrainerParams) -> None:
+    def __init__(self, params: T5TrainerParams) -> None:
         self.params = params
 
     def train(self) -> None:
-        tokenizer = RobertaTokenizerFast.from_pretrained(str(self.params.tokenizer))
+        tokenizer = T5TokenizerFast.from_pretrained(str(self.params.tokenizer))
 
-        config = RobertaConfig.from_pretrained("FacebookAI/roberta-base")
+        config = T5Config.from_pretrained("google-t5/t5-base")
 
-        model = RobertaForMaskedLM(config)
+        model = T5ForConditionalGeneration(config)
         model = model.to("cuda") if torch.cuda.is_available() else model
 
-        data_collator = DataCollatorForLanguageModeling(
-            tokenizer=tokenizer, mlm=True, mlm_probability=0.15
-        )
+        data_collator = DataCollatorForT5(tokenizer=tokenizer)
 
         dataset = self.params.dataset.get_dataset()
         dataset = dataset.map(
@@ -61,6 +59,8 @@ class RobertaTrainer:
             num_train_epochs=self.params.num_train_epochs,
             per_device_train_batch_size=self.params.per_device_batch_size,
             per_device_eval_batch_size=self.params.per_device_batch_size,
+            # https://huggingface.co/docs/transformers/v4.39.3/en/model_doc/t5#usage-tips:~:text=T5%20models%20need%20a%20slightly%20higher%20learning%20rate
+            learning_rate=3e-4,
             logging_dir=str(self.params.dirs.logging),
             report_to=["tensorboard"],
         )

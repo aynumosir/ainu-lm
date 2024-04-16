@@ -6,13 +6,13 @@ from kfp import dsl
 from ..components import (
     build_trainer_image,
     get_base_output_directory,
+    get_byte_level_bpe_training_job_result,
+    get_byte_level_bpe_training_job_spec,
     get_latest_secret_by_id,
     get_revision_dataset,
     get_revision_source,
     get_roberta_training_job_result,
     get_roberta_training_job_spec,
-    get_tokenizer_training_job_result,
-    get_tokenizer_training_job_spec,
     push_to_huggingface_hub,
 )
 
@@ -97,8 +97,8 @@ def ainu_roberta_pipeline(
     # ----------------------------------------------------
     # トークナイザの訓練ジョブの仕様を取得
     # ----------------------------------------------------
-    get_tokenizer_training_job_spec_op = (
-        get_tokenizer_training_job_spec(
+    get_byte_level_bpe_training_job_spec_op = (
+        get_byte_level_bpe_training_job_spec(
             train_image_uri=train_image_uri,
             dataset_revision=get_revision_dataset_op.output,
         )
@@ -109,17 +109,17 @@ def ainu_roberta_pipeline(
     # ----------------------------------------------------
     # トークナイザの訓練
     # ----------------------------------------------------
-    tokenizer_training_job_op = CustomTrainingJobOp(
-        display_name=f"ainu-lm-tokenizer-{training_job_suffix}",
+    byte_level_bpe_training_job_op = CustomTrainingJobOp(
+        display_name=f"ainu-lm-byte_level_bpe-{training_job_suffix}",
         base_output_directory=get_base_output_directory_op.output,
-        worker_pool_specs=get_tokenizer_training_job_spec_op.output,
+        worker_pool_specs=get_byte_level_bpe_training_job_spec_op.output,
     ).set_display_name("トークナイザの訓練")
 
     # ----------------------------------------------------
     # トークナイザの結果取得
     # ----------------------------------------------------
-    get_tokenizer_training_job_result_op = get_tokenizer_training_job_result(
-        location=location, job_resource=tokenizer_training_job_op.output
+    get_byte_level_bpe_training_job_result_op = get_byte_level_bpe_training_job_result(
+        location=location, job_resource=byte_level_bpe_training_job_op.output
     ).set_display_name("トークナイザの結果取得")
 
     # ----------------------------------------------------
@@ -127,7 +127,7 @@ def ainu_roberta_pipeline(
     # ----------------------------------------------------
     get_roberta_training_job_spec_op = get_roberta_training_job_spec(
         train_image_uri=train_image_uri,
-        tokenizer_gcs_path=get_tokenizer_training_job_result_op.outputs[
+        tokenizer_gcs_path=get_byte_level_bpe_training_job_result_op.outputs[
             "model_artifacts"
         ],
         dataset_revision=get_revision_dataset_op.output,

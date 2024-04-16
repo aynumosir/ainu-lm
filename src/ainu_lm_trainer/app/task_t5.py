@@ -2,12 +2,12 @@ from pathlib import Path
 
 from ..models import TrainingDatasetSource, TrainingDirs
 from ..services import (
-    RobertaTrainer,
-    RobertaTrainerParams,
+    T5Trainer,
+    T5TrainerParams,
 )
 
 
-def roberta(
+def t5(
     model_dir: Path,
     checkpoint_dir: Path,
     logging_dir: Path,
@@ -16,7 +16,7 @@ def roberta(
     per_device_batch_size: int,
     dataset_revision: str,
 ) -> None:
-    params = RobertaTrainerParams(
+    params = T5TrainerParams(
         dirs=TrainingDirs(
             model=model_dir,
             checkpoint=checkpoint_dir,
@@ -33,5 +33,5 @@ def roberta(
         per_device_batch_size=per_device_batch_size,
     )
 
-    trainer = RobertaTrainer(params)
+    trainer = T5Trainer(params)
     trainer.train()
