@@ -13,7 +13,7 @@ def get_t5_training_job_spec(
                 "image_uri": train_image_uri,
                 "args": [
                     "t5",
-                    "--num-train-epochs=10",
+                    "--num-train-epochs=1",
                     "--per-device-batch-size=128",
                     f"--tokenizer-dir={tokenizer_gcs_path}",
                     f"--dataset-revision={dataset_revision}",
