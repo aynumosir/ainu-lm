@@ -162,4 +162,4 @@ cython_debug/
 /models
 /pipelines
 /logs
-/None
+/checkpoints

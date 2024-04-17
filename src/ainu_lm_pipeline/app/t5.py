@@ -21,7 +21,7 @@ if __name__ == "__main__":
             "hf_secret_id": "aynumosir-hf-token",
             "github_repo": "aynumosir/ainu-lm",
             "github_secret_id": "aynumosir-github-token",
-            # "github_commit_sha": "f3fb92820915b8c2163e76e81934142e03efc744",
+            "github_commit_sha": "ce3c49baf98137467ec91fafb58bf62d9961da55",
             "push_to_hub": True,
         },
     )

@@ -1,18 +1,19 @@
-import sys
+from transformers import T5ForConditionalGeneration, T5TokenizerFast
 
-from transformers import pipeline
+MODEL_NAME = "aynumosir/t5-base-ainu-gce"
 
-generate = pipeline("text-generation", model="./models/gpt2")
+tokenizer = T5TokenizerFast.from_pretrained("./models/sentencepiece")
+model = T5ForConditionalGeneration.from_pretrained("./checkpoints/checkpoint-3500/")
 
-result = generate(
-    sys.argv[1],
-    max_length=50,
-    truncation=True,
-    pad_token_id=25493,
-    temperature=0.1,
-    top_k=50,
-    top_p=0.95,
-    num_return_sequences=1,
+TASK_PREFIX = "pirkare: "
+SENTENCE = "oya mosir un itak a=epakasnu hu etoko ta, Esuperanto eraman yak pirka sekor ye utar ka oka."
+
+input_ids = tokenizer(TASK_PREFIX + SENTENCE, return_tensors="pt")["input_ids"]
+outputs = model.generate(input_ids)
+
+
+print(
+    tokenizer.decode(
+        outputs[0], skip_special_tokens=True, clean_up_tokenization_spaces=True
+    ),
 )
-
-print(result[0]["generated_text"])

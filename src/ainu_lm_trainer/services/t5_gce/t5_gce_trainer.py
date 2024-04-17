@@ -1,15 +1,20 @@
 from dataclasses import dataclass
 
+import evaluate
+import numpy as np
 import torch
 from transformers import (
     DataCollatorForSeq2Seq,
     Seq2SeqTrainer,
     Seq2SeqTrainingArguments,
+    T5Config,
     T5ForConditionalGeneration,
     T5TokenizerFast,
 )
 
 from ...models import TrainingDataset, TrainingDirs
+
+metric = evaluate.load("sacrebleu")
 
 
 @dataclass
@@ -21,7 +26,7 @@ class T5GCETrainerParams:
     context_length: int = 128
 
 
-TASK_PREFIX = "pirkare wa en=kore: "
+TASK_PREFIX = "pirkare: "
 
 
 class T5GCETrainer:
@@ -31,23 +36,11 @@ class T5GCETrainer:
         self.params = params
 
     def train(self) -> None:
-        tokenizer = T5TokenizerFast.from_pretrained("aynumosir/t5-base-ainu")
+        tokenizer = T5TokenizerFast.from_pretrained("./models/sentencepiece")
+        config = T5Config.from_pretrained("t5-small")
 
-        model = T5ForConditionalGeneration.from_pretrained("aynumosir/t5-base-ainu")
+        model = T5ForConditionalGeneration(config)
         model = model.to("cuda") if torch.cuda.is_available() else model
-
-        # Add `unk_id`
-        tokenizer.add_special_tokens(
-            {
-                "eos_token": "</s>",
-                "unk_token": "<unk>",
-                "pad_token": "<pad>",
-                "additional_special_tokens": [
-                    TASK_PREFIX,
-                ],
-            }
-        )
-
         dataset = self.params.dataset.get_dataset_raw()
 
         dataset = dataset.map(
@@ -71,14 +64,34 @@ class T5GCETrainer:
         dataset_dict = dataset.train_test_split(test_size=0.1)
         data_collator = DataCollatorForSeq2Seq(tokenizer, model=model)
 
+        def compute_metrics(eval_preds):
+            preds, labels = eval_preds
+            if isinstance(preds, tuple):
+                preds = preds[0]
+
+            decoded_preds = tokenizer.batch_decode(preds, skip_special_tokens=True)
+
+            labels = np.where(labels != -100, labels, tokenizer.pad_token_id)
+            decoded_labels = tokenizer.batch_decode(labels, skip_special_tokens=True)
+
+            decoded_preds = [pred.strip() for pred in decoded_preds]
+            decoded_labels = [[label.strip()] for label in decoded_labels]
+
+            result = metric.compute(
+                predictions=decoded_preds, references=decoded_labels
+            )
+            return {"bleu": result["score"]}
+
+        # https://huggingface.co/learn/nlp-course/chapter7/4?fw=pt#fine-tuning-the-model
         training_args = Seq2SeqTrainingArguments(
             evaluation_strategy="epoch",
             output_dir=str(self.params.dirs.checkpoint),
             num_train_epochs=self.params.num_train_epochs,
             per_device_train_batch_size=self.params.per_device_batch_size,
             per_device_eval_batch_size=self.params.per_device_batch_size,
-            # https://huggingface.co/docs/transformers/v4.39.3/en/model_doc/t5#usage-tips:~:text=T5%20models%20need%20a%20slightly%20higher%20learning%20rate
-            learning_rate=3e-4,
+            learning_rate=2e-5,
+            weight_decay=0.01,
+            predict_with_generate=True,
             logging_dir=str(self.params.dirs.logging),
             report_to=["tensorboard"],
         )
@@ -89,6 +102,7 @@ class T5GCETrainer:
             data_collator=data_collator,
             train_dataset=dataset_dict["train"],
             eval_dataset=dataset_dict["test"],
+            compute_metrics=compute_metrics,
         )
 
         trainer.train()
