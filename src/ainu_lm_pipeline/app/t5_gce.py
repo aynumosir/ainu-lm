@@ -17,11 +17,11 @@ if __name__ == "__main__":
             "tensorboard_id": "4565774810897973248",
             "service_account": "ainu-lm@neetlab.iam.gserviceaccount.com",
             "hf_model_repo": "aynumosir/t5-base-ainu-gce",
-            "hf_dataset_repo": "aynumosir/ainu-synthetic-learner-corpus",
+            "hf_dataset_repo": "aynumosir/ainu-corpora",
             "hf_secret_id": "aynumosir-hf-token",
             "github_repo": "aynumosir/ainu-lm",
             "github_secret_id": "aynumosir-github-token",
-            "github_commit_sha": "6be4d06fd012ecc709ac26ec54f119fee815ab03",
+            "github_commit_sha": "0deae3e1e7d88c97e76b31d14f302eac38187503",
             "push_to_hub": True,
         },
     )

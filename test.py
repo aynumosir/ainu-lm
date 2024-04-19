@@ -20,8 +20,4 @@ def correct(text: str) -> str:
     return corrected_sentence
 
 
-print(
-    correct(
-        "ne ne kusu nekon eci=iki yakka kamuy nukar akanak a=mutemus notakkaske eci=utari koyaytaraye eci=ki kun pe ne ruwe ne na” ari an pe hawki=an kane ohumse=an hine yay'okokokse'eciw=an kane ikirok pe a=kotetterke “hemka woy hu ohohoy”"
-    )
-)
+print(correct("Puraha or ta ci=ye itak."))

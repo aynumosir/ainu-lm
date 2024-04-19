@@ -24,7 +24,8 @@ class T5GCETrainerParams:
     context_length: int = 128
 
 
-TASK_PREFIX = "pirkare: "
+# TASK_PREFIX = "pirkare: "
+TASK_PREFIX = ""
 
 
 class T5GCETrainer:
