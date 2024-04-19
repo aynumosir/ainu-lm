@@ -4,7 +4,6 @@ from kfp import dsl
 @dsl.component(base_image="python:3.10")
 def get_t5_gce_training_job_spec(
     train_image_uri: str,
-    tokenizer_gcs_path: str,
     dataset_revision: str,
 ) -> list:
     worker_pool_specs = [
@@ -13,9 +12,8 @@ def get_t5_gce_training_job_spec(
                 "image_uri": train_image_uri,
                 "args": [
                     "t5-gce",
-                    "--num-train-epochs=5",
-                    "--per-device-batch-size=128",
-                    f"--tokenizer-dir={tokenizer_gcs_path}",
+                    "--num-train-epochs=10",
+                    "--per-device-batch-size=64",
                     f"--dataset-revision={dataset_revision}",
                 ],
             },

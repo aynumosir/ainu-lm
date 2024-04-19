@@ -171,12 +171,6 @@ def get_argument_parser() -> argparse.ArgumentParser:
         "--num-train-epochs", type=int, help="Number of training epochs", default=2
     )
     t5_gce.add_argument(
-        "--tokenizer-dir",
-        type=get_path_from_uri,
-        help="Tokenizer directory. Use gs:/ to load from Google Cloud Storage",
-        required=True,
-    )
-    t5_gce.add_argument(
         "--model-dir",
         type=get_path_from_uri,
         help="Job directory. Use gs:/ to save to Google Cloud Storage",
