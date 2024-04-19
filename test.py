@@ -1,19 +1,27 @@
 from transformers import T5ForConditionalGeneration, T5TokenizerFast
 
-MODEL_NAME = "aynumosir/t5-base-ainu-gce"
-
 tokenizer = T5TokenizerFast.from_pretrained("./models/sentencepiece")
-model = T5ForConditionalGeneration.from_pretrained("./checkpoints/checkpoint-3500/")
+model = T5ForConditionalGeneration.from_pretrained("./models/t5-gce/")
 
-TASK_PREFIX = "pirkare: "
-SENTENCE = "oya mosir un itak a=epakasnu hu etoko ta, Esuperanto eraman yak pirka sekor ye utar ka oka."
 
-input_ids = tokenizer(TASK_PREFIX + SENTENCE, return_tensors="pt")["input_ids"]
-outputs = model.generate(input_ids)
+def correct(text: str) -> str:
+    input_text = f"pirkare: {text}"
+    inputs = tokenizer.encode(
+        input_text,
+        return_tensors="pt",
+        max_length=128,
+        padding="max_length",
+        truncation=True,
+    )
+    corrected_ids = model.generate(
+        inputs, max_length=128, num_beams=5, early_stopping=True
+    )
+    corrected_sentence = tokenizer.decode(corrected_ids[0], skip_special_tokens=True)
+    return corrected_sentence
 
 
 print(
-    tokenizer.decode(
-        outputs[0], skip_special_tokens=True, clean_up_tokenization_spaces=True
-    ),
+    correct(
+        "ne ne kusu nekon eci=iki yakka kamuy nukar akanak a=mutemus notakkaske eci=utari koyaytaraye eci=ki kun pe ne ruwe ne na” ari an pe hawki=an kane ohumse=an hine yay'okokokse'eciw=an kane ikirok pe a=kotetterke “hemka woy hu ohohoy”"
+    )
 )

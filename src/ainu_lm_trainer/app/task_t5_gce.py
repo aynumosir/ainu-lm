@@ -11,11 +11,13 @@ def t5_gce(
     model_dir: Path,
     checkpoint_dir: Path,
     logging_dir: Path,
+    tokenizer_dir: Path,
     num_train_epochs: int,
     per_device_batch_size: int,
     dataset_revision: str,
 ) -> None:
     params = T5GCETrainerParams(
+        tokenizer=tokenizer_dir,
         dirs=TrainingDirs(
             model=model_dir,
             checkpoint=checkpoint_dir,
@@ -24,7 +26,7 @@ def t5_gce(
         dataset=TrainingDatasetSource(
             name="aynumosir/ainu-synthetic-learner-corpus",
             split="data",
-            revision=dataset_revision,
+            # revision=dataset_revision,
             column_name="sentence",
         ),
         num_train_epochs=num_train_epochs,

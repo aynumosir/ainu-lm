@@ -1,7 +1,6 @@
 from dataclasses import dataclass
+from pathlib import Path
 
-import evaluate
-import numpy as np
 import torch
 from transformers import (
     DataCollatorForSeq2Seq,
@@ -14,13 +13,12 @@ from transformers import (
 
 from ...models import TrainingDataset, TrainingDirs
 
-metric = evaluate.load("sacrebleu")
-
 
 @dataclass
 class T5GCETrainerParams:
     dirs: TrainingDirs
     dataset: TrainingDataset
+    tokenizer: Path | str
     num_train_epochs: int
     per_device_batch_size: int = 32
     context_length: int = 128
@@ -35,52 +33,41 @@ class T5GCETrainer:
     def __init__(self, params: T5GCETrainerParams) -> None:
         self.params = params
 
+    # https://huggingface.co/docs/transformers/en/tasks/summarization#preprocess
+    def preprocess_function(self, tokenizer: T5TokenizerFast, examples: dict) -> dict:
+        inputs = tokenizer(
+            [TASK_PREFIX + text for text in examples["text"]],
+            max_length=self.params.context_length,
+            padding="max_length",
+            truncation=True,
+            return_tensors="pt",
+        )
+
+        labels = tokenizer(
+            text_target=examples["labels"],
+            max_length=self.params.context_length,
+            padding="max_length",
+            truncation=True,
+            return_tensors="pt",
+        )
+
+        inputs["labels"] = labels["input_ids"]
+        return inputs
+
     def train(self) -> None:
-        tokenizer = T5TokenizerFast.from_pretrained("./models/sentencepiece")
-        config = T5Config.from_pretrained("t5-small")
+        tokenizer = T5TokenizerFast.from_pretrained(str(self.params.tokenizer))
+        config = T5Config.from_pretrained("t5-base")
 
         model = T5ForConditionalGeneration(config)
         model = model.to("cuda") if torch.cuda.is_available() else model
         dataset = self.params.dataset.get_dataset_raw()
 
         dataset = dataset.map(
-            lambda example: {
-                "text": TASK_PREFIX + example["text"],
-                "labels": example["labels"],
-            }
-        )
-
-        dataset = dataset.map(
-            lambda examples: tokenizer(
-                examples["text"],
-                text_target=examples["labels"],
-                truncation=True,
-                max_length=self.params.context_length,
-                padding="max_length",
-                return_tensors="pt",
-            ),
+            lambda examples: self.preprocess_function(tokenizer, examples),
             batched=True,
         )
         dataset_dict = dataset.train_test_split(test_size=0.1)
         data_collator = DataCollatorForSeq2Seq(tokenizer, model=model)
-
-        def compute_metrics(eval_preds):
-            preds, labels = eval_preds
-            if isinstance(preds, tuple):
-                preds = preds[0]
-
-            decoded_preds = tokenizer.batch_decode(preds, skip_special_tokens=True)
-
-            labels = np.where(labels != -100, labels, tokenizer.pad_token_id)
-            decoded_labels = tokenizer.batch_decode(labels, skip_special_tokens=True)
-
-            decoded_preds = [pred.strip() for pred in decoded_preds]
-            decoded_labels = [[label.strip()] for label in decoded_labels]
-
-            result = metric.compute(
-                predictions=decoded_preds, references=decoded_labels
-            )
-            return {"bleu": result["score"]}
 
         # https://huggingface.co/learn/nlp-course/chapter7/4?fw=pt#fine-tuning-the-model
         training_args = Seq2SeqTrainingArguments(
@@ -102,7 +89,6 @@ class T5GCETrainer:
             data_collator=data_collator,
             train_dataset=dataset_dict["train"],
             eval_dataset=dataset_dict["test"],
-            compute_metrics=compute_metrics,
         )
 
         trainer.train()

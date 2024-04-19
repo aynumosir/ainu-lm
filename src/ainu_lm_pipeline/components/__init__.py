@@ -15,6 +15,8 @@ from .get_sentencepiece_training_job_result import (
     get_sentencepiece_training_job_result,
 )
 from .get_sentencepiece_training_job_spec import get_sentencepiece_training_job_spec
+from .get_t5_gce_training_job_result import get_t5_gce_training_job_result
+from .get_t5_gce_training_job_spec import get_t5_gce_training_job_spec
 from .get_t5_training_job_result import get_t5_training_job_result
 from .get_t5_training_job_spec import get_t5_training_job_spec
 from .push_to_huggingface_hub import push_to_huggingface_hub
