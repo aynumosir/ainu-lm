@@ -13,10 +13,11 @@ def t5_gce(
     logging_dir: Path,
     num_train_epochs: int,
     per_device_batch_size: int,
+    tokenizer_dir: Path,
     dataset_revision: str,
 ) -> None:
     params = T5GCETrainerParams(
-        # tokenizer=tokenizer_dir,
+        tokenizer=tokenizer_dir,
         dirs=TrainingDirs(
             model=model_dir,
             checkpoint=checkpoint_dir,

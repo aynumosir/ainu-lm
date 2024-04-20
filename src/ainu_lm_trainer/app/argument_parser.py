@@ -189,6 +189,12 @@ def get_argument_parser() -> argparse.ArgumentParser:
         default=os.environ.get("AIP_TENSORBOARD_LOG_DIR"),
     )
     t5_gce.add_argument(
+        "--tokenizer-dir",
+        type=get_path_from_uri,
+        help="Tokenizer directory. Use gs:/ to load from Google Cloud Storage",
+        required=True,
+    )
+    t5_gce.add_argument(
         "--dataset-revision",
         type=str,
         help="Dataset version e.g. v1",

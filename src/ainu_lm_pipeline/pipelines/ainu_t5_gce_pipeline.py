@@ -9,6 +9,8 @@ from ..components import (
     get_latest_secret_by_id,
     get_revision_dataset,
     get_revision_source,
+    get_sentencepiece_training_job_result,
+    get_sentencepiece_training_job_spec,
     get_t5_gce_training_job_result,
     get_t5_gce_training_job_spec,
     push_to_huggingface_hub,
@@ -93,11 +95,42 @@ def ainu_t5_gce_pipeline(
     ).set_display_name("カスタム訓練イメージのビルド")
 
     # ----------------------------------------------------
+    # トークナイザの訓練ジョブの仕様を取得
+    # ----------------------------------------------------
+    get_sentencepiece_training_job_spec_op = (
+        get_sentencepiece_training_job_spec(
+            train_image_uri=train_image_uri,
+            dataset_revision=get_revision_dataset_op.output,
+        )
+        .set_display_name("トークナイザの訓練ジョブの仕様を取得")
+        .after(build_custom_train_image_op)
+    )
+
+    # ----------------------------------------------------
+    # トークナイザの訓練
+    # ----------------------------------------------------
+    sentencepiece_training_job_op = CustomTrainingJobOp(
+        display_name=f"ainu-lm-sentencepiece-{training_job_suffix}",
+        base_output_directory=get_base_output_directory_op.output,
+        worker_pool_specs=get_sentencepiece_training_job_spec_op.output,
+    ).set_display_name("トークナイザの訓練")
+
+    # ----------------------------------------------------
+    # トークナイザの結果取得
+    # ----------------------------------------------------
+    get_sentencepiece_training_job_result_op = get_sentencepiece_training_job_result(
+        location=location, job_resource=sentencepiece_training_job_op.output
+    ).set_display_name("トークナイザの結果取得")
+
+    # ----------------------------------------------------
     # T5 訓練ジョブの仕様を取得
     # ----------------------------------------------------
     get_t5_gce_training_job_spec_op = (
         get_t5_gce_training_job_spec(
             train_image_uri=train_image_uri,
+            tokenizer_gcs_path=get_sentencepiece_training_job_result_op.outputs[
+                "model_artifacts"
+            ],
             dataset_revision=get_revision_dataset_op.output,
         )
         .set_display_name("T5 GCE訓練ジョブの仕様を取得")

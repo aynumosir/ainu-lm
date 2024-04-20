@@ -1,10 +1,12 @@
 from dataclasses import dataclass
+from pathlib import Path
 
 import torch
 from transformers import (
     DataCollatorForSeq2Seq,
     Seq2SeqTrainer,
     Seq2SeqTrainingArguments,
+    T5Config,
     T5ForConditionalGeneration,
     T5TokenizerFast,
 )
@@ -15,6 +17,7 @@ from ...models import TrainingDataset, TrainingDirs
 @dataclass
 class T5GCETrainerParams:
     dirs: TrainingDirs
+    tokenizer: Path | str
     dataset: TrainingDataset
     num_train_epochs: int
     per_device_batch_size: int = 32
@@ -52,12 +55,13 @@ class T5GCETrainer:
         return inputs
 
     def train(self) -> None:
-        tokenizer = T5TokenizerFast.from_pretrained("aynumosir/t5-base-ainu")
+        tokenizer = T5TokenizerFast.from_pretrained(str(self.params.tokenizer))
 
-        model = T5ForConditionalGeneration.from_pretrained("aynumosir/t5-base-ainu")
+        config = T5Config.from_pretrained("t5-small")
+        model = T5ForConditionalGeneration(config)
         model = model.to("cuda") if torch.cuda.is_available() else model
-        dataset = self.params.dataset.get_dataset_raw()
 
+        dataset = self.params.dataset.get_dataset_raw()
         dataset = dataset.map(
             lambda examples: self.preprocess_function(tokenizer, examples),
             batched=True,
