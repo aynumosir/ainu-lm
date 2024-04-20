@@ -4,7 +4,7 @@ from .task_gpt2 import gpt2
 from .task_roberta import roberta
 from .task_sentencepiece import sentencepiece
 from .task_t5 import t5
-from .task_t5_gce import t5_gce
+from .task_t5_gec import t5_gec
 
 if __name__ == "__main__":
     argument_parser = get_argument_parser()
@@ -52,8 +52,8 @@ if __name__ == "__main__":
             dataset_revision=args.dataset_revision,
         )
 
-    if args.task == "t5-gce":
-        t5_gce(
+    if args.task == "t5-gec":
+        t5_gec(
             model_dir=args.model_dir,
             checkpoint_dir=args.checkpoint_dir,
             logging_dir=args.logging_dir,

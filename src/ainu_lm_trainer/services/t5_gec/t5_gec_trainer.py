@@ -15,7 +15,7 @@ from ...models import TrainingDataset, TrainingDirs
 
 
 @dataclass
-class T5GCETrainerParams:
+class T5GECTrainerParams:
     dirs: TrainingDirs
     tokenizer: Path | str
     dataset: TrainingDataset
@@ -27,10 +27,10 @@ class T5GCETrainerParams:
 TASK_PREFIX = "pirkare: "
 
 
-class T5GCETrainer:
-    params: T5GCETrainerParams
+class T5GECTrainer:
+    params: T5GECTrainerParams
 
-    def __init__(self, params: T5GCETrainerParams) -> None:
+    def __init__(self, params: T5GECTrainerParams) -> None:
         self.params = params
 
     # https://huggingface.co/docs/transformers/en/tasks/summarization#preprocess
@@ -44,7 +44,8 @@ class T5GCETrainer:
         )
 
         labels = tokenizer(
-            text_target=examples["labels"],
+            # TODO: temporarily using the same text as input
+            text_target=examples["text"],
             max_length=self.params.context_length,
             padding="max_length",
             truncation=True,
@@ -61,7 +62,7 @@ class T5GCETrainer:
         model = T5ForConditionalGeneration(config)
         model = model.to("cuda") if torch.cuda.is_available() else model
 
-        dataset = self.params.dataset.get_dataset_raw()
+        dataset = self.params.dataset.get_dataset()
         dataset = dataset.map(
             lambda examples: self.preprocess_function(tokenizer, examples),
             batched=True,

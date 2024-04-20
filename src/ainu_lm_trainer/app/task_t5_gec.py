@@ -2,12 +2,12 @@ from pathlib import Path
 
 from ..models import TrainingDatasetSource, TrainingDirs
 from ..services import (
-    T5GCETrainer,
-    T5GCETrainerParams,
+    T5GECTrainer,
+    T5GECTrainerParams,
 )
 
 
-def t5_gce(
+def t5_gec(
     model_dir: Path,
     checkpoint_dir: Path,
     logging_dir: Path,
@@ -16,7 +16,7 @@ def t5_gce(
     tokenizer_dir: Path,
     dataset_revision: str,
 ) -> None:
-    params = T5GCETrainerParams(
+    params = T5GECTrainerParams(
         tokenizer=tokenizer_dir,
         dirs=TrainingDirs(
             model=model_dir,
@@ -24,14 +24,14 @@ def t5_gce(
             logging=logging_dir,
         ),
         dataset=TrainingDatasetSource(
-            name="aynumosir/ainu-synthetic-learner-corpus",
-            split="data",
-            # revision=dataset_revision,
+            name="aynumosir/ainu-corpora",
+            split="train",
+            revision=dataset_revision,
             column_name="sentence",
         ),
         num_train_epochs=num_train_epochs,
         per_device_batch_size=per_device_batch_size,
     )
 
-    trainer = T5GCETrainer(params)
+    trainer = T5GECTrainer(params)
     trainer.train()

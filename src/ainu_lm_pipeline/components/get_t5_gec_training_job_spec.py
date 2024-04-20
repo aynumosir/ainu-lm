@@ -2,7 +2,7 @@ from kfp import dsl
 
 
 @dsl.component(base_image="python:3.10")
-def get_t5_gce_training_job_spec(
+def get_t5_gec_training_job_spec(
     train_image_uri: str,
     dataset_revision: str,
     tokenizer_gcs_path: str,
@@ -12,7 +12,7 @@ def get_t5_gce_training_job_spec(
             "container_spec": {
                 "image_uri": train_image_uri,
                 "args": [
-                    "t5-gce",
+                    "t5-gec",
                     "--num-train-epochs=10",
                     "--per-device-batch-size=64",
                     f"--tokenizer-dir={tokenizer_gcs_path}",

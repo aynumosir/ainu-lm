@@ -164,42 +164,42 @@ def get_argument_parser() -> argparse.ArgumentParser:
     )
 
     """
-    Subparser for the T5 GCE
+    Subparser for the T5 GEC
     """
-    t5_gce = subparsers.add_parser("t5-gce")
-    t5_gce.add_argument(
+    t5_gec = subparsers.add_parser("t5-gec")
+    t5_gec.add_argument(
         "--num-train-epochs", type=int, help="Number of training epochs", default=2
     )
-    t5_gce.add_argument(
+    t5_gec.add_argument(
         "--model-dir",
         type=get_path_from_uri,
         help="Job directory. Use gs:/ to save to Google Cloud Storage",
         default=os.environ.get("AIP_MODEL_DIR"),
     )
-    t5_gce.add_argument(
+    t5_gec.add_argument(
         "--checkpoint-dir",
         type=get_path_from_uri,
         help="Checkpoint directory. Use gs:/ to save to Google Cloud Storage",
         default=os.environ.get("AIP_CHECKPOINT_DIR"),
     )
-    t5_gce.add_argument(
+    t5_gec.add_argument(
         "--logging-dir",
         type=get_path_from_uri,
         help="Logging directory. Use gs:/ to save to Google Cloud Storage",
         default=os.environ.get("AIP_TENSORBOARD_LOG_DIR"),
     )
-    t5_gce.add_argument(
+    t5_gec.add_argument(
         "--tokenizer-dir",
         type=get_path_from_uri,
         help="Tokenizer directory. Use gs:/ to load from Google Cloud Storage",
         required=True,
     )
-    t5_gce.add_argument(
+    t5_gec.add_argument(
         "--dataset-revision",
         type=str,
         help="Dataset version e.g. v1",
     )
-    t5_gce.add_argument(
+    t5_gec.add_argument(
         "--per-device-batch-size",
         type=int,
         default=8,

@@ -1,23 +1,19 @@
-from transformers import T5ForConditionalGeneration, T5TokenizerFast
+from transformers import T5TokenizerFast
 
-tokenizer = T5TokenizerFast.from_pretrained("./models/sentencepiece")
-model = T5ForConditionalGeneration.from_pretrained("./models/t5-gce/")
+# model = T5ForConditionalGeneration.from_pretrained("aynumosir/t5-base-ainu-gce")
 
+tokenizer = T5TokenizerFast.from_pretrained("./test")
+tokenizer.save_pretrained("./test")
 
-def correct(text: str) -> str:
-    input_text = f"pirkare: {text}"
-    inputs = tokenizer.encode(
-        input_text,
-        return_tensors="pt",
-        max_length=128,
-        padding="max_length",
-        truncation=True,
-    )
-    corrected_ids = model.generate(
-        inputs, max_length=128, num_beams=5, early_stopping=True
-    )
-    corrected_sentence = tokenizer.decode(corrected_ids[0], skip_special_tokens=True)
-    return corrected_sentence
+# generate = pipeline(
+#     "text2text-generation",
+# )
 
-
-print(correct("Puraha or ta ci=ye itak."))
+# print(
+#     generate(
+#         "pirkare: inkarusi sekor ku=rehe an. kani sisam ku=ne korka aynu itak k=eyaypakasnu wa an na.",
+#         max_length=100,
+#         num_beams=4,
+#         early_stopping=True,
+#     )
+# )

@@ -11,14 +11,14 @@ from ..components import (
     get_revision_source,
     get_sentencepiece_training_job_result,
     get_sentencepiece_training_job_spec,
-    get_t5_gce_training_job_result,
-    get_t5_gce_training_job_spec,
+    get_t5_gec_training_job_result,
+    get_t5_gec_training_job_spec,
     push_to_huggingface_hub,
 )
 
 
-@dsl.pipeline(name="ainu-t5-gce-pipeline", pipeline_root="ainu-lm")
-def ainu_t5_gce_pipeline(
+@dsl.pipeline(name="ainu-t5-gec-pipeline", pipeline_root="ainu-lm")
+def ainu_t5_gec_pipeline(
     project_id: str,
     location: str,
     service_account: str,
@@ -125,15 +125,15 @@ def ainu_t5_gce_pipeline(
     # ----------------------------------------------------
     # T5 訓練ジョブの仕様を取得
     # ----------------------------------------------------
-    get_t5_gce_training_job_spec_op = (
-        get_t5_gce_training_job_spec(
+    get_t5_gec_training_job_spec_op = (
+        get_t5_gec_training_job_spec(
             train_image_uri=train_image_uri,
             tokenizer_gcs_path=get_sentencepiece_training_job_result_op.outputs[
                 "model_artifacts"
             ],
             dataset_revision=get_revision_dataset_op.output,
         )
-        .set_display_name("T5 GCE訓練ジョブの仕様を取得")
+        .set_display_name("T5 GEC訓練ジョブの仕様を取得")
         .after(build_custom_train_image_op)
     )
 
@@ -142,21 +142,21 @@ def ainu_t5_gce_pipeline(
     # ----------------------------------------------------
     lm_training_job_op = CustomTrainingJobOp(
         project=project_id,
-        display_name=f"ainu-lm-t5-gce-{training_job_suffix}",
+        display_name=f"ainu-lm-t5-gec-{training_job_suffix}",
         base_output_directory=get_base_output_directory_op.output,
-        worker_pool_specs=get_t5_gce_training_job_spec_op.output,
+        worker_pool_specs=get_t5_gec_training_job_spec_op.output,
         location=location,
         tensorboard=f"projects/{project_id}/locations/{location}/tensorboards/{tensorboard_id}",
         service_account=service_account,
-    ).set_display_name("T5 GCEの訓練")
+    ).set_display_name("T5 GECの訓練")
 
     # ----------------------------------------------------
     # LMの結果取得
     # ----------------------------------------------------
-    get_t5_gce_training_job_op = get_t5_gce_training_job_result(
+    get_t5_gec_training_job_op = get_t5_gec_training_job_result(
         location=location,
         job_resource=lm_training_job_op.output,
-    ).set_display_name("T5 GCEの結果取得")
+    ).set_display_name("T5 GECの結果取得")
 
     with dsl.If(push_to_hub == True, "公開する場合"):  # noqa: E712
         # ----------------------------------------------------
@@ -164,7 +164,7 @@ def ainu_t5_gce_pipeline(
         # ----------------------------------------------------
         (
             push_to_huggingface_hub(
-                model_gcs_path=get_t5_gce_training_job_op.outputs["model_artifacts"],
+                model_gcs_path=get_t5_gec_training_job_op.outputs["model_artifacts"],
                 commit_message=f"Update model for {get_revision_dataset_op.output}",
                 hf_repo=hf_model_repo,
                 hf_token=get_hf_token_op.output,
