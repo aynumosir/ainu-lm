@@ -57,7 +57,7 @@ class T5GCETrainer:
     def train(self) -> None:
         tokenizer = T5TokenizerFast.from_pretrained(str(self.params.tokenizer))
 
-        config = T5Config.from_pretrained("t5-small")
+        config = T5Config.from_pretrained("t5-base")
         model = T5ForConditionalGeneration(config)
         model = model.to("cuda") if torch.cuda.is_available() else model
 
@@ -76,7 +76,7 @@ class T5GCETrainer:
             num_train_epochs=self.params.num_train_epochs,
             per_device_train_batch_size=self.params.per_device_batch_size,
             per_device_eval_batch_size=self.params.per_device_batch_size,
-            learning_rate=2e-5,
+            learning_rate=3e-4,
             weight_decay=0.01,
             predict_with_generate=True,
             logging_dir=str(self.params.dirs.logging),
