@@ -98,7 +98,7 @@ def ainu_mt5_gec_pipeline(
     get_mt5_gec_training_job_spec_op = (
         get_mt5_gec_training_job_spec(
             train_image_uri=train_image_uri,
-            dataset_revision=get_revision_dataset_op.output,
+            # dataset_revision=get_revision_dataset_op.output,
         )
         .set_display_name("mT5 GEC訓練ジョブの仕様を取得")
         .after(build_custom_train_image_op)
