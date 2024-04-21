@@ -12,7 +12,7 @@ from kfp import dsl
         "pyarrow",
     ],
 )
-def get_t5_gec_training_job_result(
+def get_mt5_gec_training_job_result(
     location: str,
     job_resource: str,
     model: dsl.Output[dsl.Model],

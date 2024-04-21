@@ -1,40 +1,38 @@
 from dataclasses import dataclass
-from pathlib import Path
 
 import torch
 from transformers import (
     DataCollatorForSeq2Seq,
+    EarlyStoppingCallback,
+    MT5ForConditionalGeneration,
+    MT5TokenizerFast,
     Seq2SeqTrainer,
     Seq2SeqTrainingArguments,
-    T5Config,
-    T5ForConditionalGeneration,
-    T5TokenizerFast,
 )
 
 from ...models import TrainingDataset, TrainingDirs
 
 
 @dataclass
-class T5GECTrainerParams:
+class MT5GECTrainerParams:
     dirs: TrainingDirs
-    tokenizer: Path | str
     dataset: TrainingDataset
     num_train_epochs: int
     per_device_batch_size: int = 32
     context_length: int = 128
 
 
-TASK_PREFIX = "pirkare: "
+TASK_PREFIX = "aynu itak pirkare: "
 
 
-class T5GECTrainer:
-    params: T5GECTrainerParams
+class MT5GECTrainer:
+    params: MT5GECTrainerParams
 
-    def __init__(self, params: T5GECTrainerParams) -> None:
+    def __init__(self, params: MT5GECTrainerParams) -> None:
         self.params = params
 
     # https://huggingface.co/docs/transformers/en/tasks/summarization#preprocess
-    def preprocess_function(self, tokenizer: T5TokenizerFast, examples: dict) -> dict:
+    def preprocess_function(self, tokenizer: MT5TokenizerFast, examples: dict) -> dict:
         inputs = tokenizer(
             [TASK_PREFIX + text for text in examples["text"]],
             max_length=self.params.context_length,
@@ -44,8 +42,7 @@ class T5GECTrainer:
         )
 
         labels = tokenizer(
-            # TODO: temporarily using the same text as input
-            text_target=examples["text"],
+            text_target=examples["labels"],
             max_length=self.params.context_length,
             padding="max_length",
             truncation=True,
@@ -56,13 +53,12 @@ class T5GECTrainer:
         return inputs
 
     def train(self) -> None:
-        tokenizer = T5TokenizerFast.from_pretrained(str(self.params.tokenizer))
+        tokenizer = MT5TokenizerFast.from_pretrained("google/mt5-base")
 
-        config = T5Config.from_pretrained("t5-base")
-        model = T5ForConditionalGeneration(config)
+        model = MT5ForConditionalGeneration.from_pretrained("google/mt5-base")
         model = model.to("cuda") if torch.cuda.is_available() else model
 
-        dataset = self.params.dataset.get_dataset()
+        dataset = self.params.dataset.get_dataset_raw()
         dataset = dataset.map(
             lambda examples: self.preprocess_function(tokenizer, examples),
             batched=True,
@@ -70,22 +66,22 @@ class T5GECTrainer:
         dataset_dict = dataset.train_test_split(test_size=0.1)
         data_collator = DataCollatorForSeq2Seq(tokenizer, model=model)
 
-        # https://huggingface.co/learn/nlp-course/chapter7/4?fw=pt#fine-tuning-the-model
         training_args = Seq2SeqTrainingArguments(
+            save_strategy="epoch",
             evaluation_strategy="epoch",
             output_dir=str(self.params.dirs.checkpoint),
             num_train_epochs=self.params.num_train_epochs,
             per_device_train_batch_size=self.params.per_device_batch_size,
             per_device_eval_batch_size=self.params.per_device_batch_size,
+            # とくに根拠はないけどT5の事前学習でうまく行った数値
             learning_rate=3e-4,
             weight_decay=0.01,
             predict_with_generate=True,
+            # https://dev.classmethod.jp/articles/huggingface-usage-early-stopping/#toc-5
+            load_best_model_at_end=True,
             logging_dir=str(self.params.dirs.logging),
             report_to=["tensorboard"],
         )
-
-        if torch.cuda.is_available():
-            training_args.fp16 = True
 
         trainer = Seq2SeqTrainer(
             model=model,
@@ -93,6 +89,7 @@ class T5GECTrainer:
             data_collator=data_collator,
             train_dataset=dataset_dict["train"],
             eval_dataset=dataset_dict["test"],
+            callbacks=[EarlyStoppingCallback(early_stopping_patience=3)],
         )
 
         trainer.train()

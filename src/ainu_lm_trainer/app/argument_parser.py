@@ -164,9 +164,9 @@ def get_argument_parser() -> argparse.ArgumentParser:
     )
 
     """
-    Subparser for the T5 GEC
+    Subparser for the MT5 GEC
     """
-    t5_gec = subparsers.add_parser("t5-gec")
+    t5_gec = subparsers.add_parser("mt5-gec")
     t5_gec.add_argument(
         "--num-train-epochs", type=int, help="Number of training epochs", default=2
     )
@@ -187,12 +187,6 @@ def get_argument_parser() -> argparse.ArgumentParser:
         type=get_path_from_uri,
         help="Logging directory. Use gs:/ to save to Google Cloud Storage",
         default=os.environ.get("AIP_TENSORBOARD_LOG_DIR"),
-    )
-    t5_gec.add_argument(
-        "--tokenizer-dir",
-        type=get_path_from_uri,
-        help="Tokenizer directory. Use gs:/ to load from Google Cloud Storage",
-        required=True,
     )
     t5_gec.add_argument(
         "--dataset-revision",

@@ -1,14 +1,14 @@
 from google.cloud.aiplatform import PipelineJob
 from kfp.compiler import Compiler
 
-from ..pipelines import ainu_t5_gec_pipeline
+from ..pipelines import ainu_mt5_gec_pipeline
 from .get_timestamp import get_timestamp
 
 if __name__ == "__main__":
     compiler = Compiler()
     compiler.compile(
-        pipeline_func=ainu_t5_gec_pipeline,
-        package_path="./dist/ainu_t5_gec_pipeline.yaml",
+        pipeline_func=ainu_mt5_gec_pipeline,
+        package_path="./dist/ainu_mt5_gec_pipeline.yaml",
         pipeline_parameters={
             "project_id": "neetlab",
             "location": "us-central1",
@@ -16,20 +16,20 @@ if __name__ == "__main__":
             "pipeline_staging": "gs://ainu-lm/staging",
             "tensorboard_id": "4565774810897973248",
             "service_account": "ainu-lm@neetlab.iam.gserviceaccount.com",
-            "hf_model_repo": "aynumosir/t5-base-ainu-gec",
+            "hf_model_repo": "aynumosir/mt5-base-ainu-gec",
             "hf_dataset_repo": "aynumosir/ainu-corpora",
             "hf_secret_id": "aynumosir-hf-token",
             "github_repo": "aynumosir/ainu-lm",
             "github_secret_id": "aynumosir-github-token",
-            "github_commit_sha": "9b9c7a39801725d85a6f1f888c90f93289c8b4a3",
+            "github_commit_sha": "3601de6d012c03b3ebc712c9849f5fd3e37c1201",
             "push_to_hub": True,
         },
     )
 
     pipeline_job = PipelineJob(
         display_name="Ainu LM via Pull Request",
-        template_path="./dist/ainu_t5_gec_pipeline.yaml",
-        job_id=f"ainu-lm-t5-gec-{get_timestamp()}",
+        template_path="./dist/ainu_mt5_gec_pipeline.yaml",
+        job_id=f"ainu-lm-mt5-gec-{get_timestamp()}",
         pipeline_root="gs://ainu-lm/pipeline_root",
     )
 
