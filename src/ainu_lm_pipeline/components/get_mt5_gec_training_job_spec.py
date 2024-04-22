@@ -14,7 +14,7 @@ def get_mt5_gec_training_job_spec(
                 "args": [
                     "mt5-gec",
                     "--num-train-epochs=10",
-                    "--per-device-batch-size=64",
+                    "--per-device-batch-size=16",
                     # f"--tokenizer-dir={tokenizer_gcs_path}",
                     # f"--dataset-revision={dataset_revision}",
                 ],

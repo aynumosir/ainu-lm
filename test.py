@@ -1,19 +1,9 @@
-from transformers import T5TokenizerFast
+from transformers import MT5ForConditionalGeneration, T5TokenizerFast
 
-# model = T5ForConditionalGeneration.from_pretrained("aynumosir/t5-base-ainu-gce")
+model = MT5ForConditionalGeneration.from_pretrained("./models/mt5-gec")
+tokenizer = T5TokenizerFast.from_pretrained("google/mt5-small")
 
-tokenizer = T5TokenizerFast.from_pretrained("./test")
-tokenizer.save_pretrained("./test")
+MODEL_NAME = "aynumosir/mt5-small-ainu-gec"
 
-# generate = pipeline(
-#     "text2text-generation",
-# )
-
-# print(
-#     generate(
-#         "pirkare: inkarusi sekor ku=rehe an. kani sisam ku=ne korka aynu itak k=eyaypakasnu wa an na.",
-#         max_length=100,
-#         num_beams=4,
-#         early_stopping=True,
-#     )
-# )
+model.push_to_hub(MODEL_NAME)
+tokenizer.push_to_hub(MODEL_NAME)

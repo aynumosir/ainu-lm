@@ -53,9 +53,9 @@ class MT5GECTrainer:
         return inputs
 
     def train(self) -> None:
-        tokenizer = MT5TokenizerFast.from_pretrained("google/mt5-base")
+        tokenizer = MT5TokenizerFast.from_pretrained("google/mt5-small")
 
-        model = MT5ForConditionalGeneration.from_pretrained("google/mt5-base")
+        model = MT5ForConditionalGeneration.from_pretrained("google/mt5-small")
         model = model.to("cuda") if torch.cuda.is_available() else model
 
         dataset = self.params.dataset.get_dataset_raw()
