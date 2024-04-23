@@ -1,18 +1,9 @@
-import sys
+from transformers import MT5ForConditionalGeneration, T5TokenizerFast
 
-from transformers import pipeline
+model = MT5ForConditionalGeneration.from_pretrained("./models/mt5-gec")
+tokenizer = T5TokenizerFast.from_pretrained("google/mt5-small")
 
-generate = pipeline("text-generation", model="./models/gpt2")
+MODEL_NAME = "aynumosir/mt5-small-ainu-gec"
 
-result = generate(
-    sys.argv[1],
-    max_length=50,
-    truncation=True,
-    pad_token_id=25493,
-    temperature=0.1,
-    top_k=50,
-    top_p=0.95,
-    num_return_sequences=1,
-)
-
-print(result[0]["generated_text"])
+model.push_to_hub(MODEL_NAME)
+tokenizer.push_to_hub(MODEL_NAME)

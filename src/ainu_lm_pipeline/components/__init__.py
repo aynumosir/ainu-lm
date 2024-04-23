@@ -7,6 +7,8 @@ from .get_byte_level_bpe_training_job_spec import get_byte_level_bpe_training_jo
 from .get_gpt2_training_job_result import get_gpt2_training_job_result
 from .get_gpt2_training_job_spec import get_gpt2_training_job_spec
 from .get_latest_secret_by_id import get_latest_secret_by_id
+from .get_mt5_gec_training_job_result import get_mt5_gec_training_job_result
+from .get_mt5_gec_training_job_spec import get_mt5_gec_training_job_spec
 from .get_revision_dataset import get_revision_dataset
 from .get_revision_source import get_revision_source
 from .get_roberta_training_job_result import get_roberta_training_job_result
