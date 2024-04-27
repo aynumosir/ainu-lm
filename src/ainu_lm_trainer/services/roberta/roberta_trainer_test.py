@@ -2,14 +2,19 @@ from pathlib import Path
 
 from datasets import Dataset
 
-from ...models import TrainingDatasetValue, TrainingDirs
-from .roberta_trainer import RobertaTrainer, RobertaTrainerParams
+from ...config import (
+    DatasetsConfigWithValue,
+    FineTuningConfig,
+    TrainingConfig,
+    WorkspaceConfig,
+)
+from .roberta_trainer import RobertaTrainer
 
 
 def test_compact_dataset() -> None:
     dataset = Dataset.from_dict(
         {
-            "text": [
+            "sentence": [
                 "this is a 1st test sentence",
                 "this is a 2nd test sentence",
                 "this is a 3rd test sentence",
@@ -33,17 +38,18 @@ def test_compact_dataset() -> None:
     checkpoint_dir = Path("/tmp/ainu_lm_trainer_test_checkpoint")
     checkpoint_dir.mkdir(parents=True, exist_ok=True)
 
-    params = RobertaTrainerParams(
-        num_train_epochs=1,
-        tokenizer="roberta-base",
-        dataset=TrainingDatasetValue(dataset=dataset),
-        dirs=TrainingDirs(
-            model=model_dir,
-            logging=logging_dir,
-            checkpoint=checkpoint_dir,
+    trainer = RobertaTrainer(
+        dataset_config=DatasetsConfigWithValue(dataset),
+        fine_tuning_config=FineTuningConfig(tokenizer="roberta-base"),
+        training_config=TrainingConfig(
+            num_train_epochs=1,
+        ),
+        workspace_config=WorkspaceConfig(
+            model_dir=model_dir,
+            logging_dir=logging_dir,
+            checkpoint_dir=checkpoint_dir,
         ),
     )
-    trainer = RobertaTrainer(params)
 
     trainer.train()
 

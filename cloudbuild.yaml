@@ -1,0 +1,54 @@
+options:
+  logging: CLOUD_LOGGING_ONLY
+  env:
+    - PROJECT_ID=$PROJECT_ID
+    - REGION=$_REGION
+    - SERVICE_ACCOUNT=$_SERVICE_ACCOUNT
+    - TRAIN_IMAGE_URI=$_TRAIN_IMAGE_URI
+    - PIPELINE_STAGING=$_PIPELINE_STAGING
+    - PIPELINE_ROOT=$_PIPELINE_ROOT
+    - TENSORBOARD_ID=$_TENSORBOARD_ID
+    - KFP_REPO=$_KFP_REPO
+    - HF_DATASET_REPO=$_HF_DATASET_REPO
+    - HF_SECRET_ID=$_HF_SECRET_ID
+    - GITHUB_REPO=$_GITHUB_REPO
+    - GITHUB_SECRET_ID=$_GITHUB_SECRET_ID
+
+serviceAccount: projects/$PROJECT_ID/serviceAccounts/$_SERVICE_ACCOUNT
+
+steps:
+  - id: "Update ainu-roberta-pipeline"
+    name: python:3.11
+    entrypoint: bash
+    args:
+      - "-c"
+      - |
+        pip install -q "." \
+        && python -m ainu_lm_pipeline.app.compile roberta \
+        && python -m ainu_lm_pipeline.app.push roberta \
+        && python -m ainu_lm_pipeline.app.schedule roberta --cron "TZ=Asia/Tokyo 0 0 * * SAT"
+    # waitFor: ["-"]
+
+  - id: "Update ainu-gpt2-pipeline"
+    name: python:3.11
+    entrypoint: bash
+    args:
+      - "-c"
+      - |
+        pip install -q "." \
+        && python -m ainu_lm_pipeline.app.compile gpt2 \
+        && python -m ainu_lm_pipeline.app.push gpt2 \
+        && python -m ainu_lm_pipeline.app.schedule gpt2 --cron "TZ=Asia/Tokyo 0 0 * * SUN"
+    # waitFor: ["-"]
+
+  - id: "Update ainu-mt5-pipeline"
+    name: python:3.11
+    entrypoint: bash
+    args:
+      - "-c"
+      - |
+        pip install -q "." \
+        && python -m ainu_lm_pipeline.app.compile mt5 \
+        && python -m ainu_lm_pipeline.app.push mt5 \
+        && python -m ainu_lm_pipeline.app.schedule mt5 --cron "TZ=Asia/Tokyo 0 0 * * MON"
+    # waitFor: ["-"]

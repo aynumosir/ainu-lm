@@ -1,1 +1,1 @@
-from .mt5_gec_trainer import MT5GECTrainer, MT5GECTrainerParams
+from .mt5_gec_trainer import Mt5GecTrainer

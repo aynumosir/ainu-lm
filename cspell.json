@@ -2,9 +2,12 @@
   "version": "0.2",
   "ignorePaths": [],
   "dictionaryDefinitions": [],
-  "dictionaries": ["python"],
+  "dictionaries": [
+    "python"
+  ],
   "words": [
     "aiplatform",
+    "argmax",
     "aynumosir",
     "cloudbuild",
     "cloudsdktool",
@@ -19,15 +22,19 @@
     "isna",
     "kaniko",
     "logdir",
-    "unigram",
-    "sentencepiece",
     "neetlab",
+    "postprocess",
+    "preds",
     "protobuf",
     "pyarrow",
     "pygithub",
     "secretmanager",
+    "sentencepiece",
+    "seqeval",
     "tensorboard",
-    "tensorboards"
+    "tensorboards",
+    "treebank",
+    "unigram"
   ],
   "ignoreWords": [],
   "import": []

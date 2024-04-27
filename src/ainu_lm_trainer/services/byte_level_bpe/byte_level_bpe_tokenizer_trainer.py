@@ -1,31 +1,32 @@
-from pathlib import Path
 from typing import Iterator
 
 from datasets import Dataset
 from tokenizers import ByteLevelBPETokenizer
 from tokenizers.normalizers import NFD, Lowercase, Sequence, StripAccents
 
+from ...config import DatasetConfig, WorkspaceConfig
 
-class ByteLevelBPETokenizerTrainer:
-    dataset: Dataset
-    output_dir: Path
+
+class ByteLevelBpeTokenizerTrainer:
+    __dataset: Dataset
+    __workspace_config: WorkspaceConfig
 
     def __init__(
-        self, dataset: Dataset, output_dir: Path = Path("models/tokenizer")
+        self, dataset_config: DatasetConfig, workspace_config: WorkspaceConfig
     ) -> None:
-        self.dataset = dataset
-        self.output_dir = output_dir
+        self.__dataset = dataset_config.load()
+        self.__workspace_config = workspace_config
 
     # https://huggingface.co/docs/tokenizers/en/training_from_memory#using-the-datasets-library
-    def batch_iterator(self, batch_size: int = 1_000) -> Iterator[Iterator[str]]:
-        for i in range(0, len(self.dataset), batch_size):
-            yield self.dataset[i : i + batch_size]["sentence"]
+    def __batch_iterator(self, batch_size: int = 1_000) -> Iterator[Iterator[str]]:
+        for i in range(0, len(self.__dataset), batch_size):
+            yield self.__dataset[i : i + batch_size]["sentence"]
 
-    def prepare(self) -> None:
-        self.output_dir.mkdir(parents=True, exist_ok=True)
+    def __prepare(self) -> None:
+        self.__workspace_config.model_dir.mkdir(parents=True, exist_ok=True)
 
     def train(self) -> ByteLevelBPETokenizer:
-        self.prepare()
+        self.__prepare()
 
         tokenizer = ByteLevelBPETokenizer()
 
@@ -34,7 +35,7 @@ class ByteLevelBPETokenizerTrainer:
         tokenizer.normalizer = Sequence([NFD(), Lowercase(), StripAccents()])
 
         tokenizer.train_from_iterator(
-            iterator=self.batch_iterator(),
+            iterator=self.__batch_iterator(),
             vocab_size=52_000,
             min_frequency=2,
             special_tokens=[
@@ -47,7 +48,7 @@ class ByteLevelBPETokenizerTrainer:
         )
 
         self.demo(tokenizer)
-        tokenizer.save(str(self.output_dir / "tokenizer.json"))
+        tokenizer.save(str(self.__workspace_config.model_dir / "tokenizer.json"))
 
         return tokenizer
 

@@ -1,64 +1,94 @@
-from .argument_parser import get_argument_parser
-from .task_byte_level_bpe import byte_level_bpe
-from .task_gpt2 import gpt2
-from .task_mt5_gec import mt5_gec
-from .task_roberta import roberta
-from .task_sentencepiece import sentencepiece
-from .task_t5 import t5
+from ..config import (
+    DatasetsConfigWithHuggingFaceHub,
+    FineTuningConfig,
+    TrainingConfig,
+    WorkspaceConfig,
+)
+from ..services import (
+    ByteLevelBpeTokenizerTrainer,
+    Gpt2Trainer,
+    Mt5GecTrainer,
+    Mt5Trainer,
+    RobertaPosTrainer,
+    RobertaTrainer,
+)
+from .argument_parser import get_parser
 
 if __name__ == "__main__":
-    argument_parser = get_argument_parser()
-    args = argument_parser.parse_args()
+    parser = get_parser()
+    args = parser.parse_args()
 
-    if args.task == "byte-level-bpe":
-        byte_level_bpe(
-            output_dir=args.output_dir, dataset_revision=args.dataset_revision
-        )
-
-    if args.task == "sentencepiece":
-        sentencepiece(
-            output_dir=args.output_dir, dataset_revision=args.dataset_revision
-        )
+    dataset_config = DatasetsConfigWithHuggingFaceHub(
+        name=args.dataset_name,
+        split=args.dataset_split,
+        revision=args.dataset_revision,
+    )
+    fine_tuning_config = FineTuningConfig(
+        tokenizer=args.base_tokenizer,
+        model=args.base_model,
+    )
+    training_config = TrainingConfig(
+        num_train_epochs=args.num_train_epochs,
+        per_device_eval_batch_size=args.per_device_eval_batch_size,
+        per_device_train_batch_size=args.per_device_train_batch_size,
+        weight_decay=args.weight_decay,
+        learning_rate=args.learning_rate,
+        push_to_hub=args.push_to_hub,
+    )
+    workspace_config = WorkspaceConfig(
+        model_dir=args.model_dir,
+        checkpoint_dir=args.checkpoint_dir,
+        logging_dir=args.logging_dir,
+    )
 
     if args.task == "roberta":
-        roberta(
-            model_dir=args.model_dir,
-            checkpoint_dir=args.checkpoint_dir,
-            logging_dir=args.logging_dir,
-            tokenizer_dir=args.tokenizer_dir,
-            num_train_epochs=args.num_train_epochs,
-            per_device_batch_size=args.per_device_batch_size,
-            dataset_revision=args.dataset_revision,
+        roberta_trainer = RobertaTrainer(
+            dataset_config=dataset_config,
+            fine_tuning_config=fine_tuning_config,
+            training_config=training_config,
+            workspace_config=workspace_config,
         )
+        roberta_trainer.train()
 
-    if args.task == "gpt2":
-        gpt2(
-            model_dir=args.model_dir,
-            checkpoint_dir=args.checkpoint_dir,
-            logging_dir=args.logging_dir,
-            tokenizer_dir=args.tokenizer_dir,
-            num_train_epochs=args.num_train_epochs,
-            dataset_revision=args.dataset_revision,
+    if args.task == "roberta-pos":
+        roberta_pos_trainer = RobertaPosTrainer(
+            dataset_config=dataset_config,
+            fine_tuning_config=fine_tuning_config,
+            training_config=training_config,
+            workspace_config=workspace_config,
         )
+        roberta_pos_trainer.train()
 
-    if args.task == "t5":
-        t5(
-            model_dir=args.model_dir,
-            checkpoint_dir=args.checkpoint_dir,
-            logging_dir=args.logging_dir,
-            tokenizer_dir=args.tokenizer_dir,
-            num_train_epochs=args.num_train_epochs,
-            per_device_batch_size=args.per_device_batch_size,
-            dataset_revision=args.dataset_revision,
+    if args.task == "mt5":
+        mt5_trainer = Mt5Trainer(
+            dataset_config=dataset_config,
+            fine_tuning_config=fine_tuning_config,
+            training_config=training_config,
+            workspace_config=workspace_config,
         )
+        mt5_trainer.train()
 
     if args.task == "mt5-gec":
-        mt5_gec(
-            model_dir=args.model_dir,
-            checkpoint_dir=args.checkpoint_dir,
-            logging_dir=args.logging_dir,
-            # tokenizer_dir=args.tokenizer_dir,
-            num_train_epochs=args.num_train_epochs,
-            per_device_batch_size=args.per_device_batch_size,
-            dataset_revision=args.dataset_revision,
+        mt5_gec_trainer = Mt5GecTrainer(
+            dataset_config=dataset_config,
+            fine_tuning_config=fine_tuning_config,
+            training_config=training_config,
+            workspace_config=workspace_config,
         )
+        mt5_gec_trainer.train()
+
+    if args.task == "gpt2":
+        gpt2_trainer = Gpt2Trainer(
+            dataset_config=dataset_config,
+            fine_tuning_config=fine_tuning_config,
+            training_config=training_config,
+            workspace_config=workspace_config,
+        )
+        gpt2_trainer.train()
+
+    if args.task == "byte-level-bpe":
+        bpe_trainer = ByteLevelBpeTokenizerTrainer(
+            dataset_config=dataset_config,
+            workspace_config=workspace_config,
+        )
+        bpe_trainer.train()

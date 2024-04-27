@@ -2,24 +2,25 @@ from kfp import dsl
 
 
 @dsl.component(base_image="python:3.10")
-def get_mt5_gec_training_job_spec(
+def get_roberta_pos_training_job_spec(
     train_image_uri: str,
+    dataset_revision: str,
     push_to_hub: bool,
-    # dataset_revision: str,
-    # tokenizer_gcs_path: str,
 ) -> list:
     worker_pool_specs = [
         {
             "container_spec": {
                 "image_uri": train_image_uri,
                 "args": [
-                    "mt5-gec",
-                    "--dataset-name=aynumosir/ainu-synthetic-learner-corpus",
-                    "--dataset-split=data",
+                    "roberta",
+                    "--base-model=aynumosir/roberta-base-ainu",
+                    "--dataset-name=aynumosir/ainu-treebank",
+                    "--dataset-split=train",
+                    f"--dataset-revision={dataset_revision}",
                     f"--push-to-hub={push_to_hub}",
-                    "--num-train-epochs=10",
-                    "--per-device-train-batch-size=32",
-                    "--per-device-eval-batch-size=32",
+                    "--num-train-epochs=3",
+                    "--per-device-train-batch-size=128",
+                    "--per-device-eval-batch-size=128",
                 ],
             },
             # https://cloud.google.com/vertex-ai/docs/training/configure-compute?hl=ja#specifying_gpus

@@ -1,1 +1,1 @@
-from .byte_level_bpe_tokenizer_trainer import ByteLevelBPETokenizerTrainer
+from .byte_level_bpe_tokenizer_trainer import ByteLevelBpeTokenizerTrainer

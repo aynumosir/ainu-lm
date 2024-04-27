@@ -6,6 +6,7 @@ def get_roberta_training_job_spec(
     train_image_uri: str,
     tokenizer_gcs_path: str,
     dataset_revision: str,
+    push_to_hub: bool,
 ) -> list:
     worker_pool_specs = [
         {
@@ -13,10 +14,14 @@ def get_roberta_training_job_spec(
                 "image_uri": train_image_uri,
                 "args": [
                     "roberta",
-                    "--num-train-epochs=45",
-                    "--per-device-batch-size=128",
-                    f"--tokenizer-dir={tokenizer_gcs_path}",
+                    f"--base-tokenizer={tokenizer_gcs_path}",
+                    "--dataset-name=aynumosir/ainu-corpora",
+                    "--dataset-split=train",
                     f"--dataset-revision={dataset_revision}",
+                    f"--push-to-hub={push_to_hub}",
+                    "--num-train-epochs=45",
+                    "--per-device-train-batch-size=128",
+                    "--per-device-eval-batch-size=128",
                 ],
             },
             # https://cloud.google.com/vertex-ai/docs/training/configure-compute?hl=ja#specifying_gpus
