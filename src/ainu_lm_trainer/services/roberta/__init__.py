@@ -1,1 +1,1 @@
-from .roberta_trainer import RobertaTrainer, RobertaTrainerParams
+from .roberta_trainer import RobertaTrainer

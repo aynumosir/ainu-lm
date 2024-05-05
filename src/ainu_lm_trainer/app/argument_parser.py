@@ -1,203 +1,52 @@
-import argparse
+# fmt: off
 import os
+from argparse import ArgumentParser
 
 from ..utils import get_path_from_uri
 
+# Base model arguments
+base_model_parser = ArgumentParser(add_help=False)
+base_model_parser.add_argument("--base-model", type=get_path_from_uri)
+base_model_parser.add_argument("--base-tokenizer", type=get_path_from_uri)
 
-def get_argument_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="Train a language model")
-    subparsers = parser.add_subparsers(dest="task", description="Model to train")
+# Dataset arguments
+dataset_parser = ArgumentParser(add_help=False)
+dataset_parser.add_argument("--dataset-name", type=str)
+dataset_parser.add_argument("--dataset-revision", type=str)
+dataset_parser.add_argument("--dataset-split", type=str)
 
-    """
-    Subparser for the Byte-Level BPE
-    """
-    byte_level_bpe = subparsers.add_parser("byte-level-bpe")
-    byte_level_bpe.add_argument(
-        "--output-dir",
-        type=get_path_from_uri,
-        help="Job directory. Use gs:/ to save to Google Cloud Storage",
-        default=os.environ.get("AIP_MODEL_DIR"),
-    )
-    byte_level_bpe.add_argument(
-        "--dataset-revision",
-        type=str,
-        help="Dataset version e.g. v1",
-    )
+# Training arguments
+training_parser = ArgumentParser(add_help=False)
+training_parser.add_argument("--per-device-train-batch-size", type=int)
+training_parser.add_argument("--per-device-eval-batch-size", type=int)
+training_parser.add_argument("--num-train-epochs", type=int)
+training_parser.add_argument("--weight-decay", type=float)
+training_parser.add_argument("--learning-rate", type=float)
+training_parser.add_argument("--push-to-hub", type=bool)
 
-    """
-    Subparser for the Sentencepiece
-    """
-    sentencepiece = subparsers.add_parser("sentencepiece")
-    sentencepiece.add_argument(
-        "--output-dir",
-        type=get_path_from_uri,
-        help="Job directory. Use gs:/ to save to Google Cloud Storage",
-        default=os.environ.get("AIP_MODEL_DIR"),
-    )
-    sentencepiece.add_argument(
-        "--dataset-revision",
-        type=str,
-        help="Dataset version e.g. v1",
-    )
+# Workspace arguments
+workspace_parser = ArgumentParser(add_help=False)
+workspace_parser.add_argument("--model-dir", type=get_path_from_uri, default=os.environ.get("AIP_MODEL_DIR"))
+workspace_parser.add_argument("--checkpoint-dir", type=get_path_from_uri, default=os.environ.get("AIP_CHECKPOINT_DIR"))
+workspace_parser.add_argument("--logging-dir", type=get_path_from_uri, default=os.environ.get("AIP_TENSORBOARD_LOG_DIR"))
 
-    """
-    Subparser for the RoBERTa
-    """
-    roberta = subparsers.add_parser("roberta")
-    roberta.add_argument(
-        "--num-train-epochs", type=int, help="Number of training epochs", default=10
-    )
-    roberta.add_argument(
-        "--tokenizer-dir",
-        type=get_path_from_uri,
-        help="Tokenizer directory. Use gs:/ to load from Google Cloud Storage",
-        required=True,
-    )
-    roberta.add_argument(
-        "--model-dir",
-        type=get_path_from_uri,
-        help="Job directory. Use gs:/ to save to Google Cloud Storage",
-        default=os.environ.get("AIP_MODEL_DIR"),
-    )
-    roberta.add_argument(
-        "--checkpoint-dir",
-        type=get_path_from_uri,
-        help="Checkpoint directory. Use gs:/ to save to Google Cloud Storage",
-        default=os.environ.get("AIP_CHECKPOINT_DIR"),
-    )
-    roberta.add_argument(
-        "--logging-dir",
-        type=get_path_from_uri,
-        help="Logging directory. Use gs:/ to save to Google Cloud Storage",
-        default=os.environ.get("AIP_TENSORBOARD_LOG_DIR"),
-    )
-    roberta.add_argument(
-        "--dataset-revision",
-        type=str,
-        help="Dataset version e.g. v1",
-    )
-    roberta.add_argument(
-        "--per-device-batch-size",
-        type=int,
-        default=8,
-        help="Per device batch size",
-    )
 
-    """
-    Subparser for the GPT2
-    """
-    gpt2 = subparsers.add_parser("gpt2")
-    gpt2.add_argument(
-        "--num-train-epochs", type=int, help="Number of training epochs", default=10
-    )
-    gpt2.add_argument(
-        "--tokenizer-dir",
-        type=get_path_from_uri,
-        help="Tokenizer directory. Use gs:/ to load from Google Cloud Storage",
-        required=True,
-    )
-    gpt2.add_argument(
-        "--model-dir",
-        type=get_path_from_uri,
-        help="Job directory. Use gs:/ to save to Google Cloud Storage",
-        default=os.environ.get("AIP_MODEL_DIR"),
-    )
-    gpt2.add_argument(
-        "--checkpoint-dir",
-        type=get_path_from_uri,
-        help="Checkpoint directory. Use gs:/ to save to Google Cloud Storage",
-        default=os.environ.get("AIP_CHECKPOINT_DIR"),
-    )
-    gpt2.add_argument(
-        "--logging-dir",
-        type=get_path_from_uri,
-        help="Logging directory. Use gs:/ to save to Google Cloud Storage",
-        default=os.environ.get("AIP_TENSORBOARD_LOG_DIR"),
-    )
-    gpt2.add_argument(
-        "--dataset-revision",
-        type=str,
-        help="Dataset version e.g. v1",
-    )
+def get_parser() -> ArgumentParser:
+    parser = ArgumentParser()
+    subparser = parser.add_subparsers(dest="task")
 
-    """
-    Subparser for the T5
-    """
-    t5 = subparsers.add_parser("t5")
-    t5.add_argument(
-        "--num-train-epochs", type=int, help="Number of training epochs", default=10
-    )
-    t5.add_argument(
-        "--tokenizer-dir",
-        type=get_path_from_uri,
-        help="Tokenizer directory. Use gs:/ to load from Google Cloud Storage",
-        required=True,
-    )
-    t5.add_argument(
-        "--model-dir",
-        type=get_path_from_uri,
-        help="Job directory. Use gs:/ to save to Google Cloud Storage",
-        default=os.environ.get("AIP_MODEL_DIR"),
-    )
-    t5.add_argument(
-        "--checkpoint-dir",
-        type=get_path_from_uri,
-        help="Checkpoint directory. Use gs:/ to save to Google Cloud Storage",
-        default=os.environ.get("AIP_CHECKPOINT_DIR"),
-    )
-    t5.add_argument(
-        "--logging-dir",
-        type=get_path_from_uri,
-        help="Logging directory. Use gs:/ to save to Google Cloud Storage",
-        default=os.environ.get("AIP_TENSORBOARD_LOG_DIR"),
-    )
-    t5.add_argument(
-        "--dataset-revision",
-        type=str,
-        help="Dataset version e.g. v1",
-    )
-    t5.add_argument(
-        "--per-device-batch-size",
-        type=int,
-        default=8,
-        help="Per device batch size",
-    )
+    parents = [
+        base_model_parser,
+        dataset_parser,
+        training_parser,
+        workspace_parser,
+    ]
 
-    """
-    Subparser for the MT5 GEC
-    """
-    t5_gec = subparsers.add_parser("mt5-gec")
-    t5_gec.add_argument(
-        "--num-train-epochs", type=int, help="Number of training epochs", default=2
-    )
-    t5_gec.add_argument(
-        "--model-dir",
-        type=get_path_from_uri,
-        help="Job directory. Use gs:/ to save to Google Cloud Storage",
-        default=os.environ.get("AIP_MODEL_DIR"),
-    )
-    t5_gec.add_argument(
-        "--checkpoint-dir",
-        type=get_path_from_uri,
-        help="Checkpoint directory. Use gs:/ to save to Google Cloud Storage",
-        default=os.environ.get("AIP_CHECKPOINT_DIR"),
-    )
-    t5_gec.add_argument(
-        "--logging-dir",
-        type=get_path_from_uri,
-        help="Logging directory. Use gs:/ to save to Google Cloud Storage",
-        default=os.environ.get("AIP_TENSORBOARD_LOG_DIR"),
-    )
-    t5_gec.add_argument(
-        "--dataset-revision",
-        type=str,
-        help="Dataset version e.g. v1",
-    )
-    t5_gec.add_argument(
-        "--per-device-batch-size",
-        type=int,
-        default=8,
-        help="Per device batch size",
-    )
+    subparser.add_parser("roberta", parents=parents)
+    subparser.add_parser("roberta-pos", parents=parents)
+    subparser.add_parser("mt5", parents=parents)
+    subparser.add_parser("mt5-gec", parents=parents)
+    subparser.add_parser("gpt2", parents=parents)
+    subparser.add_parser("byte-level-bpe", parents=parents)
 
     return parser

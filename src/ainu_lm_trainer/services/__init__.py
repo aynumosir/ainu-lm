@@ -1,6 +1,6 @@
-from .byte_level_bpe import ByteLevelBPETokenizerTrainer
-from .gpt2 import GPT2Trainer, GPT2TrainerParams
-from .mt5_gec import MT5GECTrainer, MT5GECTrainerParams
-from .roberta import RobertaTrainer, RobertaTrainerParams
-from .sentencepiece import SentencepieceTokenizerTrainer
-from .t5 import T5Trainer, T5TrainerParams
+from .byte_level_bpe import ByteLevelBpeTokenizerTrainer
+from .gpt2 import Gpt2Trainer
+from .mt5 import Mt5Trainer
+from .mt5_gec import Mt5GecTrainer
+from .roberta import RobertaTrainer
+from .roberta_pos import RobertaPosTrainer

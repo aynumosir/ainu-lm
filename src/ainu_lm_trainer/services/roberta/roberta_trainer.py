@@ -1,6 +1,3 @@
-from dataclasses import dataclass
-from pathlib import Path
-
 import torch
 from transformers import (
     DataCollatorForLanguageModeling,
@@ -11,27 +8,39 @@ from transformers import (
     TrainingArguments,
 )
 
-from ...models import TrainingDataset, TrainingDirs
-
-
-@dataclass
-class RobertaTrainerParams:
-    dirs: TrainingDirs
-    dataset: TrainingDataset
-    tokenizer: Path | str
-    num_train_epochs: int
-    per_device_batch_size: int = 32
-    context_length: int = 128
+from ...config import (
+    DatasetConfig,
+    FineTuningConfig,
+    TrainingConfig,
+    WorkspaceConfig,
+)
 
 
 class RobertaTrainer:
-    params: RobertaTrainerParams
+    __context_length = 128
+    __model_name = "aynumosir/roberta-base-ainu"
 
-    def __init__(self, params: RobertaTrainerParams) -> None:
-        self.params = params
+    __fine_tuning_config: FineTuningConfig
+    __dataset_config: DatasetConfig
+    __training_config: TrainingConfig
+    __workspace_config: WorkspaceConfig
+
+    def __init__(
+        self,
+        fine_tuning_config: FineTuningConfig,
+        dataset_config: DatasetConfig,
+        training_config: TrainingConfig,
+        workspace_config: WorkspaceConfig,
+    ) -> None:
+        self.__fine_tuning_config = fine_tuning_config
+        self.__dataset_config = dataset_config
+        self.__training_config = training_config
+        self.__workspace_config = workspace_config
 
     def train(self) -> None:
-        tokenizer = RobertaTokenizerFast.from_pretrained(str(self.params.tokenizer))
+        tokenizer = RobertaTokenizerFast.from_pretrained(
+            str(self.__fine_tuning_config.tokenizer)
+        )
 
         config = RobertaConfig.from_pretrained("FacebookAI/roberta-base")
 
@@ -42,12 +51,12 @@ class RobertaTrainer:
             tokenizer=tokenizer, mlm=True, mlm_probability=0.15
         )
 
-        dataset = self.params.dataset.get_dataset()
+        dataset = self.__dataset_config.load()
         dataset = dataset.map(
             lambda examples: tokenizer(
-                examples["text"],
+                examples["sentence"],
                 truncation=True,
-                max_length=self.params.context_length,
+                max_length=self.__context_length,
                 padding="max_length",
                 return_tensors="pt",
             ),
@@ -56,14 +65,12 @@ class RobertaTrainer:
         dataset_dict = dataset.train_test_split(test_size=0.1)
 
         training_args = TrainingArguments(
+            output_dir=str(self.__workspace_config.checkpoint_dir),
             evaluation_strategy="epoch",
-            output_dir=str(self.params.dirs.checkpoint),
-            num_train_epochs=self.params.num_train_epochs,
-            per_device_train_batch_size=self.params.per_device_batch_size,
-            per_device_eval_batch_size=self.params.per_device_batch_size,
-            logging_dir=str(self.params.dirs.logging),
+            logging_dir=str(self.__workspace_config.logging_dir),
             report_to=["tensorboard"],
         )
+        training_args = self.__training_config.extend(training_args)
 
         trainer = Trainer(
             model=model,
@@ -74,7 +81,11 @@ class RobertaTrainer:
         )
 
         trainer.train()
-        trainer.save_model(str(self.params.dirs.model))
+        trainer.save_model(str(self.__workspace_config.model_dir))
 
         metrics = trainer.evaluate(eval_dataset=dataset_dict["test"])
         trainer.save_metrics("all", metrics)
+
+        if self.__training_config.push_to_hub:
+            model.push_to_hub(self.__model_name)
+            tokenizer.push_to_hub(self.__model_name)

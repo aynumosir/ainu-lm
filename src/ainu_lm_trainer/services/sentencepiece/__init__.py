@@ -1,1 +1,0 @@
-from .sentencepiece_trainer import SentencepieceTokenizerTrainer

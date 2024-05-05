@@ -13,15 +13,18 @@ readme = "README.md"
 requires-python = ">=3.10"
 
 dependencies = [
-	"datasets==2.18.0",
-	"transformers==4.38.2",
-	"tokenizers==0.15.2",
+	"evaluate==0.4.2",
+	"datasets==2.19.0",
+	"transformers==4.40.1",
+	"tokenizers==0.19.1",
 	"sentencepiece==0.2.0",
+	"sacrebleu==2.4.2",
+	"seqeval==1.2.2",
 	"google-cloud-storage==2.16.0",
 	"cloudml-hypertune==0.1.0.dev6",
-	"accelerate==0.28.0",
-	"google-cloud-aiplatform[tensorboard]==1.44.0",
-	"google-cloud-pipeline-components==2.11.0",
+	"accelerate==0.29.3",
+	"google-cloud-aiplatform[tensorboard]==1.49.0",
+	"google-cloud-pipeline-components==2.14.0",
 ]
 
 [project.optional-dependencies]
