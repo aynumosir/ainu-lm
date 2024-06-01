@@ -1,4 +1,8 @@
+import multiprocessing
+import os
+
 import torch
+from datasets import interleave_datasets
 from transformers import (
     DataCollatorForSeq2Seq,
     EarlyStoppingCallback,
@@ -14,6 +18,10 @@ from ...config import (
     TrainingConfig,
     WorkspaceConfig,
 )
+from ...libs.corpus import Corpus
+from ...libs.error_generator import ErrorGenerator
+from ...libs.spell_checker import SpellChecker
+from ...libs.word_sampler import WordSampler
 
 
 class Mt5GecTrainer:
@@ -45,10 +53,41 @@ class Mt5GecTrainer:
         model = model.to("cuda") if torch.cuda.is_available() else model
 
         dataset = self.__dataset_config.load()
+        dataset = dataset.filter(lambda example: len(example["sentence"]) > 0)
+
+        corpus = Corpus.from_dataset(dataset)
+        word_sampler = WordSampler.from_corpus(corpus)
+        spell_checker_cache = multiprocessing.Manager().dict()
+        spell_checker = SpellChecker.from_corpus(corpus, cache=spell_checker_cache)
+        error_generator = ErrorGenerator(
+            word_sampler=word_sampler, spell_checker=spell_checker
+        )
+
+        dataset = interleave_datasets([dataset] * 1, stopping_strategy="all_exhausted")
+
+        print(f"executing error_generator.map with {os.cpu_count()} processes...")
         dataset = dataset.map(
-            lambda examples: self.__preprocess_function(tokenizer, examples),
+            lambda example: {
+                "incorrect": error_generator(example["sentence"]),
+                "correct": example["sentence"],
+            },
+            num_proc=os.cpu_count(),
+            # batched=True,
+        )
+
+        # https://huggingface.co/docs/transformers/en/tasks/summarization#preprocess
+        dataset = dataset.map(
+            lambda examples: tokenizer(
+                [self.__task_prefix + sentence for sentence in examples["incorrect"]],
+                text_target=[text for text in examples["correct"]],
+                max_length=self.__context_length,
+                padding="max_length",
+                truncation=True,
+                return_tensors="pt",
+            ),
             batched=True,
         )
+
         dataset_dict = dataset.train_test_split(test_size=0.1)
         data_collator = DataCollatorForSeq2Seq(tokenizer, model=model)
 
@@ -63,7 +102,6 @@ class Mt5GecTrainer:
             weight_decay=0.01,
             # https://dev.classmethod.jp/articles/huggingface-usage-early-stopping/#toc-5
             load_best_model_at_end=True,
-            fp16=True if torch.cuda.is_available() else False,
             logging_dir=str(self.__workspace_config.logging_dir),
             report_to=["tensorboard"],
         )
@@ -87,15 +125,3 @@ class Mt5GecTrainer:
         if self.__training_config.push_to_hub:
             model.push_to_hub(self.__model_name)
             tokenizer.push_to_hub(self.__model_name)
-
-    # https://huggingface.co/docs/transformers/en/tasks/summarization#preprocess
-    def __preprocess_function(self, tokenizer: MT5Tokenizer, examples: dict) -> dict:
-        inputs = tokenizer(
-            [self.__task_prefix + text for text in examples["text"]],
-            text_target=examples["labels"],
-            max_length=self.__context_length,
-            padding="max_length",
-            truncation=True,
-            return_tensors="pt",
-        )
-        return inputs

@@ -14,10 +14,10 @@ def get_mt5_gec_training_job_spec(
                 "image_uri": train_image_uri,
                 "args": [
                     "mt5-gec",
-                    "--dataset-name=aynumosir/ainu-synthetic-learner-corpus",
-                    "--dataset-split=data",
+                    "--dataset-name=aynumosir/ainu-corpora",
+                    "--dataset-split=train",
                     f"--push-to-hub={push_to_hub}",
-                    "--num-train-epochs=10",
+                    "--num-train-epochs=1",
                     "--per-device-train-batch-size=32",
                     "--per-device-eval-batch-size=32",
                 ],

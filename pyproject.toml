@@ -13,6 +13,7 @@ readme = "README.md"
 requires-python = ">=3.10"
 
 dependencies = [
+	"ainu-utils==0.2.1",
 	"evaluate==0.4.2",
 	"datasets==2.19.0",
 	"transformers==4.40.1",
@@ -20,6 +21,8 @@ dependencies = [
 	"sentencepiece==0.2.0",
 	"sacrebleu==2.4.2",
 	"seqeval==1.2.2",
+	"numpy==1.26.4",
+	"pyllist==0.3",
 	"google-cloud-storage==2.16.0",
 	"cloudml-hypertune==0.1.0.dev6",
 	"accelerate==0.29.3",
