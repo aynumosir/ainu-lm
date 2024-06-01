@@ -24,7 +24,7 @@ metric = evaluate.load("sacrebleu")
 class Mt5Trainer:
     __context_length = 128
     __model_name = "aynumosir/mt5-small-ainu"
-    __task_prefix = "translate: Ainu to Japanese: "
+    __task_prefix = "translate: Japanese to Ainu: "
 
     __dataset_config: DatasetConfig
     __fine_tuning_config: FineTuningConfig
@@ -54,15 +54,25 @@ class Mt5Trainer:
             lambda example: len(example["sentence"]) > 0
             and len(example["translation"]) > 0
         )
-        # dataset = dataset.filter(lambda example: "dictionary" not in example["tags"])
         dataset = dataset.filter(
             lambda example: not (
                 example["book"] == "鍋沢元蔵筆録ノート"
                 and example["title"] == "kamuyyukar-2"
             )
         )
+
+        # https://huggingface.co/docs/transformers/en/tasks/summarization#preprocess
+        def preprocess(examples: dict) -> dict:
+            inputs = tokenizer(
+                [self.__task_prefix + text for text in examples["translation"]],
+                text_target=examples["sentence"],
+                max_length=self.__context_length,
+                truncation=True,
+            )
+            return inputs
+
         dataset = dataset.map(
-            lambda examples: self.__preprocess_function(tokenizer, examples),
+            preprocess,
             batched=True,
             remove_columns=dataset.column_names,
         )
@@ -107,16 +117,6 @@ class Mt5Trainer:
         if self.__training_config.push_to_hub:
             model.push_to_hub(self.__model_name)
             tokenizer.push_to_hub(self.__model_name)
-
-    # https://huggingface.co/docs/transformers/en/tasks/summarization#preprocess
-    def __preprocess_function(self, tokenizer: MT5Tokenizer, examples: dict) -> dict:
-        inputs = tokenizer(
-            [self.__task_prefix + text for text in examples["sentence"]],
-            text_target=examples["translation"],
-            max_length=self.__context_length,
-            truncation=True,
-        )
-        return inputs
 
     def __compute_metrics(
         self, tokenizer: MT5Tokenizer, eval_preds: EvalPrediction
