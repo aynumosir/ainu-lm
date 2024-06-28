@@ -46,6 +46,7 @@ def get_parser() -> ArgumentParser:
     subparser.add_parser("roberta-pos", parents=parents)
     subparser.add_parser("mt5", parents=parents)
     subparser.add_parser("mt5-gec", parents=parents)
+    subparser.add_parser("mt5-affix", parents=parents)
     subparser.add_parser("gpt2", parents=parents)
     subparser.add_parser("byte-level-bpe", parents=parents)
 

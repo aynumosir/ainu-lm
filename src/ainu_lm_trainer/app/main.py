@@ -7,6 +7,7 @@ from ..config import (
 from ..services import (
     ByteLevelBpeTokenizerTrainer,
     Gpt2Trainer,
+    Mt5AffixTrainer,
     Mt5GecTrainer,
     Mt5Trainer,
     RobertaPosTrainer,
@@ -68,9 +69,18 @@ if __name__ == "__main__":
         )
         mt5_trainer.train()
 
+    if args.task == "mt5-affix":
+        mt5_affix_trainer = Mt5AffixTrainer(
+            dataset_config=dataset_config,
+            fine_tuning_config=fine_tuning_config,
+            training_config=training_config,
+            workspace_config=workspace_config,
+        )
+        mt5_affix_trainer.train()
+
     if args.task == "mt5-gec":
         mt5_gec_trainer = Mt5GecTrainer(
-            dataset_config=dataset_config,
+            # dataset_config=dataset_config,
             fine_tuning_config=fine_tuning_config,
             training_config=training_config,
             workspace_config=workspace_config,

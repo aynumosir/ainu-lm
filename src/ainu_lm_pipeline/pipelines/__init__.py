@@ -1,4 +1,5 @@
 from .ainu_gpt2_pipeline import ainu_gpt2_pipeline
+from .ainu_mt5_affix_pipeline import ainu_mt5_affix_pipeline
 from .ainu_mt5_gec_pipeline import ainu_mt5_gec_pipeline
 from .ainu_mt5_pipeline import ainu_mt5_pipeline
 from .ainu_roberta_pipeline import ainu_roberta_pipeline

@@ -20,6 +20,13 @@ def stringify(words: list[str]) -> str:
     return text.strip()
 
 
+def can_introduce_error(word: str) -> bool:
+    is_not_empty = word.strip() != ""
+    is_not_affix = "=" not in word
+    is_alphabet = re.fullmatch(r"[a-zA-Z]+", word) is not None
+    return is_not_empty and is_not_affix and is_alphabet
+
+
 class ErrorGenerator:
     __word_sampler: WordSampler
     __spell_checker: SpellChecker
@@ -45,16 +52,14 @@ class ErrorGenerator:
         valid_words = [
             error_word
             for error_word in words.iternodes()
-            if error_word.value.strip() != ""
-            and "=" not in error_word.value
-            and re.fullmatch(r"[a-zA-Z]+", error_word.value)
+            if can_introduce_error(error_word.value)
         ]
 
         if len(valid_words) == 0:
             return sentence
 
-        error_probability = random.normalvariate(0.15, 0.2)
-        error_count = max(math.floor(len(valid_words) * error_probability), 0)
+        error_probability = min(max(random.normalvariate(0.15, 0.2), 0), 1)
+        error_count = math.floor(len(valid_words) * error_probability)
         error_words = random.sample(valid_words, k=error_count)
 
         for word in error_words:

@@ -35,12 +35,13 @@ class SpellChecker:
         entries: list[SpellCheckEntry] = [
             SpellCheckEntry(
                 word=w2,
-                score=self.__score(w1, w2, max_d=5, min_L=2),
+                score=self.__score(w1, w2),
             )
             for w2 in self.__words
             if w2 != w1
         ]
 
+        entries = [e for e in entries if e.score > 0]
         entries = sorted(entries, key=lambda x: x.score, reverse=True)
         entries = entries[: self.__top_k]
 
@@ -49,17 +50,27 @@ class SpellChecker:
 
         return entries
 
-    def __score(self, w1: str, w2: str, max_d: int, min_L: int) -> float:
+    def __score(
+        self,
+        w1: str,
+        w2: str,
+        max_d: int = 5,
+        min_L: int = 2,
+        weight_d: float = 0.5,
+        weight_L: float = 0.5,
+    ) -> float:
         d = leven(w1, w2)
         L = len(lcs(w1, w2))
 
-        if d > max_d or L < min_L:
+        if d > max_d:
+            return 0.0
+        if L < min_L:
             return 0.0
 
         d_scaled = d / max_d
-        l_scaled = L / min(len(w1), len(w2))
+        L_scaled = L / len(w1)
 
-        score = (1 - d_scaled) + l_scaled / 2
+        score = weight_d * (1 - d_scaled) + weight_L * L_scaled
         score = math.exp(score)
 
         return score

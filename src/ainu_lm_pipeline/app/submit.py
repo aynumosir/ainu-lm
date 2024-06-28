@@ -21,6 +21,7 @@ subparsers.add_parser("roberta", parents=[common])
 subparsers.add_parser("gpt2", parents=[common])
 subparsers.add_parser("mt5", parents=[common])
 subparsers.add_parser("mt5-gec", parents=[common])
+subparsers.add_parser("mt5-affix", parents=[common])
 
 
 if __name__ == "__main__":
