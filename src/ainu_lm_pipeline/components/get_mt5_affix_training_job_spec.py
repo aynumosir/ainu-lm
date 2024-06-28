@@ -2,22 +2,22 @@ from kfp import dsl
 
 
 @dsl.component(base_image="python:3.10")
-def get_mt5_gec_training_job_spec(
+def get_mt5_affix_training_job_spec(
     train_image_uri: str,
     push_to_hub: bool,
-    # dataset_revision: str,
-    # tokenizer_gcs_path: str,
+    dataset_revision: str,
 ) -> list:
     worker_pool_specs = [
         {
             "container_spec": {
                 "image_uri": train_image_uri,
                 "args": [
-                    "mt5-gec",
-                    # "--dataset-name=aynumosir/ainu-corpora",
-                    # "--dataset-split=train",
+                    "mt5-affix",
+                    "--dataset-name=aynumosir/ainu-corpora",
+                    "--dataset-split=train",
+                    f"--dataset-revision={dataset_revision}",
                     f"--push-to-hub={push_to_hub}",
-                    "--num-train-epochs=3",
+                    "--num-train-epochs=10",
                     "--per-device-train-batch-size=32",
                     "--per-device-eval-batch-size=32",
                 ],

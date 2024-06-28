@@ -3,11 +3,11 @@ from typing import Optional
 from google_cloud_pipeline_components.v1.custom_job import CustomTrainingJobOp
 from kfp import dsl
 
-from ..components import common, get_mt5_training_job_spec
+from ..components import common, get_mt5_affix_training_job_spec
 
 
-@dsl.pipeline(name="ainu-mt5-pipeline", pipeline_root="ainu-lm")
-def ainu_mt5_pipeline(
+@dsl.pipeline(name="ainu-mt5-affix-pipeline", pipeline_root="ainu-lm")
+def ainu_mt5_affix_pipeline(
     project_id: str,
     location: str,
     service_account: str,
@@ -94,7 +94,7 @@ def ainu_mt5_pipeline(
     # mT5 訓練ジョブの仕様を取得
     # ----------------------------------------------------
     get_mt5_training_job_spec_op = (
-        get_mt5_training_job_spec(
+        get_mt5_affix_training_job_spec(
             train_image_uri=train_image_uri,
             push_to_hub=push_to_hub,
             dataset_revision=get_dataset_revision_op.output,
@@ -108,7 +108,7 @@ def ainu_mt5_pipeline(
     # ----------------------------------------------------
     CustomTrainingJobOp(
         project=project_id,
-        display_name=f"ainu-lm-mt5-{training_job_suffix}",
+        display_name=f"ainu-lm-mt5-affix-{training_job_suffix}",
         base_output_directory=get_base_output_directory_op.output,
         worker_pool_specs=get_mt5_training_job_spec_op.output,
         location=location,

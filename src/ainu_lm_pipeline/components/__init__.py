@@ -1,6 +1,7 @@
 from . import common
 from .get_byte_level_bpe_training_job_spec import get_byte_level_bpe_training_job_spec
 from .get_gpt2_training_job_spec import get_gpt2_training_job_spec
+from .get_mt5_affix_training_job_spec import get_mt5_affix_training_job_spec
 from .get_mt5_gec_training_job_spec import get_mt5_gec_training_job_spec
 from .get_mt5_training_job_spec import get_mt5_training_job_spec
 from .get_roberta_pos_training_job_spec import get_roberta_pos_training_job_spec

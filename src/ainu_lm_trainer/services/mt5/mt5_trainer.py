@@ -54,6 +54,7 @@ class Mt5Trainer:
             lambda example: len(example["sentence"]) > 0
             and len(example["translation"]) > 0
         )
+        # 文語に括弧書きで口語がある資料。除外する。
         dataset = dataset.filter(
             lambda example: not (
                 example["book"] == "鍋沢元蔵筆録ノート"

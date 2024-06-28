@@ -5,6 +5,7 @@ from kfp.compiler import Compiler
 
 from ..pipelines import (
     ainu_gpt2_pipeline,
+    ainu_mt5_affix_pipeline,
     ainu_mt5_gec_pipeline,
     ainu_mt5_pipeline,
     ainu_roberta_pipeline,
@@ -31,6 +32,7 @@ subparsers.add_parser("roberta", parents=[common])
 subparsers.add_parser("gpt2", parents=[common])
 subparsers.add_parser("mt5", parents=[common])
 subparsers.add_parser("mt5-gec", parents=[common])
+subparsers.add_parser("mt5-affix", parents=[common])
 
 
 if __name__ == "__main__":
@@ -47,6 +49,8 @@ if __name__ == "__main__":
         pipeline_func = ainu_mt5_pipeline
     elif args.pipeline == "mt5-gec":
         pipeline_func = ainu_mt5_gec_pipeline
+    elif args.pipeline == "mt5-affix":
+        pipeline_func = ainu_mt5_affix_pipeline
 
     compiler = Compiler()
     compiler.compile(

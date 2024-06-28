@@ -25,15 +25,23 @@ def ainu_mt5_gec_pipeline(
     # ----------------------------------------------------
     # トークンの取得
     # ----------------------------------------------------
-    get_hf_token_op = common.get_secret_by_id(
-        project_id=project_id,
-        secret_id=hf_secret_id,
-    ).set_display_name("Hugging Face Hub のトークン取得")
+    get_hf_token_op = (
+        common.get_secret_by_id(
+            project_id=project_id,
+            secret_id=hf_secret_id,
+        )
+        .set_display_name("Hugging Face Hub のトークン取得")
+        .set_caching_options(False)
+    )
 
-    get_github_token_op = common.get_secret_by_id(
-        project_id=project_id,
-        secret_id=github_secret_id,
-    ).set_display_name("GitHub のトークン取得")
+    get_github_token_op = (
+        common.get_secret_by_id(
+            project_id=project_id,
+            secret_id=github_secret_id,
+        )
+        .set_display_name("GitHub のトークン取得")
+        .set_caching_options(False)
+    )
 
     # ----------------------------------------------------
     # リビジョンの取得
