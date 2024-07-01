@@ -34,7 +34,7 @@ class Corpus:
         return [Usage(word, count) for word, count in usages.items()]
 
     @classmethod
-    def from_dataset(cls, dataset: Dataset, column_name: str = "sentence") -> Corpus:
+    def from_dataset(cls, dataset: Dataset, column_name: str = "text") -> Corpus:
         sentences: list[Sentence] = []
 
         for example in dataset[column_name]:

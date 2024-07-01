@@ -24,9 +24,9 @@ steps:
       - "-c"
       - |
         pip install -q "." \
-        && python -m ainu_lm_pipeline.app.compile roberta \
-        && python -m ainu_lm_pipeline.app.push roberta \
-        && python -m ainu_lm_pipeline.app.schedule roberta --cron "TZ=Asia/Tokyo 0 0 * * SAT"
+        && ainu-lm-pipeline compile roberta \
+        && ainu-lm-pipeline push roberta \
+        && ainu-lm-pipeline schedule roberta --cron "TZ=Asia/Tokyo 0 0 * * SAT"
     # waitFor: ["-"]
 
   - id: "Update ainu-gpt2-pipeline"
@@ -36,9 +36,9 @@ steps:
       - "-c"
       - |
         pip install -q "." \
-        && python -m ainu_lm_pipeline.app.compile gpt2 \
-        && python -m ainu_lm_pipeline.app.push gpt2 \
-        && python -m ainu_lm_pipeline.app.schedule gpt2 --cron "TZ=Asia/Tokyo 0 0 * * SUN"
+        && ainu-lm-pipeline compile gpt2 \
+        && ainu-lm-pipeline push gpt2 \
+        && ainu-lm-pipeline schedule gpt2 --cron "TZ=Asia/Tokyo 0 0 * * SUN"
     # waitFor: ["-"]
 
   - id: "Update ainu-mt5-pipeline"
@@ -48,7 +48,7 @@ steps:
       - "-c"
       - |
         pip install -q "." \
-        && python -m ainu_lm_pipeline.app.compile mt5 \
-        && python -m ainu_lm_pipeline.app.push mt5 \
-        && python -m ainu_lm_pipeline.app.schedule mt5 --cron "TZ=Asia/Tokyo 0 0 * * MON"
+        && ainu-lm-pipeline compile mt5 \
+        && ainu-lm-pipeline push mt5 \
+        && ainu-lm-pipeline schedule mt5 --cron "TZ=Asia/Tokyo 0 0 * * MON"
     # waitFor: ["-"]
