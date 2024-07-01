@@ -20,7 +20,7 @@ class ByteLevelBpeTokenizerTrainer:
     # https://huggingface.co/docs/tokenizers/en/training_from_memory#using-the-datasets-library
     def __batch_iterator(self, batch_size: int = 1_000) -> Iterator[Iterator[str]]:
         for i in range(0, len(self.__dataset), batch_size):
-            yield self.__dataset[i : i + batch_size]["sentence"]
+            yield self.__dataset[i : i + batch_size]["text"]
 
     def __prepare(self) -> None:
         self.__workspace_config.model_dir.mkdir(parents=True, exist_ok=True)

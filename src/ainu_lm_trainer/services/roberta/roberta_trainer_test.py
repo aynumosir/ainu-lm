@@ -14,7 +14,7 @@ from .roberta_trainer import RobertaTrainer
 def test_compact_dataset() -> None:
     dataset = Dataset.from_dict(
         {
-            "sentence": [
+            "text": [
                 "this is a 1st test sentence",
                 "this is a 2nd test sentence",
                 "this is a 3rd test sentence",

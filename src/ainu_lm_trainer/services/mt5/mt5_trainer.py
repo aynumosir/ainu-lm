@@ -24,7 +24,6 @@ metric = evaluate.load("sacrebleu")
 class Mt5Trainer:
     __context_length = 128
     __model_name = "aynumosir/mt5-small-ainu"
-    __task_prefix = "translate: Japanese to Ainu: "
 
     __dataset_config: DatasetConfig
     __fine_tuning_config: FineTuningConfig
@@ -51,22 +50,17 @@ class Mt5Trainer:
 
         dataset = self.__dataset_config.load()
         dataset = dataset.filter(
-            lambda example: len(example["sentence"]) > 0
-            and len(example["translation"]) > 0
-        )
-        # 文語に括弧書きで口語がある資料。除外する。
-        dataset = dataset.filter(
-            lambda example: not (
-                example["book"] == "鍋沢元蔵筆録ノート"
-                and example["title"] == "kamuyyukar-2"
-            )
+            lambda example: len(example["text"]) > 0 and len(example["translation"]) > 0
         )
 
         # https://huggingface.co/docs/transformers/en/tasks/summarization#preprocess
         def preprocess(examples: dict) -> dict:
             inputs = tokenizer(
-                [self.__task_prefix + text for text in examples["translation"]],
-                text_target=examples["sentence"],
+                [
+                    self.__get_task_prefix(example) + example["translation"]
+                    for example in examples
+                ],
+                text_target=examples["text"],
                 max_length=self.__context_length,
                 truncation=True,
             )
@@ -118,6 +112,12 @@ class Mt5Trainer:
         if self.__training_config.push_to_hub:
             model.push_to_hub(self.__model_name)
             tokenizer.push_to_hub(self.__model_name)
+
+    def __get_task_prefix(self, example: dict) -> str:
+        if example["dialect"] is not None:
+            return f"translate Japanese to Ainu ({example['dialect']}, {example['pronoun']}): "
+        else:
+            return f"translate Japanese to Ainu (沙流, {example['pronoun']}): "
 
     def __compute_metrics(
         self, tokenizer: MT5Tokenizer, eval_preds: EvalPrediction
