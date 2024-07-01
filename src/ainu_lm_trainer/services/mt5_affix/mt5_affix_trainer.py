@@ -49,11 +49,11 @@ class Mt5AffixTrainer:
         model = model.to("cuda") if torch.cuda.is_available() else model
 
         dataset = self.__dataset_config.load()
-        dataset = dataset.filter(lambda example: len(example["sentence"]) > 0)
+        dataset = dataset.filter(lambda example: len(example["text"]) > 0)
         dataset = dataset.map(
             lambda example: {
-                "text": example["sentence"].replace("=", ""),
-                "target": example["sentence"],
+                "text": example["text"].replace("=", ""),
+                "target": example["text"],
             },
             remove_columns=dataset.column_names,
         )

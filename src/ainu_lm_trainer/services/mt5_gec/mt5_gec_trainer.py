@@ -19,7 +19,6 @@ from ...config import (
 class Mt5GecTrainer:
     __context_length = 128
     __model_name = "aynumosir/mt5-small-ainu-gec"
-    __task_prefix = "fix Ainu sentence: "
 
     __fine_tuning_config: FineTuningConfig
     __training_config: TrainingConfig
@@ -53,7 +52,10 @@ class Mt5GecTrainer:
         # https://huggingface.co/docs/transformers/en/tasks/summarization#preprocess
         dataset = dataset.map(
             lambda examples: tokenizer(
-                [self.__task_prefix + sentence for sentence in examples["text"]],
+                [
+                    self.__get_task_prefix(example) + example["text"]
+                    for example in examples
+                ],
                 text_target=[text for text in examples["target"]],
                 max_length=self.__context_length,
                 padding="max_length",
@@ -100,3 +102,9 @@ class Mt5GecTrainer:
         if self.__training_config.push_to_hub:
             model.push_to_hub(self.__model_name)
             tokenizer.push_to_hub(self.__model_name)
+
+    def __get_task_prefix(self, example: dict) -> str:
+        if example["dialect"] is not None:
+            return f"fix Ainu sentence ({example['dialect']}, {example['pronoun']}): "
+        else:
+            return f"fix Ainu sentence (沙流, {example['pronoun']}): "

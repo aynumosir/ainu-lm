@@ -59,7 +59,7 @@ class Gpt2Trainer:
         dataset = self.__dataset_config.load()
         dataset = dataset.map(
             lambda examples: tokenizer(
-                examples["sentence"],
+                examples["text"],
                 truncation=True,
                 max_length=self.__context_length,
                 padding="max_length",

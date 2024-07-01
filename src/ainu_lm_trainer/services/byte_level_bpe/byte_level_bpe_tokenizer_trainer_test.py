@@ -10,7 +10,7 @@ from .byte_level_bpe_tokenizer_trainer import ByteLevelBpeTokenizerTrainer
 def test_train() -> None:
     dataset = Dataset.from_dict(
         {
-            "sentence": [
+            "text": [
                 "This is a sentence.",
                 "This is another sentence.",
             ]
