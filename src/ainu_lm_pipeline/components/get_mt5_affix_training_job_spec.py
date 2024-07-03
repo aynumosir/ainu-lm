@@ -13,7 +13,7 @@ def get_mt5_affix_training_job_spec(
                 "image_uri": train_image_uri,
                 "args": [
                     "mt5-affix",
-                    "--dataset-name=aynumosir/ainu-corpora",
+                    "--dataset-name=aynumosir/ainu-corpora-normalized",
                     "--dataset-split=train",
                     f"--dataset-revision={dataset_revision}",
                     f"--push-to-hub={push_to_hub}",

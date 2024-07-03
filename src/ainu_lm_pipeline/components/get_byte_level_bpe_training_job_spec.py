@@ -12,7 +12,7 @@ def get_byte_level_bpe_training_job_spec(
                 "image_uri": train_image_uri,
                 "args": [
                     "byte-level-bpe",
-                    "--dataset-name=aynumosir/ainu-corpora",
+                    "--dataset-name=aynumosir/ainu-corpora-normalized",
                     "--dataset-split=train",
                     f"--dataset-revision={dataset_revision}",
                 ],

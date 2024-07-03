@@ -15,7 +15,7 @@ def get_gpt2_training_job_spec(
                 "args": [
                     "gpt2",
                     f"--base-tokenizer={tokenizer_gcs_path}",
-                    "--dataset-name=aynumosir/ainu-corpora",
+                    "--dataset-name=aynumosir/ainu-corpora-normalized",
                     "--dataset-split=train",
                     f"--dataset-revision={dataset_revision}",
                     f"--push-to-hub={push_to_hub}",

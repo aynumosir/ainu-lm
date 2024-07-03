@@ -97,6 +97,7 @@ def ainu_mt5_pipeline(
         get_mt5_training_job_spec(
             train_image_uri=train_image_uri,
             push_to_hub=push_to_hub,
+            dataset_name=hf_dataset_repo,
             dataset_revision=get_dataset_revision_op.output,
         )
         .after(build_custom_train_image_op)

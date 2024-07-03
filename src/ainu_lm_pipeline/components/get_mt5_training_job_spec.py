@@ -5,6 +5,7 @@ from kfp import dsl
 def get_mt5_training_job_spec(
     train_image_uri: str,
     push_to_hub: bool,
+    dataset_name: str,
     dataset_revision: str,
 ) -> list:
     worker_pool_specs = [
@@ -13,7 +14,7 @@ def get_mt5_training_job_spec(
                 "image_uri": train_image_uri,
                 "args": [
                     "mt5",
-                    "--dataset-name=aynumosir/ainu-corpora",
+                    f"--dataset-name={dataset_name}",
                     "--dataset-split=train",
                     f"--dataset-revision={dataset_revision}",
                     f"--push-to-hub={push_to_hub}",

@@ -15,7 +15,7 @@ def get_roberta_training_job_spec(
                 "args": [
                     "roberta",
                     f"--base-tokenizer={tokenizer_gcs_path}",
-                    "--dataset-name=aynumosir/ainu-corpora",
+                    "--dataset-name=aynumosir/ainu-corpora-normalized",
                     "--dataset-split=train",
                     f"--dataset-revision={dataset_revision}",
                     f"--push-to-hub={push_to_hub}",
