@@ -28,7 +28,7 @@ class SpellChecker:
         self.__words = words
         self.__cache = cache
 
-    def check(self, w1: str) -> list[SpellCheckEntry]:
+    def suggest(self, w1: str) -> list[SpellCheckEntry]:
         if self.__cache is not None and w1 in self.__cache:
             return self.__cache[w1]
 

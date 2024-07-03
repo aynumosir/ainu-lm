@@ -30,6 +30,11 @@ dependencies = [
 	"google-cloud-pipeline-components==2.14.0",
 ]
 
+[project.scripts]
+"ainu-lm-pipeline" = "ainu_lm_pipeline.app.main:main"
+"ainu-lm-trainer" = "ainu_lm_trainer.app.main:main"
+"ainu-lm-utils" = "ainu_lm_utils.app.main:main"
+
 [project.optional-dependencies]
 test = ["pytest==8.1.1", "pytest-cov==4.1.0"]
 dev = ["ruff==0.3.3", "mypy==1.9.0", "torch"]

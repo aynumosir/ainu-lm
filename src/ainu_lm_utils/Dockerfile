@@ -16,4 +16,4 @@ RUN pip install -q --no-cache-dir .
 COPY . ./
 RUN pip install -q --no-cache-dir --no-deps .
 
-ENTRYPOINT [ "ainu-lm-trainer" ]
+ENTRYPOINT [ "ainu-lm-utils" ]

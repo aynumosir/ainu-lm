@@ -2,9 +2,7 @@
   "version": "0.2",
   "ignorePaths": [],
   "dictionaryDefinitions": [],
-  "dictionaries": [
-    "python"
-  ],
+  "dictionaries": ["python"],
   "words": [
     "aiohttp",
     "aiplatform",
@@ -20,7 +18,6 @@
     "hypertune",
     "hypertuner",
     "idxmin",
-    "insertafter",
     "isna",
     "iternodes",
     "kaniko",
@@ -32,12 +29,10 @@
     "protobuf",
     "pyarrow",
     "pygithub",
-    "pyllist",
     "secretmanager",
     "sentencepiece",
     "seqeval",
     "sllist",
-    "sllistnode",
     "tensorboard",
     "tensorboards",
     "tqdm",

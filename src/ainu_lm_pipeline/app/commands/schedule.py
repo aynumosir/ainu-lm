@@ -1,29 +1,31 @@
 import os
-from argparse import ArgumentParser
+from argparse import ArgumentParser, Namespace
 
 from google.cloud import aiplatform
 from google.cloud.aiplatform import PipelineJob
 from google.cloud.aiplatform.pipeline_job_schedules import PipelineJobSchedule
 
-from .utils import get_template_path, get_timestamp
+from ..utils import get_template_path, get_timestamp
 
-common = ArgumentParser(add_help=False)
-common.add_argument("--project-id", type=str, default=os.getenv("PROJECT_ID"))
-common.add_argument("--region", type=str, default=os.getenv("REGION"))
-common.add_argument("--pipeline-root", type=str, default=os.getenv("PIPELINE_ROOT"))
-common.add_argument("--service-account", type=str, default=os.getenv("SERVICE_ACCOUNT"))
-common.add_argument("--cron", type=str, required=True)
 
-parser = ArgumentParser()
-subparser = parser.add_subparsers(dest="pipeline")
-subparser.add_parser("roberta", parents=[common])
-subparser.add_parser("gpt2", parents=[common])
-subparser.add_parser("mt5", parents=[common])
-subparser.add_parser("mt5-gec", parents=[common])
+def add_parser(parser: ArgumentParser) -> None:
+    # fmt: off
+    common = ArgumentParser(add_help=False)
+    common.add_argument("--project-id", type=str, default=os.getenv("PROJECT_ID"))
+    common.add_argument("--region", type=str, default=os.getenv("REGION"))
+    common.add_argument("--pipeline-root", type=str, default=os.getenv("PIPELINE_ROOT"))
+    common.add_argument("--service-account", type=str, default=os.getenv("SERVICE_ACCOUNT"))
+    common.add_argument("--cron", type=str, required=True)
 
-if __name__ == "__main__":
-    args = parser.parse_args()
+    subparser = parser.add_subparsers(dest="pipeline")
+    subparser.add_parser("roberta", parents=[common])
+    subparser.add_parser("gpt2", parents=[common])
+    subparser.add_parser("mt5", parents=[common])
+    subparser.add_parser("mt5-gec", parents=[common])
+    # fmt: on
 
+
+def main(args: Namespace) -> None:
     aiplatform.init(project=args.project_id, location=args.region)
 
     pipeline_job = PipelineJob(
