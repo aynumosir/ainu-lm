@@ -1,8 +1,8 @@
-from .dataset_config import (
+from .config_dataset import (
     DatasetConfig,
     DatasetsConfigWithHuggingFaceHub,
     DatasetsConfigWithValue,
 )
-from .fine_tuning_config import FineTuningConfig
-from .training_config import TrainingConfig
-from .workspace_config import WorkspaceConfig
+from .config_fine_tuning import FineTuningConfig
+from .config_training import TrainingConfig
+from .config_workspace import WorkspaceConfig
