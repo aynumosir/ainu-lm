@@ -4,6 +4,9 @@ from argparse import ArgumentParser, Namespace
 from ...config import (
     DatasetsConfigWithHuggingFaceHub,
     FineTuningConfig,
+    MtExperimentsConfig,
+    PronounType,
+    TaskPrefixType,
     TrainingConfig,
     WorkspaceConfig,
 )
@@ -23,6 +26,7 @@ training_parser.add_argument("--per-device-eval-batch-size", type=int)
 training_parser.add_argument("--num-train-epochs", type=int)
 training_parser.add_argument("--weight-decay", type=float)
 training_parser.add_argument("--learning-rate", type=float)
+training_parser.add_argument("--warmup-ratio", type=float)
 training_parser.add_argument("--gradient-accumulation-steps", type=int)
 training_parser.add_argument("--hub-model-id", type=str, required=True)
 training_parser.add_argument("--push-to-hub", type=str, choices=["yes", "no"], default="no")
@@ -50,7 +54,12 @@ def add_parser(parser: ArgumentParser) -> None:
     ]
 
     subparsers.add_parser("pos-tagging", parents=[*common, fine_tuning_parser])
-    subparsers.add_parser("mt", parents=[*common, fine_tuning_parser])
+
+    mt_parser = subparsers.add_parser("mt", parents=[*common, fine_tuning_parser])
+    mt_parser.add_argument("--experiment-task-prefix", type=str, default="all")
+    mt_parser.add_argument("--experiment-include-dialect", type=str)
+    mt_parser.add_argument("--experiment-include-pronoun", type=str)
+    mt_parser.add_argument("--experiment-hyperparameter-tuning", type=bool)
 
     roberta_parser = subparsers.add_parser("roberta", parents=common)
     roberta_parser.add_argument("--base-tokenizer", type=str)
@@ -71,6 +80,7 @@ def main(args: Namespace) -> None:
         per_device_eval_batch_size=args.per_device_eval_batch_size,
         per_device_train_batch_size=args.per_device_train_batch_size,
         weight_decay=args.weight_decay,
+        warmup_ratio=args.warmup_ratio,
         learning_rate=args.learning_rate,
         gradient_accumulation_steps=args.gradient_accumulation_steps,
         hub_model_id=args.hub_model_id,
@@ -106,6 +116,14 @@ def main(args: Namespace) -> None:
             config_dataset=config_dataset,
             config_training=config_training,
             config_workspace=config_workspace,
+            config_mt_experiments=MtExperimentsConfig(
+                task_prefix=TaskPrefixType.from_str(args.experiment_task_prefix),
+                include_dialect=args.experiment_include_dialect,
+                include_pronoun=PronounType.from_str(args.experiment_include_pronoun)
+                if args.experiment_include_pronoun
+                else None,
+                hyperparameter_tuning=args.experiment_hyperparameter_tuning,
+            ),
             config_fine_tuning=FineTuningConfig(
                 base_model=args.base_model,
                 base_tokenizer=args.base_tokenizer,

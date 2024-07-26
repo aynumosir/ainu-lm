@@ -17,30 +17,6 @@ options:
 serviceAccount: projects/$PROJECT_ID/serviceAccounts/$_SERVICE_ACCOUNT
 
 steps:
-  - id: "Update ainu-roberta-pipeline"
-    name: python:3.11
-    entrypoint: bash
-    args:
-      - "-c"
-      - |
-        pip install -q "." \
-        && ainu-lm-pipeline compile roberta \
-        && ainu-lm-pipeline push roberta \
-        && ainu-lm-pipeline schedule roberta --cron "TZ=Asia/Tokyo 0 0 * * SAT"
-    # waitFor: ["-"]
-
-  - id: "Update ainu-gpt2-pipeline"
-    name: python:3.11
-    entrypoint: bash
-    args:
-      - "-c"
-      - |
-        pip install -q "." \
-        && ainu-lm-pipeline compile gpt2 \
-        && ainu-lm-pipeline push gpt2 \
-        && ainu-lm-pipeline schedule gpt2 --cron "TZ=Asia/Tokyo 0 0 * * SUN"
-    # waitFor: ["-"]
-
   - id: "Update ainu-mt5-pipeline"
     name: python:3.11
     entrypoint: bash
@@ -48,7 +24,7 @@ steps:
       - "-c"
       - |
         pip install -q "." \
-        && ainu-lm-pipeline compile mt5 \
-        && ainu-lm-pipeline push mt5 \
-        && ainu-lm-pipeline schedule mt5 --cron "TZ=Asia/Tokyo 0 0 * * MON"
+        && ainu-lm-pipeline compile mt \
+        && ainu-lm-pipeline push mt \
+    # && ainu-lm-pipeline schedule mt --cron "TZ=Asia/Tokyo 0 0 * * MON"
     # waitFor: ["-"]

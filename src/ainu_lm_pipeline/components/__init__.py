@@ -1,4 +1,2 @@
 from . import common
-from .get_mt_ain2ja_training_job_spec import get_mt_ain2ja_training_job_spec
-from .get_mt_bidi_training_job_spec import get_mt_bidi_training_job_spec
-from .get_mt_ja2ain_training_job_spec import get_mt_ja2ain_training_job_spec
+from .get_mt_training_job_spec import get_mt_training_job_spec
