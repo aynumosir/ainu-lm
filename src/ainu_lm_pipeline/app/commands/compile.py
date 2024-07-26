@@ -3,13 +3,7 @@ from argparse import ArgumentParser, Namespace
 
 from kfp.compiler import Compiler
 
-from ...pipelines import (
-    ainu_gpt2_pipeline,
-    ainu_mt5_affix_pipeline,
-    ainu_mt5_gec_pipeline,
-    ainu_mt5_pipeline,
-    ainu_roberta_pipeline,
-)
+from ...pipelines import ainu_mt_pipeline
 from ..utils import get_pipeline_path
 
 
@@ -28,11 +22,7 @@ def add_parser(parser: ArgumentParser) -> None:
     common.add_argument("--github-secret-id", type=str, default=os.getenv("GITHUB_SECRET_ID"))
 
     subparsers = parser.add_subparsers(dest="pipeline")
-    subparsers.add_parser("roberta", parents=[common])
-    subparsers.add_parser("gpt2", parents=[common])
-    subparsers.add_parser("mt5", parents=[common])
-    subparsers.add_parser("mt5-gec", parents=[common])
-    subparsers.add_parser("mt5-affix", parents=[common])
+    subparsers.add_parser("mt", parents=[common])
     # fmt: on
 
 
@@ -41,16 +31,8 @@ def main(args: Namespace) -> None:
 
     os.makedirs(pipeline_path.parent, exist_ok=True)
 
-    if args.pipeline == "roberta":
-        pipeline_func = ainu_roberta_pipeline
-    elif args.pipeline == "gpt2":
-        pipeline_func = ainu_gpt2_pipeline
-    elif args.pipeline == "mt5":
-        pipeline_func = ainu_mt5_pipeline
-    elif args.pipeline == "mt5-gec":
-        pipeline_func = ainu_mt5_gec_pipeline
-    elif args.pipeline == "mt5-affix":
-        pipeline_func = ainu_mt5_affix_pipeline
+    if args.pipeline == "mt":
+        pipeline_func = ainu_mt_pipeline
 
     compiler = Compiler()
     compiler.compile(

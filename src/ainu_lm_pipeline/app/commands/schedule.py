@@ -18,10 +18,7 @@ def add_parser(parser: ArgumentParser) -> None:
     common.add_argument("--cron", type=str, required=True)
 
     subparser = parser.add_subparsers(dest="pipeline")
-    subparser.add_parser("roberta", parents=[common])
-    subparser.add_parser("gpt2", parents=[common])
-    subparser.add_parser("mt5", parents=[common])
-    subparser.add_parser("mt5-gec", parents=[common])
+    subparser.add_parser("mt", parents=[common])
     # fmt: on
 
 

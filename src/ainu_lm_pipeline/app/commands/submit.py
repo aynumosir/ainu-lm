@@ -16,14 +16,10 @@ def add_parser(parser: ArgumentParser) -> None:
     common.add_argument("--service-account", type=str, default=os.getenv("SERVICE_ACCOUNT"))
     common.add_argument("--github-commit-sha", type=str)
     common.add_argument("--hf-dataset-commit-sha", type=str)
-    common.add_argument("--push-to-hub", type=bool, default=False)
+    common.add_argument("--push-to-hub", type=str, choices=["yes", "no"], default="no")
 
     subparsers = parser.add_subparsers(dest="pipeline")
-    subparsers.add_parser("roberta", parents=[common])
-    subparsers.add_parser("gpt2", parents=[common])
-    subparsers.add_parser("mt5", parents=[common])
-    subparsers.add_parser("mt5-gec", parents=[common])
-    subparsers.add_parser("mt5-affix", parents=[common])
+    subparsers.add_parser("mt", parents=[common])
     # fmt: on
 
 
@@ -44,7 +40,7 @@ def main(args: Namespace) -> None:
         parameter_values={
             "github_commit_sha": args.github_commit_sha,
             "hf_dataset_commit_sha": args.hf_dataset_commit_sha,
-            "push_to_hub": args.push_to_hub,
+            "push_to_hub": args.push_to_hub == "yes",
         },
     )
 
