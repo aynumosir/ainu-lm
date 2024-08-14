@@ -5,7 +5,7 @@ from kfp import dsl
 
 from ..components import (
     common,
-    get_mt_bidi_training_job_spec,
+    get_mt_training_job_spec,
 )
 
 
@@ -81,11 +81,10 @@ def ainu_mt_pipeline(
         hf_token=get_hf_token_op.output,
     ).set_display_name("カスタム訓練イメージのビルド")
 
-    get_mt_training_job_spec_op = get_mt_bidi_training_job_spec(
+    get_mt_training_job_spec_op = get_mt_training_job_spec(
         train_image_uri=train_image_uri,
         dataset_name=hf_dataset_repo,
         dataset_revision=get_dataset_revision_op.output,
-        base_model="google/mt5-base",
         hub_model_id="aynumosir/mt5-base-ainu",
         push_to_hub=True,
     ).set_display_name("MTジョブの仕様を取得")
