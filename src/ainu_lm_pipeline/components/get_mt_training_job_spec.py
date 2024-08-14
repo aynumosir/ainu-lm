@@ -19,7 +19,7 @@ def get_mt_training_job_spec(
                 "args": [
                     "train",
                     "mt",
-                    "--base-model=google/mt5-small",
+                    "--base-model=google/mt5-base",
                     f"--dataset-name={dataset_name}",
                     f"--dataset-revision={dataset_revision}",
                     "--num-train-epochs=20",
@@ -29,9 +29,12 @@ def get_mt_training_job_spec(
                     "--learning-rate=5e-4",
                     "--warmup-ratio=0.06",
                     "--weight-decay=0.01",
-                    "--experiment-task-prefix=all",
                     f"--hub-model-id={hub_model_id}",
                     f"--push-to-hub={'yes' if push_to_hub else 'no'}",
+                    # 〜〜〜〜〜〜ここから実験〜〜〜〜〜〜〜
+                    "--experiment-prefix=none",
+                    "--experiment-include-dialect=幌別",
+                    "--experiment-include-pronoun=first",
                 ],
             },
             # https://cloud.google.com/vertex-ai/docs/training/configure-compute?hl=ja#specifying_gpus
