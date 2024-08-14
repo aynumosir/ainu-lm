@@ -33,7 +33,7 @@ def get_mt_training_job_spec(
                     f"--push-to-hub={'yes' if push_to_hub else 'no'}",
                     # 〜〜〜〜〜〜ここから実験〜〜〜〜〜〜〜
                     "--experiment-task-prefix=none",
-                    "--experiment-include-dialect=沙流",
+                    "--experiment-include-dialect=静内",
                     "--experiment-include-pronoun=first",
                 ],
             },
