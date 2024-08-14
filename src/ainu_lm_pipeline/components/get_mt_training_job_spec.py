@@ -34,7 +34,7 @@ def get_mt_training_job_spec(
                     # 〜〜〜〜〜〜ここから実験〜〜〜〜〜〜〜
                     "--experiment-task-prefix=none",
                     "--experiment-include-dialect=千歳",
-                    "--experiment-include-pronoun=first",
+                    "--experiment-include-pronoun=fourth",
                 ],
             },
             # https://cloud.google.com/vertex-ai/docs/training/configure-compute?hl=ja#specifying_gpus
