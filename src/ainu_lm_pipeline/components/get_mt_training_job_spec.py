@@ -32,9 +32,9 @@ def get_mt_training_job_spec(
                     f"--hub-model-id={hub_model_id}",
                     f"--push-to-hub={'yes' if push_to_hub else 'no'}",
                     # 〜〜〜〜〜〜ここから実験〜〜〜〜〜〜〜
-                    "--experiment-task-prefix=none",
-                    "--experiment-include-dialect=沙流",
-                    "--experiment-include-pronoun=fourth",
+                    # "--experiment-task-prefix=none",
+                    # "--experiment-include-dialect=沙流",
+                    # "--experiment-include-pronoun=fourth",
                 ],
             },
             # https://cloud.google.com/vertex-ai/docs/training/configure-compute?hl=ja#specifying_gpus
