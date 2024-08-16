@@ -19,7 +19,7 @@ def get_mt_training_job_spec(
                 "args": [
                     "train",
                     "mt",
-                    "--base-model=google/mt5-base",
+                    "--base-model=google-t5/t5-base",
                     f"--dataset-name={dataset_name}",
                     f"--dataset-revision={dataset_revision}",
                     "--num-train-epochs=20",
