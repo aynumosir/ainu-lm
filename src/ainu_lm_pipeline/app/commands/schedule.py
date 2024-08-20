@@ -19,6 +19,7 @@ def add_parser(parser: ArgumentParser) -> None:
 
     subparser = parser.add_subparsers(dest="pipeline")
     subparser.add_parser("mt", parents=[common])
+    subparser.add_parser("kana", parents=[common])
     # fmt: on
 
 

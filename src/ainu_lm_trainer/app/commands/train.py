@@ -54,6 +54,7 @@ def add_parser(parser: ArgumentParser) -> None:
     ]
 
     subparsers.add_parser("pos-tagging", parents=[*common, fine_tuning_parser])
+    subparsers.add_parser("kana", parents=[*common, fine_tuning_parser])
 
     mt_parser = subparsers.add_parser("mt", parents=[*common, fine_tuning_parser])
     mt_parser.add_argument("--experiment-task-prefix", type=str, default="all")
@@ -124,6 +125,17 @@ def main(args: Namespace) -> None:
                 else None,
                 hyperparameter_tuning=args.experiment_hyperparameter_tuning,
             ),
+            config_fine_tuning=FineTuningConfig(
+                base_model=args.base_model,
+                base_tokenizer=args.base_tokenizer,
+            ),
+        )
+
+    if args.task == "kana":
+        fine_tuning.kana.train(
+            config_dataset=config_dataset,
+            config_training=config_training,
+            config_workspace=config_workspace,
             config_fine_tuning=FineTuningConfig(
                 base_model=args.base_model,
                 base_tokenizer=args.base_tokenizer,

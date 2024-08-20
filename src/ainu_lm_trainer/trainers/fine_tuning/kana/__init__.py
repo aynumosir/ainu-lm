@@ -1,0 +1,1 @@
+from .kana import train
