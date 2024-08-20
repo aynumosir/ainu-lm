@@ -18,6 +18,8 @@ dependencies = [
 	"transformers==4.40.1",
 	"tokenizers==0.19.1",
 	"sentencepiece==0.2.0",
+	"mecab-python3==1.0.9",
+	"ipadic==1.0.0",
 	"sacrebleu==2.4.2",
 	"seqeval==1.2.2",
 	"numpy==1.26.4",
