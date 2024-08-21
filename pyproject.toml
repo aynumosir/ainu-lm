@@ -13,6 +13,7 @@ readme = "README.md"
 requires-python = ">=3.10"
 
 dependencies = [
+	"ainu-utils==0.3.2",
 	"evaluate==0.4.2",
 	"datasets==2.19.0",
 	"transformers==4.40.1",

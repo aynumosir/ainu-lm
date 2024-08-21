@@ -2,7 +2,7 @@ from kfp import dsl
 
 
 @dsl.component(base_image="python:3.10")
-def get_mt_training_job_spec(
+def get_kana_training_job_spec(
     train_image_uri: str,
     dataset_name: str,
     dataset_revision: str,
@@ -15,18 +15,17 @@ def get_mt_training_job_spec(
                 "image_uri": train_image_uri,
                 "args": [
                     "train",
-                    "mt",
+                    "kana",
                     "--base-model=google/mt5-small",
                     f"--dataset-name={dataset_name}",
                     f"--dataset-revision={dataset_revision}",
-                    "--num-train-epochs=20",
+                    "--num-train-epochs=10",
                     "--per-device-train-batch-size=16",
                     "--per-device-eval-batch-size=16",
                     "--gradient-accumulation-steps=2",
                     "--learning-rate=5e-4",
                     "--warmup-ratio=0.06",
                     "--weight-decay=0.01",
-                    "--experiment-task-prefix=all",
                     f"--hub-model-id={hub_model_id}",
                     f"--push-to-hub={'yes' if push_to_hub else 'no'}",
                 ],

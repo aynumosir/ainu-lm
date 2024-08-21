@@ -3,7 +3,7 @@ from argparse import ArgumentParser, Namespace
 
 from kfp.compiler import Compiler
 
-from ...pipelines import ainu_mt_pipeline
+from ...pipelines import ainu_kana_pipeline, ainu_mt_pipeline
 from ..utils import get_pipeline_path
 
 
@@ -23,6 +23,7 @@ def add_parser(parser: ArgumentParser) -> None:
 
     subparsers = parser.add_subparsers(dest="pipeline")
     subparsers.add_parser("mt", parents=[common])
+    subparsers.add_parser("kana", parents=[common])
     # fmt: on
 
 
@@ -33,6 +34,8 @@ def main(args: Namespace) -> None:
 
     if args.pipeline == "mt":
         pipeline_func = ainu_mt_pipeline
+    elif args.pipeline == "kana":
+        pipeline_func = ainu_kana_pipeline
 
     compiler = Compiler()
     compiler.compile(
