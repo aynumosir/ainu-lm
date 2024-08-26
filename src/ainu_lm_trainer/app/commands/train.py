@@ -69,6 +69,7 @@ def add_parser(parser: ArgumentParser) -> None:
     gpt2_parser.add_argument("--base-tokenizer", type=str)
 
     subparsers.add_parser("byte-level-bpe", parents=common)
+    subparsers.add_parser("sentencepiece", parents=common)
 
 
 def main(args: Namespace) -> None:
@@ -156,3 +157,10 @@ def main(args: Namespace) -> None:
             config_workspace=config_workspace,
         )
         bpe_trainer.train()
+
+    if args.task == "sentencepiece":
+        sentencepiece_trainer = pretraining.SentencepieceTokenizerTrainer(
+            config_dataset=config_dataset,
+            config_workspace=config_workspace,
+        )
+        sentencepiece_trainer.train()
