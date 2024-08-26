@@ -85,7 +85,7 @@ def ainu_mt_pipeline(
         train_image_uri=train_image_uri,
         dataset_name=hf_dataset_repo,
         dataset_revision=get_dataset_revision_op.output,
-        hub_model_id="aynumosir/mt5-base-ainu",
+        hub_model_id="aynumosir/t5-base-ainu",
         push_to_hub=True,
     ).set_display_name("MTジョブの仕様を取得")
 

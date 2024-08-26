@@ -3,28 +3,23 @@ import numpy as np
 import torch
 from datasets import DatasetDict, interleave_datasets
 from transformers import (
-    AutoModelForSeq2SeqLM,
-    AutoTokenizer,
     DataCollatorForSeq2Seq,
     EarlyStoppingCallback,
     EvalPrediction,
     Seq2SeqTrainer,
     Seq2SeqTrainingArguments,
+    T5Config,
+    T5ForConditionalGeneration,
+    T5TokenizerFast,
 )
 
-from ....config import (
-    DatasetConfig,
-    FineTuningConfig,
-    MtExperimentsConfig,
-    TrainingConfig,
-    WorkspaceConfig,
-)
-from ....utils import HyperparameterTuningCallback, task_prefix
+from ....config import DatasetConfig, TrainingConfig, WorkspaceConfig
+from ....utils import task_prefix
 
 sacrebleu = evaluate.load("sacrebleu")
 
 
-def compute_metrics(tokenizer: AutoTokenizer, eval_preds: EvalPrediction) -> dict:
+def compute_metrics(tokenizer: T5TokenizerFast, eval_preds: EvalPrediction) -> dict:
     predictions, labels = eval_preds
 
     predictions = np.where(predictions != -100, predictions, tokenizer.pad_token_id)
@@ -41,13 +36,14 @@ def train(
     config_dataset: DatasetConfig,
     config_training: TrainingConfig,
     config_workspace: WorkspaceConfig,
-    config_fine_tuning: FineTuningConfig,
-    config_mt_experiments: MtExperimentsConfig,
+    tokenizer_name: str,
     context_length: int = 128,
 ) -> None:
-    tokenizer = AutoTokenizer.from_pretrained(config_fine_tuning.base_tokenizer)
+    tokenizer = T5TokenizerFast.from_pretrained(tokenizer_name)
 
-    model = AutoModelForSeq2SeqLM.from_pretrained(config_fine_tuning.base_model)
+    config = T5Config.from_pretrained("google-t5/t5-base")
+
+    model = T5ForConditionalGeneration(config)
     model = model.to("cuda") if torch.cuda.is_available() else model
 
     dataset_dict = config_dataset.load()
@@ -55,27 +51,12 @@ def train(
         lambda example: len(example["text"]) > 0 and len(example["translation"]) > 0
     )
 
-    if config_mt_experiments.hyperparameter_tuning:
-        dataset_dict = dataset_dict["test"].train_test_split(test_size=0.1, seed=42)
-
-    if config_mt_experiments.include_dialect is not None:
-        dataset_dict = dataset_dict.filter(
-            lambda example: example["dialect"] == config_mt_experiments.include_dialect
-        )
-
-    if config_mt_experiments.include_pronoun is not None:
-        dataset_dict = dataset_dict.filter(
-            lambda example: example["pronoun"]
-            == config_mt_experiments.include_pronoun.value
-        )
-
     # --------------------------------------
     # Prepare Japanese to Ainu
     # --------------------------------------
     dataset_dict_ja2ain = dataset_dict.map(
         lambda example: {
-            "text": task_prefix.ja2ain(example, config_mt_experiments.task_prefix)
-            + example["translation"],
+            "text": task_prefix.ja2ain(example) + example["translation"],
             "text_target": example["text"],
         },
         remove_columns=dataset_dict.column_names["train"],
@@ -86,8 +67,7 @@ def train(
     # --------------------------------------
     dataset_dict_ain2ja = dataset_dict.map(
         lambda example: {
-            "text": task_prefix.ain2ja(example, config_mt_experiments.task_prefix)
-            + example["text"],
+            "text": task_prefix.ain2ja(example) + example["text"],
             "text_target": example["translation"],
         },
         remove_columns=dataset_dict.column_names["train"],
@@ -140,11 +120,6 @@ def train(
         callbacks=[EarlyStoppingCallback(early_stopping_patience=3)],
         compute_metrics=lambda eval_preds: compute_metrics(tokenizer, eval_preds),
     )
-
-    if config_mt_experiments.hyperparameter_tuning:
-        trainer.add_callback(
-            HyperparameterTuningCallback(metric_tag="bleu", metric_value="eval_bleu")
-        )
 
     trainer.train()
     trainer.save_model(str(config_workspace.model_dir))

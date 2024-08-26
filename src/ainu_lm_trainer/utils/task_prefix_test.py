@@ -1,4 +1,4 @@
-from ....config import TaskPrefixType
+from ..config import TaskPrefixType
 from .task_prefix import ain2ja
 
 sentence = {

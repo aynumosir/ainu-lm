@@ -26,6 +26,11 @@ class SentencepieceTokenizerTrainer:
             yield self.__dataset[i : i + batch_size]["text"]
             yield self.__dataset[i : i + batch_size]["translation"]
 
+            # 方言名がちゃんとトークナイズされること
+            for dialect in self.__dataset[i : i + batch_size]["dialect"]:
+                if dialect:
+                    yield dialect
+
     def __prepare(self) -> None:
         self.__config_workspace.model_dir.mkdir(parents=True, exist_ok=True)
 
@@ -36,6 +41,7 @@ class SentencepieceTokenizerTrainer:
 
         tokenizer.train_from_iterator(
             iterator=self.__batch_iterator(),
+            unk_token="<unk>",
             special_tokens=[
                 "<unk>",
                 "<pad>",

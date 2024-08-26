@@ -1,4 +1,4 @@
-from ....config import TaskPrefixType
+from ..config import TaskPrefixType
 
 
 def __make_ainu_language_identifier(

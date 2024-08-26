@@ -68,6 +68,9 @@ def add_parser(parser: ArgumentParser) -> None:
     gpt2_parser = subparsers.add_parser("gpt2", parents=common)
     gpt2_parser.add_argument("--base-tokenizer", type=str)
 
+    t5_parser = subparsers.add_parser("t5", parents=common)
+    t5_parser.add_argument("--base-tokenizer", type=str)
+
     subparsers.add_parser("byte-level-bpe", parents=common)
     subparsers.add_parser("sentencepiece", parents=common)
 
@@ -145,6 +148,14 @@ def main(args: Namespace) -> None:
 
     if args.task == "gpt2":
         pretraining.gpt2.train(
+            tokenizer_name=args.base_tokenizer,
+            config_dataset=config_dataset,
+            config_training=config_training,
+            config_workspace=config_workspace,
+        )
+
+    if args.task == "t5":
+        pretraining.t5.train(
             tokenizer_name=args.base_tokenizer,
             config_dataset=config_dataset,
             config_training=config_training,
