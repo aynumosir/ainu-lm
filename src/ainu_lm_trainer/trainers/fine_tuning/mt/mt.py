@@ -34,7 +34,12 @@ def compute_metrics(tokenizer: AutoTokenizer, eval_preds: EvalPrediction) -> dic
     labels = np.where(labels != -100, labels, tokenizer.pad_token_id)
     decoded_labels = tokenizer.batch_decode(labels, skip_special_tokens=True)
 
+    # FIXME: This line works only with Japanese->Ainu direction. You must set
+    # `tokenize="ja-mecab"` in order to evaluate Ainu->Japanese direction accurately.
+    # Currently I evaluate a model on a local setup after a training finished.
+    # In the future, you may decode the task-prefix and use it for switching the option automatically.
     bleu = sacrebleu.compute(predictions=decoded_preds, references=decoded_labels)
+
     return {"bleu": bleu["score"]}
 
 
